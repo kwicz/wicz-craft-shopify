@@ -1,0 +1,92 @@
+{%- comment -%}
+  wicz craft header (design guide §7).
+  Cream background, single-line wordmark left, mono text nav right,
+  "cart (n)", 1.5px deep periwinkle bottom border.
+  Below 750px the menu links collapse into a <details> disclosure;
+  the wordmark and cart count stay visible.
+{%- endcomment -%}
+{{ 'wicz-header.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign menu = section.settings.menu
+-%}
+
+<header class="wicz-header">
+  <div class="wicz-header__inner page-width">
+    <a href="{{ routes.root_url }}" class="wicz-header__wordmark">
+      {{- section.settings.wordmark | default: 'wicz craft' -}}
+    </a>
+
+    {%- capture menu_links -%}
+      {%- for link in menu.links -%}
+        <li>
+          <a
+            href="{{ link.url }}"
+            class="wicz-header__link"
+            {% if link.current %}
+              aria-current="page"
+            {% endif %}
+          >
+            {{- link.title | downcase -}}
+          </a>
+        </li>
+      {%- endfor -%}
+    {%- endcapture -%}
+
+    <nav class="wicz-header__nav" aria-label="main">
+      {%- comment -%} 750px and up: inline list {%- endcomment -%}
+      <ul class="wicz-header__links wicz-header__links--inline" role="list">
+        {{ menu_links }}
+      </ul>
+
+      {%- comment -%} below 750px: disclosure, no JavaScript needed {%- endcomment -%}
+      <details class="wicz-header__menu">
+        <summary class="wicz-header__toggle">
+          <span class="wicz-header__toggle-open">menu</span>
+          <span class="wicz-header__toggle-close">close</span>
+        </summary>
+        <ul class="wicz-header__links wicz-header__links--stacked" role="list">
+          {{ menu_links }}
+        </ul>
+      </details>
+
+      <a
+        href="{{ routes.cart_url }}"
+        id="cart-icon-bubble"
+        class="wicz-header__link wicz-header__cart"
+        {% if template.name == 'cart' %}
+          aria-current="page"
+        {% endif %}
+      >
+        <span aria-hidden="true">cart ({{ cart.item_count }})</span>
+        <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "wicz header",
+  "class": "wicz-header-section",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "wordmark",
+      "label": "wordmark",
+      "default": "wicz craft",
+      "info": "lowercase, set in the display face"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "menu",
+      "default": "main-menu",
+      "info": "suggested: shop, cartons, about. the cart link is added automatically."
+    }
+  ]
+}
+{% endschema %}

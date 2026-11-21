@@ -1,0 +1,329 @@
+/*
+  wicz craft shared components: foil cube placeholder (§10), flavor card,
+  flavor pills on product pages (§7). Mobile first.
+*/
+
+/* ---------- foil cube placeholder (§10) ---------- */
+.wicz-cube {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  padding: 14%;
+}
+
+.wicz-cube__wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  padding: 12%;
+}
+
+.wicz-cube__wordmark {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: var(--fraunces-axes);
+  letter-spacing: -0.045em;
+  line-height: 0.78;
+  color: var(--flavor-ink);
+  text-transform: lowercase;
+  /* stays at 32px or larger so the light ink is allowed (§3.3) */
+  font-size: max(32px, 11cqi);
+}
+
+.wicz-cube__wordmark span {
+  display: block;
+}
+
+.wicz-cube__number {
+  align-self: flex-end;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--flavor-deep);
+}
+
+.wicz-cube--card {
+  container-type: inline-size;
+}
+
+.wicz-cube--large {
+  container-type: inline-size;
+  padding: 12%;
+}
+
+.wicz-cube--large .wicz-cube__wordmark {
+  font-size: max(44px, 14cqi);
+}
+
+.wicz-cube--large .wicz-cube__number {
+  font-size: 14px;
+}
+
+/* ---------- flavor card (§7) ---------- */
+.wicz-card {
+  height: 100%;
+}
+
+.wicz-card__link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: var(--flavor-deep);
+  text-decoration: none;
+  /* flat by default: only the foil fold line, no drop shadow */
+  box-shadow: 0 2px 0 var(--flavor-ground);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.wicz-card__link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 0 var(--foil-fold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wicz-card__link {
+    transition: none;
+  }
+
+  .wicz-card__link:hover {
+    transform: none;
+  }
+}
+
+.wicz-card__media {
+  overflow: hidden;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+/* the card is already foil; the cube inside is a quieter fold of the same ground */
+.wicz-card__media .wicz-cube__wrap {
+  box-shadow: 0 2px 0 var(--foil-fold), 0 10px 20px rgba(120, 95, 40, 0.16);
+}
+
+.wicz-card__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.wicz-card__body {
+  display: grid;
+  gap: var(--space-1);
+  padding: 0 var(--space-2) var(--space-2);
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-card__body {
+    padding: 0 var(--space-3) var(--space-3);
+  }
+}
+
+/* 32px, so the flavor ink is allowed (§3.3) */
+.wicz-card__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: var(--fraunces-axes);
+  font-size: 32px;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: var(--flavor-ink);
+  text-transform: lowercase;
+}
+
+.wicz-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--flavor-deep);
+}
+
+.wicz-card__number {
+  font-weight: 500;
+}
+
+.wicz-card__number,
+.wicz-card__price {
+  white-space: nowrap;
+}
+
+/* ---------- product page (§9) ---------- */
+.wicz-flavor-page .product__media-wrapper .wicz-cube {
+  background-color: transparent;
+}
+
+.wicz-product-number {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--flavor-text);
+}
+
+.wicz-flavor-page .product__title h1 {
+  font-size: 44px;
+}
+
+@media screen and (min-width: 990px) {
+  .wicz-flavor-page .product__title h1 {
+    font-size: 72px;
+  }
+}
+
+.wicz-flavor-page .price-item {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  letter-spacing: 0;
+  color: var(--flavor-text);
+}
+
+/* size selector as pills (§9) */
+.wicz-flavor-page .product-form__input--pill input[type='radio'] + label {
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--flavor-text);
+  color: var(--flavor-text);
+  background-color: transparent;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0;
+  padding: 8px 18px;
+}
+
+.wicz-flavor-page .product-form__input--pill input[type='radio']:checked + label {
+  background-color: var(--flavor-text);
+  color: var(--cream);
+}
+
+.wicz-flavor-page .product-form__input .form__label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--flavor-text);
+}
+
+.wicz-facts {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3) 0 0;
+  border-top: 1.5px solid var(--flavor-text);
+}
+
+.wicz-facts__row {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+
+.wicz-facts__label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--flavor-text);
+}
+
+.wicz-facts__value {
+  margin: 0;
+  font-size: 16px;
+  color: var(--flavor-text);
+}
+
+.wicz-facts__allergen {
+  font-style: italic;
+}
+
+/* ---------- stamp (§7): 120–170px circle, 2px deep border, rotated 12° ---------- */
+.wicz-stamp {
+  display: grid;
+  place-items: center;
+  width: 120px;
+  aspect-ratio: 1 / 1;
+  border: 2px solid var(--periwinkle-deep);
+  border-radius: var(--radius-pill);
+  background-color: var(--cream);
+  transform: rotate(12deg);
+}
+
+.wicz-stamp__text {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-size: 22px;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--periwinkle-deep);
+}
+
+.wicz-stamp__text span {
+  display: block;
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-stamp {
+    width: 160px;
+  }
+
+  .wicz-stamp__text {
+    font-size: 26px;
+  }
+}
+
+/* ---------- flavor dots (§7): 22px circles, ground fill, 3px ink ring ---------- */
+.wicz-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wicz-dots__dot {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  background-color: var(--dot-ground);
+  box-shadow: inset 0 0 0 3px var(--dot-ink);
+}
+
+/* empty slot: cream fill, dashed ring in the surrounding deep color */
+.wicz-dots__dot--empty {
+  background-color: var(--cream);
+  box-shadow: none;
+  border: 2px dashed var(--flavor-deep, var(--periwinkle-deep));
+}
+
+/* a 2″ cube reads bigger than a 1.2″ cube */
+.wicz-dots__dot--big {
+  width: 30px;
+  height: 30px;
+}
+
+.wicz-dots {
+  align-items: center;
+}
+
+/* ---------- carton contents in the cart ---------- */
+.wicz-cart-contents {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wicz-cart-contents li::before {
+  content: '· ';
+  speak: never;
+}

@@ -1,0 +1,128 @@
+{%- comment -%}
+  wicz craft footer (design guide §7).
+  Foil background in the salted pair, optional carton-stripe band across
+  the top, stacked wordmark, mono location line, one voice line.
+  Legal links and copyright keep their normal case (§4.2).
+{%- endcomment -%}
+{{ 'wicz-footer.css' | asset_url | stylesheet_tag }}
+
+<footer class="wicz-footer">
+  {%- if section.settings.show_stripes -%}
+    {%- render 'wicz-carton-stripes',
+      flavor: section.settings.stripe_flavor,
+      height: 24,
+      id: 'footer'
+    -%}
+  {%- endif -%}
+
+  <div class="wicz-footer__foil foil">
+    <div class="wicz-footer__inner page-width">
+      <a href="{{ routes.root_url }}" class="wicz-footer__wordmark wicz-display wicz-display--stacked">
+        {%- assign words = section.settings.wordmark | default: 'wicz craft' | split: ' ' -%}
+        {%- for word in words -%}
+          <span>{{ word }}</span>
+        {%- endfor -%}
+      </a>
+
+      <div class="wicz-footer__details">
+        {%- if section.settings.voice_line != blank -%}
+          <p class="wicz-footer__voice wicz-italic">{{ section.settings.voice_line }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.location_line != blank -%}
+          <p class="wicz-footer__location">{{ section.settings.location_line }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.menu.links.size > 0 -%}
+          <nav aria-label="footer">
+            <ul class="wicz-footer__links" role="list">
+              {%- for link in section.settings.menu.links -%}
+                <li><a href="{{ link.url }}">{{ link.title | downcase }}</a></li>
+              {%- endfor -%}
+            </ul>
+          </nav>
+        {%- endif -%}
+
+        {%- if section.settings.show_policies and shop.policies.size > 0 -%}
+          <ul class="wicz-footer__legal wicz-legal" role="list">
+            {%- for policy in shop.policies -%}
+              {%- if policy != blank -%}
+                <li><a href="{{ policy.url }}">{{ policy.title }}</a></li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+        <p class="wicz-footer__copyright wicz-legal">
+          &copy; {{ 'now' | date: '%Y' }} Wicz Craft
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "wicz footer",
+  "class": "wicz-footer-section",
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "wordmark",
+      "label": "wordmark",
+      "default": "wicz craft",
+      "info": "each word stacks on its own line"
+    },
+    {
+      "type": "text",
+      "id": "location_line",
+      "label": "location line",
+      "default": "cultured butter · grass-fed cream · portland, oregon"
+    },
+    {
+      "type": "text",
+      "id": "voice_line",
+      "label": "voice line",
+      "default": "keep cold. spread generously."
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "menu",
+      "default": "footer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_policies",
+      "label": "show policy links",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "carton stripes"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stripes",
+      "label": "show stripe band across the top",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "stripe_flavor",
+      "label": "stripe colors",
+      "default": "salted",
+      "options": [
+        { "value": "salted", "label": "nº 1 salted (butter × periwinkle)" },
+        { "value": "garlic-herb", "label": "nº 2 garlic herb (pistachio × tomato)" },
+        { "value": "honey", "label": "nº 3 honey (apricot × magenta)" },
+        { "value": "white-miso", "label": "nº 4 white miso (lilac × kelly green)" },
+        { "value": "chili-crisp", "label": "nº 5 chili crisp (oxblood × tangerine)" }
+      ]
+    }
+  ]
+}
+{% endschema %}

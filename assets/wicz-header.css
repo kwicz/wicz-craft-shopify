@@ -1,0 +1,123 @@
+/* wicz craft header (design guide §7). Mobile first. */
+.wicz-header {
+  background-color: var(--cream);
+  border-bottom: var(--border);
+  position: relative;
+}
+
+.wicz-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 64px;
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-2);
+}
+
+/* Wordmark: display face, single line. 28px / weight 900 counts as large bold
+   text, so periwinkle is allowed (§3.3). */
+.wicz-header__wordmark {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: var(--fraunces-axes);
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  color: var(--periwinkle);
+  text-decoration: none;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+.wicz-header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.wicz-header__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.wicz-header__link,
+.wicz-header__toggle {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0;
+  color: var(--periwinkle-deep);
+  text-decoration: none;
+  text-transform: lowercase;
+}
+
+.wicz-header__link:hover,
+.wicz-header__link[aria-current='page'] {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+/* ---------- mobile: disclosure ---------- */
+.wicz-header__links--inline {
+  display: none;
+}
+
+.wicz-header__toggle {
+  list-style: none;
+  cursor: pointer;
+  padding: var(--space-1) 0;
+}
+
+.wicz-header__toggle::-webkit-details-marker {
+  display: none;
+}
+
+.wicz-header__toggle-close,
+.wicz-header__menu[open] .wicz-header__toggle-open {
+  display: none;
+}
+
+.wicz-header__menu[open] .wicz-header__toggle-close {
+  display: inline;
+}
+
+.wicz-header__links--stacked {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--gutter);
+  background-color: var(--cream);
+  border-bottom: var(--border);
+}
+
+.wicz-header__links--stacked .wicz-header__link {
+  font-size: 16px;
+}
+
+/* ---------- 750px and up: inline list ---------- */
+@media screen and (min-width: 750px) {
+  .wicz-header__inner {
+    min-height: 80px;
+  }
+
+  .wicz-header__wordmark {
+    font-size: 32px;
+  }
+
+  .wicz-header__menu {
+    display: none;
+  }
+
+  .wicz-header__links--inline {
+    display: flex;
+    gap: var(--space-3);
+  }
+}

@@ -1,0 +1,29 @@
+{%- comment -%}
+  Foil-wrapped cube placeholder, used until real product photos exist
+  (design guide §10). Built from the .foil class plus the wordmark. No stock imagery.
+  Colors come from the nearest --flavor-* custom properties, so wrap it in an
+  element that sets them (the product page body, or a flavor card).
+
+  Accepts:
+  - product: {Object} optional. Adds the flavor number and an accessible label.
+  - size: {String} 'card' (default) or 'large' (product page)
+
+  Usage:
+  {% render 'wicz-foil-placeholder', product: product, size: 'large' %}
+{%- endcomment -%}
+{%- liquid
+  assign placeholder_size = size | default: 'card'
+  assign flavor_number = product.metafields.custom.flavor_number.value
+-%}
+<div
+  class="wicz-cube wicz-cube--{{ placeholder_size }}"
+  role="img"
+  aria-label="{% if product %}{{ product.title | escape }}, {% endif %}foil-wrapped butter cube"
+>
+  <div class="wicz-cube__wrap foil foil--folds">
+    <span class="wicz-cube__wordmark" aria-hidden="true"><span>wicz</span><span>craft</span></span>
+    {%- if flavor_number != blank -%}
+      <span class="wicz-cube__number" aria-hidden="true">nº {{ flavor_number }}</span>
+    {%- endif -%}
+  </div>
+</div>

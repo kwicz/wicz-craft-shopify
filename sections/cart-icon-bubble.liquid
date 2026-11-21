@@ -1,0 +1,7 @@
+{%- comment -%}
+  wicz craft: text cart count, "cart (n)" (design guide §7 header).
+  Dawn's cart.js re-renders this section into #cart-icon-bubble after
+  quantity changes on the cart page, so the header count stays current.
+{%- endcomment -%}
+<span aria-hidden="true">cart ({{ cart.item_count }})</span>
+<span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>

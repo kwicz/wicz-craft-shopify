@@ -1,0 +1,38 @@
+{%- comment -%}
+  Core brand colors from theme settings (Theme settings > wicz craft colors).
+  Overrides the static fallbacks in assets/wicz-tokens.css and maps Dawn's
+  first color scheme onto the brand, so Dawn components (buttons, inputs,
+  drawers) follow the palette without editing each color scheme by hand.
+  Rendered in layout/theme.liquid after Dawn's own style block.
+{%- endcomment -%}
+{%- liquid
+  assign cream = settings.wicz_cream
+  assign deep = settings.wicz_periwinkle_deep
+-%}
+{% style %}
+  :root {
+    --foil: {{ settings.wicz_foil }};
+    --foil-fold: {{ settings.wicz_foil_fold }};
+    --periwinkle: {{ settings.wicz_periwinkle }};
+    --periwinkle-deep: {{ deep }};
+    --cream: {{ cream }};
+    --crust: {{ settings.wicz_crust }};
+    --flavor-text-rgb: {{ deep.red }},{{ deep.green }},{{ deep.blue }};
+  }
+
+  :root,
+  .color-scheme-1 {
+    --color-background: {{ cream.red }},{{ cream.green }},{{ cream.blue }};
+    --gradient-background: {{ cream }};
+    --color-foreground: {{ deep.red }},{{ deep.green }},{{ deep.blue }};
+    --color-button: {{ deep.red }},{{ deep.green }},{{ deep.blue }};
+    --color-button-text: {{ cream.red }},{{ cream.green }},{{ cream.blue }};
+    --color-secondary-button: {{ cream.red }},{{ cream.green }},{{ cream.blue }};
+    --color-secondary-button-text: {{ deep.red }},{{ deep.green }},{{ deep.blue }};
+    --color-link: {{ deep.red }},{{ deep.green }},{{ deep.blue }};
+    --color-badge-foreground: {{ deep.red }},{{ deep.green }},{{ deep.blue }};
+    --color-badge-background: {{ cream.red }},{{ cream.green }},{{ cream.blue }};
+    --color-badge-border: {{ deep.red }},{{ deep.green }},{{ deep.blue }};
+    --color-shadow: {{ deep.red }},{{ deep.green }},{{ deep.blue }};
+  }
+{% endstyle %}

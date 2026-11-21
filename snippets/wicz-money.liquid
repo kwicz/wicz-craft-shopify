@@ -1,0 +1,18 @@
+{%- comment -%}
+  Prints a money amount, or the [PRICE] placeholder when it's 0
+  (prices aren't set yet, design guide §8).
+
+  Accepts:
+  - amount: {Number} in cents
+  - with_currency: {Boolean} use money_with_currency (default false)
+
+  Usage:
+  {% render 'wicz-money', amount: item.final_line_price %}
+{%- endcomment -%}
+{%- if amount == 0 -%}
+  <span class="wicz-placeholder">[PRICE]</span>
+{%- elsif with_currency -%}
+  {{- amount | money_with_currency -}}
+{%- else -%}
+  {{- amount | money -}}
+{%- endif -%}

@@ -1,0 +1,37 @@
+{%- comment -%}
+  Outputs CSS custom property declarations for one product's flavor colors,
+  read from product metafields (design guide §3.2). Use inside a style attribute:
+
+    <div style="{% render 'wicz-flavor-vars', product: product %}">
+
+  Accepts:
+  - product: {Object} product with custom.color_ground / color_ink / color_deep
+
+  Outputs nothing when any of the three colors is missing, so the salted
+  defaults in wicz-tokens.css apply.
+
+  --flavor-text is the small-text color on the cream page. It is the deep
+  color unless deep fails WCAG AA (4.5:1) on cream, in which case the ground
+  color is used. Today that only changes chili crisp (tangerine on cream is
+  2.2:1; oxblood on cream is 9.5:1).
+{%- endcomment -%}
+{%- liquid
+  assign mf = product.metafields.custom
+  if mf.color_ground != blank and mf.color_ink != blank and mf.color_deep != blank
+    assign ground = mf.color_ground.value
+    assign ink = mf.color_ink.value
+    assign deep = mf.color_deep.value
+
+    assign text = deep
+    assign deep_on_cream = deep | color_contrast: settings.wicz_cream
+    if deep_on_cream < 4.5
+      assign text = ground
+    endif
+
+    echo '--flavor-ground:' | append: ground | append: ';'
+    echo '--flavor-ink:' | append: ink | append: ';'
+    echo '--flavor-deep:' | append: deep | append: ';'
+    echo '--flavor-text:' | append: text | append: ';'
+    echo '--flavor-text-rgb:' | append: text.red | append: ',' | append: text.green | append: ',' | append: text.blue | append: ';'
+  endif
+-%}

@@ -1,0 +1,21 @@
+{
+  "sections": {
+    "main": {
+      "type": "wicz-about",
+      "blocks": {
+        "line-1": { "type": "line", "settings": { "text": "we made butter.", "italic": false } },
+        "line-2": { "type": "line", "settings": { "text": "cultured slowly from grass-fed cream in portland, oregon.", "italic": false } },
+        "line-3": { "type": "line", "settings": { "text": "keep cold. spread generously.", "italic": false } },
+        "line-4": { "type": "line", "settings": { "text": "it's really good.", "italic": true } }
+      },
+      "block_order": ["line-1", "line-2", "line-3", "line-4"],
+      "settings": {
+        "heading": "about",
+        "show_stamp": true,
+        "stamp_text": "it's really good.",
+        "location_line": "cultured butter · grass-fed cream · portland, oregon"
+      }
+    }
+  },
+  "order": ["main"]
+}

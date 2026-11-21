@@ -1,0 +1,14 @@
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "header": {
+      "type": "wicz-header",
+      "settings": {
+        "wordmark": "wicz craft",
+        "menu": "main-menu"
+      }
+    }
+  },
+  "order": ["header"]
+}

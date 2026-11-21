@@ -1,0 +1,32 @@
+{%- comment -%}
+  Flavor dots (design guide §7): a row of 22px circles, each filled with a
+  flavor's ground and ringed 3px in its ink. Shows what's inside a carton.
+
+  Accepts:
+  - products: {Array} flavor products (e.g. carton.metafields.custom.carton_flavors.value).
+    The same product may appear more than once.
+  - label: {Boolean} also print the flavor names for screen readers (default true)
+
+  Usage:
+  {% render 'wicz-flavor-dots', products: product.metafields.custom.carton_flavors.value %}
+{%- endcomment -%}
+{%- if products != blank -%}
+  <ul class="wicz-dots" role="list">
+    {%- for flavor in products -%}
+      {%- liquid
+        assign mf = flavor.metafields.custom
+        assign ground = mf.color_ground.value | default: settings.wicz_foil
+        assign ink = mf.color_ink.value | default: settings.wicz_periwinkle
+      -%}
+      <li
+        class="wicz-dots__dot"
+        style="--dot-ground: {{ ground }}; --dot-ink: {{ ink }};"
+        title="{{ flavor.title | escape }}"
+      >
+        {%- unless label == false -%}
+          <span class="visually-hidden">{{ flavor.title | escape }}</span>
+        {%- endunless -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+{%- endif -%}

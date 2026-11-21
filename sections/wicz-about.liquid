@@ -1,0 +1,91 @@
+{%- comment -%}
+  About page (design guide §9): short. Three or four voice lines, the stamp,
+  and the location line. Each voice line is a block so it stays editable.
+  The stamp is this page's one stamp and one rotated element (§11).
+{%- endcomment -%}
+{{ 'wicz-home.css' | asset_url | stylesheet_tag }}
+
+<section class="wicz-about page-width">
+  <h1 class="wicz-about__title">{{ section.settings.heading | default: page.title }}</h1>
+
+  <div class="wicz-about__body">
+    <ul class="wicz-about__lines" role="list">
+      {%- for block in section.blocks -%}
+        <li class="wicz-about__line{% if block.settings.italic %} wicz-italic{% endif %}" {{ block.shopify_attributes }}>
+          {{- block.settings.text -}}
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    {%- if section.settings.show_stamp -%}
+      {%- render 'wicz-stamp', text: section.settings.stamp_text, class: 'wicz-about__stamp' -%}
+    {%- endif -%}
+  </div>
+
+  {%- if section.settings.location_line != blank -%}
+    <p class="wicz-about__location">{{ section.settings.location_line }}</p>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "wicz about",
+  "class": "wicz-about-section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "heading",
+      "default": "about",
+      "info": "leave blank to use the page title"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stamp",
+      "label": "show stamp",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "stamp_text",
+      "label": "stamp text",
+      "default": "it's really good."
+    },
+    {
+      "type": "text",
+      "id": "location_line",
+      "label": "location line",
+      "default": "cultured butter · grass-fed cream · portland, oregon"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "line",
+      "name": "voice line",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "line",
+          "default": "we made butter. it's really good."
+        },
+        {
+          "type": "checkbox",
+          "id": "italic",
+          "label": "italic accent",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "wicz about",
+      "blocks": [
+        { "type": "line" }
+      ]
+    }
+  ]
+}
+{% endschema %}

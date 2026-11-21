@@ -1,0 +1,19 @@
+{
+  "name": "t:sections.footer.name",
+  "type": "footer",
+  "sections": {
+    "footer": {
+      "type": "wicz-footer",
+      "settings": {
+        "wordmark": "wicz craft",
+        "location_line": "cultured butter · grass-fed cream · portland, oregon",
+        "voice_line": "keep cold. spread generously.",
+        "menu": "footer",
+        "show_policies": true,
+        "show_stripes": true,
+        "stripe_flavor": "salted"
+      }
+    }
+  },
+  "order": ["footer"]
+}

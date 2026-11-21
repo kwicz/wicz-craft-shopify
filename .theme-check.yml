@@ -1,0 +1,8 @@
+ignore:
+  - app/**
+  - catalog/**
+
+MatchingTranslations:
+  enabled: false
+TemplateLength:
+  enabled: false

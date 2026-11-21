@@ -1,0 +1,105 @@
+{%- comment -%}
+  Foil hero (design guide §7): a large foil block, rotated about -2.5°,
+  holding a stacked display line in periwinkle at 72–96px (mobile) and
+  160–200px (desktop). A mono detail column sits top-right and a stamp
+  overlaps the lower-right corner.
+  This is the page's one rotated element and one stamp (§11).
+{%- endcomment -%}
+{{ 'wicz-home.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign hero_words = section.settings.heading | newline_to_br | replace: '<br />', ' ' | split: ' '
+  assign detail_lines = section.settings.details | newline_to_br | split: '<br />'
+-%}
+
+<section class="wicz-hero page-width" aria-label="{{ section.settings.heading | newline_to_br | replace: '<br />', ' ' | strip_newlines | escape }}">
+  <div class="wicz-hero__block foil foil--folds{% if section.settings.rotate %} foil--dropped{% endif %}">
+    <h1 class="wicz-hero__heading wicz-display wicz-display--stacked">
+      {%- for word in hero_words -%}
+        {%- if word != blank -%}
+          <span>{{ word | strip }}</span>
+        {%- endif -%}
+      {%- endfor -%}
+    </h1>
+
+    {%- if section.settings.details != blank -%}
+      <ul class="wicz-hero__details" role="list">
+        {%- for line in detail_lines -%}
+          {%- assign clean = line | strip_newlines | strip -%}
+          {%- if clean != blank -%}
+            <li>{{ clean }}</li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+      <a href="{{ section.settings.button_link }}" class="button wicz-hero__button">
+        {{- section.settings.button_label -}}
+      </a>
+    {%- endif -%}
+
+    {%- if section.settings.show_stamp -%}
+      {%- render 'wicz-stamp', text: section.settings.stamp_text, class: 'wicz-hero__stamp' -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "wicz hero",
+  "class": "wicz-hero-section",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "stacked heading",
+      "default": "really\ngood\nbutter",
+      "info": "one word per line. lowercase."
+    },
+    {
+      "type": "textarea",
+      "id": "details",
+      "label": "detail column",
+      "default": "cultured butter\nnº 1 — salted\ngrass-fed cream\nportland, oregon",
+      "info": "one line each, set in mono"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "button label",
+      "info": "optional. the guide's hero has no button; leave blank to keep it quiet."
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "rotate",
+      "label": "drop the brick (rotate -2.5°)",
+      "default": true,
+      "info": "use one rotated element per page"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stamp",
+      "label": "show stamp",
+      "default": true,
+      "info": "one stamp per page"
+    },
+    {
+      "type": "text",
+      "id": "stamp_text",
+      "label": "stamp text",
+      "default": "it's really good."
+    }
+  ],
+  "presets": [
+    {
+      "name": "wicz hero"
+    }
+  ]
+}
+{% endschema %}

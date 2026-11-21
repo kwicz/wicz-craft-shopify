@@ -1,0 +1,44 @@
+{
+  "sections": {
+    "hero": {
+      "type": "wicz-hero",
+      "settings": {
+        "heading": "really\ngood\nbutter",
+        "details": "cultured butter\nnº 1 — salted\ngrass-fed cream\nportland, oregon",
+        "rotate": true,
+        "show_stamp": true,
+        "stamp_text": "it's really good."
+      }
+    },
+    "flavors": {
+      "type": "wicz-product-grid",
+      "settings": {
+        "heading": "the flavors",
+        "collection": "shop",
+        "limit": 5,
+        "columns_desktop": "5",
+        "link_label": "see all"
+      }
+    },
+    "cartons": {
+      "type": "wicz-product-grid",
+      "settings": {
+        "heading": "cartons",
+        "collection": "cartons",
+        "limit": 3,
+        "columns_desktop": "3",
+        "link_label": "see all"
+      }
+    },
+    "story": {
+      "type": "wicz-story",
+      "settings": {
+        "line": "we made butter.",
+        "accent": "it's really good.",
+        "subline": "cultured slowly from grass-fed cream in portland, oregon.",
+        "show_stamp": false
+      }
+    }
+  },
+  "order": ["hero", "flavors", "cartons", "story"]
+}

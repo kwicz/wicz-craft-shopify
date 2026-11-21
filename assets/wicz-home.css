@@ -1,0 +1,223 @@
+/* wicz craft home sections (design guide §7, §9). Mobile first. */
+
+/* ---------- hero ---------- */
+.wicz-hero {
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-6);
+  /* the rotated brick and stamp may poke past the gutter; never scroll sideways */
+  overflow-x: clip;
+}
+
+.wicz-hero__block {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-3) var(--space-6);
+}
+
+.wicz-hero__heading {
+  /* 72–96px mobile, 160–200px desktop, set by .wicz-display */
+  margin: 0;
+}
+
+.wicz-hero__details {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--periwinkle-deep);
+}
+
+.wicz-hero__button {
+  justify-self: start;
+}
+
+.wicz-hero__stamp {
+  position: absolute;
+  right: -8px;
+  bottom: -40px;
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-hero {
+    padding-top: var(--space-6);
+  }
+
+  .wicz-hero__block {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    padding: var(--space-5) var(--space-5) var(--space-6);
+  }
+
+  .wicz-hero__details {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+    font-size: 14px;
+  }
+
+  .wicz-hero__button {
+    grid-column: 1;
+  }
+
+  .wicz-hero__stamp {
+    right: -16px;
+    bottom: -56px;
+  }
+}
+
+/* ---------- product grid ---------- */
+.wicz-grid-section {
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-4);
+}
+
+.wicz-grid-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.wicz-grid-section__heading {
+  margin: 0;
+}
+
+.wicz-grid-section__link {
+  font-weight: 500;
+  font-size: 14px;
+  text-underline-offset: 4px;
+}
+
+.wicz-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .wicz-grid--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .wicz-grid--5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.wicz-grid-section__empty {
+  font-size: 14px;
+}
+
+/* ---------- story ---------- */
+.wicz-story {
+  position: relative;
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-5);
+  text-align: center;
+}
+
+.wicz-story__line {
+  margin: 0 auto;
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: var(--fraunces-axes);
+  font-size: 44px;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: var(--periwinkle);
+}
+
+.wicz-story__accent {
+  display: block;
+  font-weight: 800;
+}
+
+.wicz-story__subline {
+  margin: var(--space-3) 0 0;
+  font-size: 14px;
+}
+
+.wicz-story__stamp {
+  margin: var(--space-4) auto 0;
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-story__line {
+    font-size: 72px;
+  }
+}
+
+/* ---------- about (§9) ---------- */
+.wicz-about {
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-6);
+}
+
+.wicz-about__title {
+  margin: 0 0 var(--space-4);
+}
+
+.wicz-about__body {
+  display: grid;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.wicz-about__lines {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 32px+ display lines, so periwinkle is allowed (§3.3) */
+.wicz-about__line {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: var(--fraunces-axes-heading);
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--periwinkle);
+}
+
+.wicz-about__line.wicz-italic {
+  font-style: italic;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}
+
+.wicz-about__stamp {
+  justify-self: center;
+}
+
+.wicz-about__location {
+  margin: var(--space-5) 0 0;
+  font-size: 14px;
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-about__body {
+    grid-template-columns: 1fr auto;
+    gap: var(--space-5);
+  }
+
+  .wicz-about__line {
+    font-size: 44px;
+  }
+}

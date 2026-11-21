@@ -1,0 +1,66 @@
+{%- comment -%}
+  One-line story (design guide §9): "we made butter. it's really good."
+  The stamp is off by default, because the hero already carries the page's
+  one stamp (§11). Turn it on here only if the hero's stamp is off.
+{%- endcomment -%}
+{{ 'wicz-home.css' | asset_url | stylesheet_tag }}
+
+<section class="wicz-story page-width{% if section.settings.show_stamp %} wicz-story--stamped{% endif %}">
+  <p class="wicz-story__line">
+    {{- section.settings.line -}}
+    {%- if section.settings.accent != blank %}
+      <em class="wicz-italic wicz-story__accent">{{ section.settings.accent }}</em>
+    {%- endif -%}
+  </p>
+  {%- if section.settings.subline != blank -%}
+    <p class="wicz-story__subline">{{ section.settings.subline }}</p>
+  {%- endif -%}
+  {%- if section.settings.show_stamp -%}
+    {%- render 'wicz-stamp', text: section.settings.stamp_text, class: 'wicz-story__stamp' -%}
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "wicz story",
+  "class": "wicz-story-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "line",
+      "label": "line",
+      "default": "we made butter."
+    },
+    {
+      "type": "text",
+      "id": "accent",
+      "label": "italic accent",
+      "default": "it's really good."
+    },
+    {
+      "type": "text",
+      "id": "subline",
+      "label": "small line",
+      "default": "cultured slowly from grass-fed cream in portland, oregon."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stamp",
+      "label": "show stamp",
+      "default": false,
+      "info": "one stamp per page. leave off if the hero shows one."
+    },
+    {
+      "type": "text",
+      "id": "stamp_text",
+      "label": "stamp text",
+      "default": "it's really good."
+    }
+  ],
+  "presets": [
+    {
+      "name": "wicz story"
+    }
+  ]
+}
+{% endschema %}

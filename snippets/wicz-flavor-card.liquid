@@ -1,0 +1,72 @@
+{%- comment -%}
+  Flavor product card (design guide §7). Also the carton card: when the
+  product has custom.carton_flavors, a row of flavor dots shows what's inside.
+  Card background is the flavor's ground with the foil sheen. Name in display
+  type; it uses the flavor's ink only at 32px and up, otherwise the deep color
+  (§3.3). Below it, nº and price in mono, deep color.
+  Hover: no shadow change; lifts 2px and the bottom border darkens to foil-fold.
+
+  Accepts:
+  - product: {Object} product with custom.* flavor metafields
+  - heading_level: {String} 'h2' or 'h3' (default 'h3')
+  - lazy_load: {Boolean} lazy-load the image (default true; pass false for the first row)
+
+  Usage:
+  {% render 'wicz-flavor-card', product: product %}
+{%- endcomment -%}
+{%- liquid
+  assign tag = heading_level | default: 'h3'
+  assign image_loading = 'lazy'
+  if lazy_load == false
+    assign image_loading = 'eager'
+  endif
+  assign flavor_number = product.metafields.custom.flavor_number.value
+  assign card_title = product.title
+  if flavor_number != blank
+    assign number_prefix = 'nº ' | append: flavor_number
+    assign card_title = product.title | remove_first: number_prefix | strip
+  endif
+-%}
+<article class="wicz-card" style="{% render 'wicz-flavor-vars', product: product %}">
+  <a href="{{ product.url }}" class="wicz-card__link foil">
+    <div class="wicz-card__media">
+      {%- if product.featured_media -%}
+        {{
+          product.featured_media
+          | image_url: width: 900
+          | image_tag:
+            loading: image_loading,
+            widths: '300, 450, 600, 900',
+            sizes: '(min-width: 990px) 380px, (min-width: 750px) 45vw, 90vw',
+            class: 'wicz-card__image'
+        }}
+      {%- else -%}
+        {%- render 'wicz-foil-placeholder', product: product -%}
+      {%- endif -%}
+    </div>
+
+    <div class="wicz-card__body">
+      <{{ tag }} class="wicz-card__title">{{ card_title | escape }}</{{ tag }}>
+      {%- comment -%} cartons: flavor dots show what's inside (§7) {%- endcomment -%}
+      {%- if product.metafields.custom.carton_config != blank -%}
+        {%- render 'wicz-carton-dots', product: product -%}
+      {%- elsif product.metafields.custom.carton_flavors != blank -%}
+        {%- render 'wicz-flavor-dots', products: product.metafields.custom.carton_flavors.value -%}
+      {%- endif -%}
+      <p class="wicz-card__meta">
+        {%- if flavor_number != blank -%}
+          <span class="wicz-card__number">nº {{ flavor_number }}</span>
+        {%- endif -%}
+        <span class="wicz-card__price">
+          {%- if product.price == 0 -%}
+            <span class="wicz-placeholder">[PRICE]</span>
+          {%- elsif product.price_varies -%}
+            from {{ product.price_min | money }}
+          {%- else -%}
+            {{ product.price | money }}
+          {%- endif -%}
+        </span>
+      </p>
+    </div>
+  </a>
+</article>

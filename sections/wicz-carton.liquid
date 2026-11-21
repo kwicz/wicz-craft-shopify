@@ -1,0 +1,222 @@
+{%- comment -%}
+  Carton product page with the bundle builder (design guide §8, §9).
+
+  Reads custom.carton_config on the carton product:
+  - slots mode:    { "mode": "slots", "slots": [ { "size": "1.2″ cube", "default": "salted" }, ... ] }
+                   one flavor per slot; slot sizes are fixed.
+  - capacity mode: { "mode": "capacity", "capacity": 6, "weights": { "2″ cube": 2, "1.2″ cube": 1 } }
+                   any mix of sizes up to the capacity.
+
+  Every pick is added to the cart as its own line carrying two hidden
+  properties:
+    _carton_id     one id shared by every line in this carton
+    _carton_parent the carton's variant id
+  The Cart Transform function (app/extensions/carton-merge) merges each
+  group into a single carton line priced as the sum of its picks.
+
+  Slots mode is a plain /cart/add form and works without JavaScript.
+  assets/wicz-carton-builder.js adds live dots, totals, a fresh carton id per
+  add, and the capacity rule.
+{%- endcomment -%}
+{{ 'wicz-carton.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'wicz-carton-builder.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign config = product.metafields.custom.carton_config.value
+  assign flavors = section.settings.flavors.products
+  assign carton_variant = product.selected_or_first_available_variant
+  assign fallback_carton_id = 'now' | date: '%s' | append: '-' | append: product.id
+  assign form_id = 'CartonForm-' | append: section.id
+-%}
+
+<div class="wicz-carton page-width">
+  <div class="wicz-carton__media">
+    {%- if product.featured_media -%}
+      {{ product.featured_media | image_url: width: 1200 | image_tag: loading: 'eager', class: 'wicz-carton__image', sizes: '(min-width: 990px) 560px, 100vw' }}
+    {%- else -%}
+      {%- render 'wicz-foil-placeholder', product: product, size: 'large' -%}
+    {%- endif -%}
+  </div>
+
+  <div class="wicz-carton__info">
+    <h1 class="wicz-carton__title">{{ product.title | escape }}</h1>
+
+    {%- render 'wicz-carton-dots', product: product -%}
+
+    {%- if config == blank or flavors == blank -%}
+      <p class="wicz-carton__notice">
+        this carton isn't set up yet. it needs a custom.carton_config metafield, and a flavors collection in the theme editor.
+      </p>
+    {%- else -%}
+      <wicz-carton-builder
+        data-mode="{{ config.mode }}"
+        {% if config.mode == 'capacity' %}
+          data-capacity="{{ config.capacity }}"
+        {% endif %}
+        data-currency="{{ cart.currency.iso_code }}"
+        data-money-format="{{ shop.money_format | escape }}"
+      >
+        <form
+          id="{{ form_id }}"
+          action="{{ routes.cart_add_url }}"
+          method="post"
+          class="wicz-builder"
+          data-carton-form
+        >
+          <input type="hidden" name="return_to" value="{{ routes.cart_url }}">
+
+          {%- if config.mode == 'slots' -%}
+            {%- for slot in config.slots -%}
+              {%- assign i = forloop.index0 -%}
+              <fieldset class="wicz-slot" data-slot="{{ i }}" data-size="{{ slot.size | escape }}">
+                <legend class="wicz-slot__legend">
+                  <span class="wicz-slot__number">slot {{ forloop.index }}</span>
+                  <span class="wicz-slot__size">{{ slot.size }}</span>
+                </legend>
+                <div class="wicz-slot__choices">
+                  {%- for flavor in flavors -%}
+                    {%- assign variant = flavor.variants | where: 'title', slot.size | first -%}
+                    {%- if variant -%}
+                      {%- assign flavor_number = flavor.metafields.custom.flavor_number.value -%}
+                      {%- assign number_prefix = 'nº ' | append: flavor_number -%}
+                      <label class="wicz-choice" style="{% render 'wicz-flavor-vars', product: flavor %}">
+                        <input
+                          type="radio"
+                          class="wicz-choice__input"
+                          name="items[{{ i }}][id]"
+                          value="{{ variant.id }}"
+                          data-handle="{{ flavor.handle }}"
+                          data-title="{{ flavor.title | escape }}"
+                          data-price="{{ variant.price }}"
+                          data-ground="{{ flavor.metafields.custom.color_ground.value }}"
+                          data-ink="{{ flavor.metafields.custom.color_ink.value }}"
+                          required
+                          {% if slot.default == flavor.handle and variant.available %}
+                            checked
+                          {% endif %}
+                          {% unless variant.available %}
+                            disabled
+                          {% endunless %}
+                        >
+                        <span class="wicz-choice__dot" aria-hidden="true"></span>
+                        <span class="wicz-choice__label">
+                          {{- flavor.title | remove_first: number_prefix | strip -}}
+                          {%- unless variant.available %} (sold out){% endunless -%}
+                        </span>
+                      </label>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+                <input type="hidden" name="items[{{ i }}][quantity]" value="1">
+                <input type="hidden" name="items[{{ i }}][properties][_carton_id]" value="{{ fallback_carton_id }}" data-carton-id>
+                <input type="hidden" name="items[{{ i }}][properties][_carton_parent]" value="{{ carton_variant.id }}">
+              </fieldset>
+            {%- endfor -%}
+
+          {%- else -%}
+            {%- comment -%} capacity mode: needs JavaScript for the capacity rule {%- endcomment -%}
+            <div class="wicz-meter" data-meter aria-hidden="true">
+              {%- for n in (1..config.capacity) -%}
+                <span class="wicz-meter__cell"></span>
+              {%- endfor -%}
+            </div>
+            <p class="wicz-meter__label" data-meter-label>0 of {{ config.capacity }} slots filled</p>
+
+            <ul class="wicz-steppers" role="list">
+              {%- for flavor in flavors -%}
+                {%- assign flavor_number = flavor.metafields.custom.flavor_number.value -%}
+                {%- assign number_prefix = 'nº ' | append: flavor_number -%}
+                {%- assign short_title = flavor.title | remove_first: number_prefix | strip -%}
+                <li class="wicz-steppers__flavor" style="{% render 'wicz-flavor-vars', product: flavor %}">
+                  <p class="wicz-steppers__name">
+                    <span class="wicz-choice__dot" aria-hidden="true"></span>
+                    {{ short_title }}
+                  </p>
+                  <div class="wicz-steppers__sizes">
+                    {%- for weight in config.weights -%}
+                      {%- assign size = weight.first -%}
+                      {%- assign variant = flavor.variants | where: 'title', size | first -%}
+                      {%- if variant -%}
+                        {%- assign input_id = 'Qty-' | append: section.id | append: '-' | append: variant.id -%}
+                        <div class="wicz-stepper">
+                          <label for="{{ input_id }}" class="wicz-stepper__label">{{ size }}</label>
+                          <div class="wicz-stepper__controls">
+                            <button type="button" class="wicz-stepper__button" data-step="-1" aria-controls="{{ input_id }}" aria-label="one less {{ short_title }}, {{ size }}">−</button>
+                            <input
+                              type="number"
+                              id="{{ input_id }}"
+                              class="wicz-stepper__input"
+                              min="0"
+                              value="0"
+                              inputmode="numeric"
+                              data-variant-id="{{ variant.id }}"
+                              data-handle="{{ flavor.handle }}"
+                              data-title="{{ flavor.title | escape }}"
+                              data-size="{{ size | escape }}"
+                              data-weight="{{ weight.last }}"
+                              data-price="{{ variant.price }}"
+                              data-ground="{{ flavor.metafields.custom.color_ground.value }}"
+                              data-ink="{{ flavor.metafields.custom.color_ink.value }}"
+                              {% unless variant.available %}
+                                disabled
+                              {% endunless %}
+                            >
+                            <button type="button" class="wicz-stepper__button" data-step="1" aria-controls="{{ input_id }}" aria-label="one more {{ short_title }}, {{ size }}">+</button>
+                          </div>
+                        </div>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
+                </li>
+              {%- endfor -%}
+            </ul>
+            <input type="hidden" data-carton-parent value="{{ carton_variant.id }}">
+            <noscript>
+              <p class="wicz-carton__notice">building your own carton needs javascript. the other cartons work without it.</p>
+            </noscript>
+          {%- endif -%}
+
+          <p class="wicz-builder__total">
+            <span>total</span>
+            <span data-total><span class="wicz-placeholder">[PRICE]</span></span>
+          </p>
+
+          <p class="wicz-builder__status" role="status" aria-live="polite" data-status></p>
+
+          <button type="submit" class="button button--full-width wicz-builder__submit" data-submit>
+            add carton to cart
+          </button>
+        </form>
+      </wicz-carton-builder>
+    {%- endif -%}
+
+    {%- if product.description != blank -%}
+      <div class="wicz-carton__description rte">{{ product.description }}</div>
+    {%- endif -%}
+
+    {%- if section.settings.care_line != blank -%}
+      <p class="wicz-carton__care">{{ section.settings.care_line }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "wicz carton",
+  "class": "wicz-carton-section",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "flavors",
+      "label": "flavors to choose from",
+      "info": "each product needs size variants that match the carton's slot sizes (e.g. 2″ cube, 1.2″ cube)"
+    },
+    {
+      "type": "text",
+      "id": "care_line",
+      "label": "care line",
+      "default": "keep cold. soften 20 minutes before serving. best within 2–3 weeks, or freeze."
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,21 @@
+{
+  "sections": {
+    "stripes": {
+      "type": "wicz-stripe-band",
+      "settings": {
+        "use_product_colors": true,
+        "flavor": "salted",
+        "height": 24,
+        "space": 0
+      }
+    },
+    "main": {
+      "type": "wicz-carton",
+      "settings": {
+        "flavors": "shop",
+        "care_line": "keep cold. soften 20 minutes before serving. best within 2–3 weeks, or freeze."
+      }
+    }
+  },
+  "order": ["stripes", "main"]
+}

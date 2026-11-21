@@ -1,0 +1,55 @@
+{%- comment -%}
+  Carton stripes (design guide §7): vertical 20px stripes alternating a
+  flavor's ground and ink. Drawn as an SVG pattern, not a CSS gradient,
+  because the foil sheen is the only gradient allowed (§6.1, §11).
+
+  Accepts:
+  - flavor: {String} salted | garlic-herb | honey | white-miso | chili-crisp (default salted)
+  - ground: {String} hex color, overrides the flavor's ground (e.g. from a metafield)
+  - ink: {String} hex color, overrides the flavor's ink
+  - height: {Number} band height in px (default 24)
+  - id: {String} unique suffix when several bands share a page
+
+  Usage:
+  {% render 'wicz-carton-stripes', flavor: 'white-miso', height: 32 %}
+{%- endcomment -%}
+{%- liquid
+  case flavor
+    when 'garlic-herb'
+      assign pair_ground = '#D6EDB8'
+      assign pair_ink = '#E5583A'
+    when 'honey'
+      assign pair_ground = '#FFD8A8'
+      assign pair_ink = '#D93B8C'
+    when 'white-miso'
+      assign pair_ground = '#E2D4F7'
+      assign pair_ink = '#2F8F55'
+    when 'chili-crisp'
+      assign pair_ground = '#7A1E1E'
+      assign pair_ink = '#FF8A3D'
+    else
+      assign pair_ground = settings.wicz_foil
+      assign pair_ink = settings.wicz_periwinkle
+  endcase
+  assign stripe_ground = ground | default: pair_ground
+  assign stripe_ink = ink | default: pair_ink
+  assign stripe_height = height | default: 24
+  assign stripe_id = id | default: 'band'
+  assign pattern_id = 'wicz-stripes-' | append: stripe_id
+-%}
+<svg
+  class="wicz-stripes"
+  width="100%"
+  height="{{ stripe_height }}"
+  aria-hidden="true"
+  focusable="false"
+  preserveAspectRatio="none"
+>
+  <defs>
+    <pattern id="{{ pattern_id }}" width="40" height="{{ stripe_height }}" patternUnits="userSpaceOnUse">
+      <rect width="20" height="{{ stripe_height }}" fill="{{ stripe_ground }}"/>
+      <rect x="20" width="20" height="{{ stripe_height }}" fill="{{ stripe_ink }}"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#{{ pattern_id }})"/>
+</svg>

@@ -1,0 +1,96 @@
+{%- comment -%}
+  Mono filter chips for collection pages (design guide §9): pill links
+  between collections, the current one filled. 999px radius (§6.2).
+{%- endcomment -%}
+<nav class="wicz-chips page-width" aria-label="{{ section.settings.label | escape }}">
+  <ul class="wicz-chips__list" role="list">
+    {%- for block in section.blocks -%}
+      {%- assign target = block.settings.collection -%}
+      {%- if target != blank -%}
+        {%- assign is_current = false -%}
+        {%- if collection.handle == target.handle -%}
+          {%- assign is_current = true -%}
+        {%- endif -%}
+        <li {{ block.shopify_attributes }}>
+          <a
+            href="{{ target.url }}"
+            class="wicz-chips__chip{% if is_current %} is-current{% endif %}"
+            {% if is_current %}
+              aria-current="page"
+            {% endif %}
+          >
+            {{- block.settings.label | default: target.title | downcase -}}
+          </a>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+</nav>
+
+{% style %}
+  .wicz-chips {
+    padding-top: var(--space-2);
+    padding-bottom: var(--space-1);
+  }
+
+  .wicz-chips__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .wicz-chips__chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 6px 16px;
+    border: 1.5px solid var(--periwinkle-deep);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--periwinkle-deep);
+    text-decoration: none;
+    text-transform: lowercase;
+  }
+
+  .wicz-chips__chip:hover {
+    background-color: var(--foil);
+  }
+
+  .wicz-chips__chip.is-current {
+    background-color: var(--periwinkle-deep);
+    color: var(--cream);
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "wicz filter chips",
+  "class": "wicz-chips-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "accessible label",
+      "default": "browse"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "chip",
+      "name": "chip",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "collection" },
+        { "type": "text", "id": "label", "label": "label", "info": "defaults to the collection title" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "wicz filter chips" }
+  ]
+}
+{% endschema %}

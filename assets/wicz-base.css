@@ -1,0 +1,387 @@
+/*
+  wicz craft base layer on top of Dawn's base.css.
+  Type (§4), surfaces (§6), buttons and pills (§7).
+  Loaded after base.css, so equal-specificity rules here win.
+  Mobile first. Breakpoints follow Dawn: 750px and 990px.
+*/
+
+/* ---------- Dawn variable overrides ---------- */
+:root {
+  --font-body-family: var(--font-mono);
+  --font-body-style: normal;
+  --font-body-weight: 400;
+  --font-body-weight-bold: 500;
+  --font-heading-family: var(--font-display);
+  --font-heading-style: normal;
+  --font-heading-weight: 800;
+
+  /* §6.2: 6px or 999px only */
+  --buttons-radius: var(--radius);
+  --buttons-radius-outset: 7.5px;
+  --inputs-radius: var(--radius);
+  --inputs-radius-outset: 7.5px;
+  --variant-pills-radius: var(--radius-pill);
+  --product-card-corner-radius: var(--radius);
+  --collection-card-corner-radius: var(--radius);
+  --blog-card-corner-radius: var(--radius);
+  --badge-corner-radius: var(--radius-pill);
+  --media-radius: var(--radius);
+  --popup-corner-radius: var(--radius);
+  --text-boxes-radius: var(--radius);
+
+  /* everything except foil is flat (§6.2) */
+  --buttons-shadow-opacity: 0;
+  --inputs-shadow-opacity: 0;
+  --product-card-shadow-opacity: 0;
+  --collection-card-shadow-opacity: 0;
+  --media-shadow-opacity: 0;
+  --popup-shadow-opacity: 0;
+  --drawer-shadow-opacity: 0;
+
+  --buttons-border-width: 1.5px;
+  --buttons-border-opacity: 1;
+  --inputs-border-width: 1.5px;
+  --inputs-border-opacity: 1;
+  --variant-pills-border-width: 1.5px;
+  --variant-pills-border-opacity: 1;
+
+  --page-width: var(--content-max);
+}
+
+/* Product pages theme themselves from metafields (see snippets/wicz-flavor-vars.liquid). */
+.wicz-flavor-page,
+.wicz-flavor-page .color-scheme-1 {
+  --text: var(--flavor-text);
+  --display: var(--flavor-ink);
+  --color-foreground: var(--flavor-text-rgb);
+  --color-button: var(--flavor-text-rgb);
+  --color-secondary-button-text: var(--flavor-text-rgb);
+  --color-link: var(--flavor-text-rgb);
+  --color-badge-foreground: var(--flavor-text-rgb);
+  --color-badge-border: var(--flavor-text-rgb);
+}
+
+/* ---------- base ---------- */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: 0;
+  text-transform: lowercase;
+}
+
+/* §4.2: lowercase except legal text and user-entered content */
+input,
+textarea,
+select,
+.wicz-legal,
+.wicz-legal *,
+.shopify-policy__container,
+.shopify-policy__container *,
+.product-option dd,
+.cart-item__details .product-option,
+.cart__note textarea,
+.wicz-placeholder {
+  text-transform: none;
+}
+
+a {
+  color: var(--text);
+}
+
+/* ---------- type (§4) ---------- */
+.wicz-display,
+h1,
+h2,
+h3,
+.h0,
+.h1,
+.h2,
+.h3 {
+  font-family: var(--font-display);
+  font-optical-sizing: none;
+  text-transform: lowercase;
+  word-break: normal;
+}
+
+/* hero wordmark / hero line: 72–96px mobile, 160–200px desktop */
+.wicz-display {
+  font-weight: 900;
+  font-variation-settings: var(--fraunces-axes);
+  letter-spacing: -0.045em;
+  line-height: 0.78;
+  color: var(--display);
+  font-size: clamp(72px, 22vw, 96px);
+  margin: 0;
+}
+
+@media screen and (min-width: 990px) {
+  .wicz-display {
+    font-size: clamp(160px, 14vw, 200px);
+  }
+}
+
+.wicz-display--stacked span {
+  display: block;
+}
+
+/* H1 page title: 44px mobile, 72px desktop. Display color is allowed at this size (§3.3). */
+h1,
+.h0,
+.h1 {
+  font-weight: 900;
+  font-variation-settings: var(--fraunces-axes);
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  font-size: 44px;
+  color: var(--display);
+}
+
+/* H2 section: 32px mobile, 44px desktop */
+h2,
+.h2 {
+  font-weight: 800;
+  font-variation-settings: var(--fraunces-axes-heading);
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  font-size: 32px;
+  color: var(--display);
+}
+
+/* Dawn uses headings for some small UI text (product counts, cart column
+   headings, captions). Those read as mono detail text, deep color, lowercase. */
+h1.text-body,
+h2.text-body,
+h3.text-body,
+.product-count__text,
+.mobile-facets__heading,
+.caption-with-letter-spacing,
+.cart-items thead th {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-variation-settings: normal;
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: 0;
+  text-transform: lowercase;
+  color: var(--text);
+}
+
+/* H3 / product name: 24px mobile, 28px desktop. Below 32px, so deep color (§3.3). */
+h3,
+.h3 {
+  font-weight: 800;
+  font-variation-settings: var(--fraunces-axes-heading);
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  font-size: 24px;
+  color: var(--text);
+}
+
+@media screen and (min-width: 750px) {
+  h1,
+  .h0,
+  .h1 {
+    font-size: 72px;
+  }
+
+  h2,
+  .h2 {
+    font-size: 44px;
+  }
+
+  h3,
+  .h3 {
+    font-size: 28px;
+  }
+}
+
+.wicz-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}
+
+.mono,
+.wicz-mono {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  text-transform: lowercase;
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+.wicz-meta,
+small,
+.caption,
+.caption-large {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-meta {
+    font-size: 14px;
+  }
+}
+
+/* ---------- layout (§6.3) ---------- */
+.page-width {
+  max-width: calc(var(--content-max) + var(--gutter) * 2);
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+/* ---------- foil (§6.1): the only gradient on the site ---------- */
+.foil {
+  position: relative;
+  background-color: var(--flavor-ground, var(--foil));
+  background-image:
+    linear-gradient(112deg, rgba(255,255,255,0) 14%, rgba(255,255,255,.6) 27%, rgba(255,255,255,0) 40%,
+                            rgba(255,255,255,0) 58%, rgba(255,255,255,.38) 69%, rgba(255,255,255,0) 80%),
+    repeating-linear-gradient(31deg, rgba(176,146,50,.06) 0 2px, rgba(255,255,255,.07) 2px 6px);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 0 var(--foil-fold), 0 18px 34px rgba(120,95,40,.22), 0 4px 8px rgba(120,95,40,.12);
+}
+
+/* wrapper end folds: subtle triangles at the left and right edges */
+.foil--folds::before,
+.foil--folds::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-top: 28px solid transparent;
+  border-bottom: 28px solid transparent;
+  transform: translateY(-50%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.foil--folds::before {
+  left: 0;
+  border-left: 14px solid var(--foil-fold);
+}
+
+.foil--folds::after {
+  right: 0;
+  border-right: 14px solid var(--foil-fold);
+}
+
+/* the one rotated element per page (§6.1, §11) */
+.foil--dropped {
+  transform: rotate(-2.5deg);
+}
+
+/* ---------- buttons (§7) ---------- */
+.button,
+.shopify-challenge__button,
+.customer button,
+button.shopify-payment-button__button--unbranded {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: 0;
+  text-transform: lowercase;
+  padding: 14px 22px;
+  min-height: 0;
+  border-radius: var(--radius);
+}
+
+.button::before,
+.button::after,
+.shopify-payment-button__button--unbranded::before,
+.shopify-payment-button__button--unbranded::after {
+  border-radius: var(--radius);
+  box-shadow: none;
+}
+
+.button:not([disabled]):hover::after {
+  box-shadow: none;
+}
+
+.button--secondary {
+  background-color: transparent;
+  --border-opacity: 1;
+}
+
+.button--secondary::after {
+  box-shadow: 0 0 0 1.5px rgb(var(--color-secondary-button-text));
+}
+
+/* ---------- pills, tags (§7) ---------- */
+.wicz-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  background-color: var(--flavor-deep);
+  color: var(--flavor-ground);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1;
+  padding: 6px 12px;
+  text-transform: lowercase;
+}
+
+/* ---------- focus ---------- */
+*:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+/* ---------- screen-reader helper ---------- */
+.wicz-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- contrast: no dimmed small text (§3.3, WCAG AA) ----------
+   Dawn draws a lot of secondary text at 75% of the foreground color, which
+   lands around 3.5:1 on cream. Everything small uses the full deep color.
+   `body` raises specificity over Dawn's component styles, which load later. */
+body .rte,
+body .product__description,
+body .product-option,
+body .cart-item .product-option,
+body .caption,
+body .caption-large,
+body .tax-note,
+body .underlined-link,
+body .link,
+body .field__label,
+body .field-currency,
+body .facets-wrapper,
+body .facets__summary-label,
+body .facets__selected,
+body .facets__reset,
+body .facet-checkbox,
+body .facet-checkbox__text,
+body .facet-checkbox__text-label,
+body .facets__heading,
+body .mobile-facets__label,
+body .mobile-facets__heading,
+body .mobile-facets__open,
+body .mobile-facets__open-label,
+body .mobile-facets__count,
+body .product-count__text {
+  opacity: 1;
+  color: var(--text);
+}
+
+body .cart-items thead th,
+body .caption-with-letter-spacing {
+  text-transform: lowercase;
+  letter-spacing: 0;
+}

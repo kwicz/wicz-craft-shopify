@@ -1,0 +1,40 @@
+{%- comment -%}
+  Ingredients, allergen line, care line and "pairs with" for a product page
+  (design guide §8, §9). Reads custom.ingredients and custom.pairs_with.
+
+  Accepts:
+  - product: {Object}
+  - block: {Object} main-product block with show_ingredients, allergen_line,
+    care_line and show_pairs_with settings
+{%- endcomment -%}
+{%- liquid
+  assign ingredients = product.metafields.custom.ingredients.value
+  assign pairs_with = product.metafields.custom.pairs_with.value
+-%}
+<dl class="wicz-facts" {{ block.shopify_attributes }}>
+  {%- if block.settings.show_ingredients and ingredients != blank -%}
+    <div class="wicz-facts__row">
+      <dt class="wicz-facts__label">ingredients</dt>
+      <dd class="wicz-facts__value">
+        {{ ingredients | newline_to_br }}
+        {%- if block.settings.allergen_line != blank -%}
+          <br><span class="wicz-facts__allergen">{{ block.settings.allergen_line }}</span>
+        {%- endif -%}
+      </dd>
+    </div>
+  {%- endif -%}
+
+  {%- if block.settings.care_line != blank -%}
+    <div class="wicz-facts__row">
+      <dt class="wicz-facts__label">care</dt>
+      <dd class="wicz-facts__value">{{ block.settings.care_line }}</dd>
+    </div>
+  {%- endif -%}
+
+  {%- if block.settings.show_pairs_with and pairs_with != blank -%}
+    <div class="wicz-facts__row">
+      <dt class="wicz-facts__label">pairs with</dt>
+      <dd class="wicz-facts__value">{{ pairs_with }}</dd>
+    </div>
+  {%- endif -%}
+</dl>

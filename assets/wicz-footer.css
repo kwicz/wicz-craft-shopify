@@ -1,0 +1,95 @@
+/* wicz craft footer (design guide §7). Mobile first. */
+.wicz-footer {
+  margin-top: var(--space-5);
+}
+
+.wicz-footer .wicz-stripes {
+  display: block;
+}
+
+/* Full-bleed foil: no corner radius at the page edge, keep the sheen and fold line. */
+.wicz-footer__foil {
+  --flavor-ground: var(--foil);
+  border-radius: 0;
+  box-shadow: inset 0 -2px 0 var(--foil-fold);
+}
+
+.wicz-footer__inner {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-4);
+}
+
+.wicz-footer__wordmark {
+  text-decoration: none;
+  color: var(--periwinkle);
+}
+
+.wicz-footer__details {
+  display: grid;
+  gap: var(--space-2);
+  align-content: end;
+}
+
+.wicz-footer__voice {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.1;
+  color: var(--periwinkle-deep);
+}
+
+.wicz-footer__location,
+.wicz-footer__copyright {
+  margin: 0;
+  font-size: 13px;
+  color: var(--periwinkle-deep);
+}
+
+.wicz-footer__links,
+.wicz-footer__legal {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  font-size: 13px;
+}
+
+.wicz-footer__links a,
+.wicz-footer__legal a {
+  color: var(--periwinkle-deep);
+  text-underline-offset: 3px;
+}
+
+.wicz-footer__links a {
+  font-weight: 500;
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-footer__inner {
+    grid-template-columns: auto 1fr;
+    align-items: end;
+    gap: var(--space-5);
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-5);
+  }
+
+  .wicz-footer__details {
+    justify-items: end;
+    text-align: right;
+  }
+
+  .wicz-footer__links,
+  .wicz-footer__legal {
+    justify-content: flex-end;
+  }
+
+  .wicz-footer__location,
+  .wicz-footer__links,
+  .wicz-footer__legal,
+  .wicz-footer__copyright {
+    font-size: 14px;
+  }
+}

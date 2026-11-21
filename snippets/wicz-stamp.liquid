@@ -1,0 +1,24 @@
+{%- comment -%}
+  Circular stamp (design guide §7): 120–170px circle, 2px deep border,
+  rotated 12°, italic display text in the deep color. One per page at most.
+
+  Accepts:
+  - text: {String} words separated by spaces or line breaks (default "it's really good.")
+  - class: {String} extra classes for positioning
+
+  Usage:
+  {% render 'wicz-stamp', text: section.settings.stamp_text, class: 'wicz-hero__stamp' %}
+{%- endcomment -%}
+{%- liquid
+  assign stamp_text = text | default: "it's really good." | newline_to_br | replace: '<br />', ' '
+  assign stamp_words = stamp_text | split: ' '
+-%}
+<div class="wicz-stamp{% if class != blank %} {{ class }}{% endif %}">
+  <p class="wicz-stamp__text">
+    {%- for word in stamp_words -%}
+      {%- if word != blank -%}
+        <span>{{ word }}</span>
+      {%- endif -%}
+    {%- endfor -%}
+  </p>
+</div>

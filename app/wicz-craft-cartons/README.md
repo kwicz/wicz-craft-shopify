@@ -35,7 +35,7 @@ From this folder (Node 22, see the repo's `.nvmrc`):
 
 | | |
 |---|---|
-| `npm test --workspace carton-merge` | unit tests + Wasm fixture tests (`extensions/carton-merge/tests`) |
+| `npm test --workspace carton-merge -- --run` | unit tests + Wasm fixture tests (`extensions/carton-merge/tests`) |
 | `shopify app dev --store wicz-craft` | dev preview on the store, plus a local GraphiQL |
 | `shopify app dev clean --store wicz-craft` | stop the dev preview, restore the released version |
 | `shopify app deploy --allow-updates` | release a new app version |

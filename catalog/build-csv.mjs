@@ -1,110 +1,119 @@
-// Builds catalog/wicz-craft-products.csv (Shopify product import format) from
-// the design guide §8. Prices are 0.00 placeholders; the theme renders them as
-// [PRICE]. Ingredients the guide marks unknown stay as [ingredients].
+// Builds catalog/wicz-craft-products.csv (Shopify product import format)
+// from catalog/catalog.mjs (design guide §8).
 // Run: node catalog/build-csv.mjs
+//
+// The CSV is for importing into a fresh store by hand. Shopify's import
+// skips list metafields and template suffixes, so the flight contents and
+// the `box` / `flight` templates are set by
+// app/wicz-craft-cartons/scripts/seed-store.mjs, which also loads the whole
+// catalog through the Admin API without this file.
 import { writeFileSync } from 'node:fs';
-import { cartons } from './cartons.mjs';
+import { flavors, SIZES, PRICES, box, formats, flights } from './catalog.mjs';
 
-const flavors = [
-  { handle: 'salted', n: 1, name: 'salted', ground: '#F6E8A4', ink: '#93AEEB', deep: '#3F5BB0',
-    ingredients: 'cultured grass-fed cream, sea salt', pairs: 'warm bread, radishes',
-    body: 'cultured butter with sea salt. for warm bread, radishes, and most things.' },
-  { handle: 'garlic-herb', n: 2, name: 'garlic herb', ground: '#D6EDB8', ink: '#E5583A', deep: '#B23A20',
-    ingredients: '[ingredients]', pairs: 'steak, potatoes, the end of the loaf',
-    body: 'cultured butter with roasted garlic and fresh herbs. for steak, potatoes, and the end of the loaf.' },
-  { handle: 'honey', n: 3, name: 'honey', ground: '#FFD8A8', ink: '#D93B8C', deep: '#A51E63',
-    ingredients: 'cultured grass-fed cream, honey, sea salt', pairs: 'toast, biscuits, cornbread',
-    body: 'cultured butter with honey and a little salt. for toast, biscuits, and cornbread.' },
-  { handle: 'white-miso', n: 4, name: 'white miso', ground: '#E2D4F7', ink: '#2F8F55', deep: '#1F6B3E',
-    ingredients: '[ingredients]', pairs: 'corn, mushrooms, rice',
-    body: 'cultured butter with white miso. for corn, mushrooms, and rice.' },
-  // deep is #FF9147, not the guide's #FF8A3D: 4.62:1 on oxblood vs 4.41:1 (AA for small text)
-  { handle: 'chili-crisp', n: 5, name: 'chili crisp', ground: '#7A1E1E', ink: '#FF8A3D', deep: '#FF9147',
-    ingredients: '[ingredients]', pairs: 'eggs, noodles, dumplings',
-    body: 'cultured butter with chili crisp. for eggs, noodles, and dumplings.' },
-];
-
-const sizes = [
-  { value: '2″ cube', sku: '2IN' },
-  { value: '1.2″ cube', sku: '12IN' },
-];
+const MF = {
+  ground: 'Color ground (product.metafields.custom.color_ground)',
+  ink: 'Color ink (product.metafields.custom.color_ink)',
+  deep: 'Color deep (product.metafields.custom.color_deep)',
+  fold: 'Color fold (product.metafields.custom.color_fold)',
+  seasonal: 'Seasonal (product.metafields.custom.seasonal)',
+  tier: 'Price tier (product.metafields.custom.price_tier)',
+  ingredients: 'Ingredients (product.metafields.custom.ingredients)',
+  pairs: 'Pairs with (product.metafields.custom.pairs_with)',
+  allergens: 'Allergens (product.metafields.custom.allergens)',
+};
 
 const headers = [
   'Handle', 'Title', 'Body (HTML)', 'Vendor', 'Type', 'Tags', 'Published',
   'Option1 Name', 'Option1 Value', 'Variant SKU', 'Variant Grams',
   'Variant Inventory Tracker', 'Variant Inventory Qty', 'Variant Inventory Policy',
-  'Variant Fulfillment Service', 'Variant Price', 'Variant Requires Shipping',
-  'Variant Taxable', 'Status',
-  'Flavor number (product.metafields.custom.flavor_number)',
-  'Color ground (product.metafields.custom.color_ground)',
-  'Color ink (product.metafields.custom.color_ink)',
-  'Color deep (product.metafields.custom.color_deep)',
-  'Ingredients (product.metafields.custom.ingredients)',
-  'Pairs with (product.metafields.custom.pairs_with)',
+  'Variant Fulfillment Service', 'Variant Price', 'Variant Compare At Price',
+  'Variant Requires Shipping', 'Variant Taxable', 'Status',
+  ...Object.values(MF),
 ];
-// Not in the CSV on purpose: the carton template suffix and the JSON
-// custom.carton_config. Shopify's import ignores both; they're set by
-// app/wicz-craft-cartons/scripts/seed-store.mjs after importing.
+
+const colorColumns = (c) => ({ [MF.ground]: c.ground, [MF.ink]: c.ink, [MF.deep]: c.deep, [MF.fold]: c.fold });
+const sku = (...parts) => ['WC', ...parts].join('-').toUpperCase();
+const base = {
+  'Vendor': 'Wicz Craft',
+  'Published': 'TRUE',
+  'Variant Grams': '0',
+  'Variant Fulfillment Service': 'manual',
+  'Variant Requires Shipping': 'TRUE',
+  'Variant Taxable': 'TRUE',
+  'Status': 'active',
+};
+// only the first row of a product carries product-level columns
+const variantOnly = (row) =>
+  Object.fromEntries(Object.entries(row).filter(([key]) => key === 'Handle' || key.startsWith('Variant') || key === 'Option1 Value'));
 
 const rows = [];
+
 for (const f of flavors) {
-  sizes.forEach((size, i) => {
-    const first = i === 0;
-    rows.push({
+  [SIZES.big, SIZES.small].forEach((size, i) => {
+    const row = {
+      ...base,
       'Handle': f.handle,
-      'Title': first ? `nº ${f.n} ${f.name}` : '',
-      'Body (HTML)': first ? `<p><strong>nº ${f.n} ${f.name}.</strong> ${f.body}</p>` : '',
-      'Vendor': first ? 'Wicz Craft' : '',
-      'Type': first ? 'butter' : '',
-      'Tags': first ? 'flavor' : '',
-      'Published': first ? 'TRUE' : '',
-      'Option1 Name': first ? 'size' : '',
-      'Option1 Value': size.value,
-      'Variant SKU': `WC-${String(f.n).padStart(2, '0')}-${size.sku}`,
-      'Variant Grams': '0',
+      'Title': f.name,
+      'Body (HTML)': `<p><strong>${f.name}.</strong> ${f.body}</p>`,
+      'Type': 'butter',
+      'Tags': ['flavor', f.seasonal ? 'holiday' : ''].filter(Boolean).join(', '),
+      'Option1 Name': 'size',
+      'Option1 Value': size,
+      'Variant SKU': sku(f.handle, size.replace(' ', '')),
       'Variant Inventory Tracker': 'shopify',
       'Variant Inventory Qty': '100',
       'Variant Inventory Policy': 'deny',
-      'Variant Fulfillment Service': 'manual',
-      'Variant Price': '0.00',
-      'Variant Requires Shipping': 'TRUE',
-      'Variant Taxable': 'TRUE',
-      'Status': first ? 'active' : '',
-      'Flavor number (product.metafields.custom.flavor_number)': first ? String(f.n) : '',
-      'Color ground (product.metafields.custom.color_ground)': first ? f.ground : '',
-      'Color ink (product.metafields.custom.color_ink)': first ? f.ink : '',
-      'Color deep (product.metafields.custom.color_deep)': first ? f.deep : '',
-      'Ingredients (product.metafields.custom.ingredients)': first ? f.ingredients : '',
-      'Pairs with (product.metafields.custom.pairs_with)': first ? f.pairs : '',
-    });
+      'Variant Price': PRICES[f.tier][size],
+      ...colorColumns(f),
+      [MF.seasonal]: String(f.seasonal),
+      [MF.tier]: f.tier,
+      [MF.ingredients]: f.ingredients,
+      [MF.pairs]: f.pairs,
+      [MF.allergens]: f.allergens,
+    };
+    rows.push(i === 0 ? row : variantOnly(row));
   });
 }
 
-for (const c of cartons) {
+formats.forEach((format, i) => {
+  const row = {
+    ...base,
+    'Handle': box.handle,
+    'Title': box.title,
+    'Body (HTML)': `<p>${box.body}</p>`,
+    'Type': 'box',
+    'Tags': 'box',
+    'Option1 Name': 'format',
+    'Option1 Value': format.title,
+    'Variant SKU': sku('box', format.key),
+    // the box isn't stocked; the butters inside are
+    'Variant Inventory Tracker': '',
+    'Variant Inventory Policy': 'continue',
+    'Variant Price': format.price,
+    ...colorColumns(box.colors),
+    [MF.seasonal]: 'false',
+    [MF.allergens]: 'contains: milk. see each butter.',
+  };
+  rows.push(i === 0 ? row : variantOnly(row));
+});
+
+for (const flight of flights) {
   rows.push({
-    'Handle': c.handle,
-    'Title': c.title,
-    'Body (HTML)': `<p><strong>${c.title}.</strong> ${c.body}</p>`,
-    'Vendor': 'Wicz Craft',
-    'Type': 'carton',
-    'Tags': 'carton',
-    'Published': 'TRUE',
+    ...base,
+    'Handle': flight.handle,
+    'Title': flight.title,
+    'Body (HTML)': `<p><strong>${flight.title}.</strong> ${flight.body}</p>`,
+    'Type': 'flight',
+    'Tags': ['flight', flight.seasonal ? 'holiday' : ''].filter(Boolean).join(', '),
     'Option1 Name': 'Title',
     'Option1 Value': 'Default Title',
-    'Variant SKU': `WC-CTN-${c.handle.toUpperCase()}`,
-    'Variant Grams': '0',
-    // the carton itself is not stocked; each cube inside is
+    'Variant SKU': sku('flight', flight.handle),
     'Variant Inventory Tracker': '',
-    'Variant Inventory Qty': '',
     'Variant Inventory Policy': 'continue',
-    'Variant Fulfillment Service': 'manual',
-    'Variant Price': '0.00',
-    'Variant Requires Shipping': 'TRUE',
-    'Variant Taxable': 'TRUE',
-    'Status': 'active',
-    'Color ground (product.metafields.custom.color_ground)': c.pair[0],
-    'Color ink (product.metafields.custom.color_ink)': c.pair[1],
-    'Color deep (product.metafields.custom.color_deep)': c.pair[2],
+    'Variant Price': flight.price,
+    ...colorColumns(flight.colors),
+    [MF.seasonal]: String(flight.seasonal),
+    [MF.allergens]: 'contains: milk.',
   });
 }
 

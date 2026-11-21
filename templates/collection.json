@@ -11,12 +11,36 @@
     "chips": {
       "type": "wicz-collection-chips",
       "blocks": {
-        "all": { "type": "chip", "settings": { "collection": "all", "label": "all" } },
-        "flavors": { "type": "chip", "settings": { "collection": "shop", "label": "flavors" } },
-        "cartons": { "type": "chip", "settings": { "collection": "cartons", "label": "cartons" } }
+        "all": {
+          "type": "chip",
+          "settings": {
+            "collection": "all",
+            "label": "all"
+          }
+        },
+        "holiday": {
+          "type": "chip",
+          "settings": {
+            "collection": "holiday",
+            "label": "holiday"
+          }
+        },
+        "flights": {
+          "type": "chip",
+          "settings": {
+            "collection": "flights",
+            "label": "flights"
+          }
+        }
       },
-      "block_order": ["all", "flavors", "cartons"],
-      "settings": { "label": "browse" }
+      "block_order": [
+        "all",
+        "holiday",
+        "flights"
+      ],
+      "settings": {
+        "label": "browse"
+      }
     },
     "product-grid": {
       "type": "main-collection-product-grid",
@@ -39,5 +63,9 @@
       }
     }
   },
-  "order": ["banner", "chips", "product-grid"]
+  "order": [
+    "banner",
+    "chips",
+    "product-grid"
+  ]
 }

@@ -54,7 +54,8 @@
   --text: var(--flavor-text);
   --display: var(--flavor-ink);
   --color-foreground: var(--flavor-text-rgb);
-  --color-button: var(--flavor-text-rgb);
+  --color-button: var(--flavor-button-bg-rgb, var(--flavor-text-rgb));
+  --color-button-text: var(--flavor-button-text-rgb, 255,244,230);
   --color-secondary-button-text: var(--flavor-text-rgb);
   --color-link: var(--flavor-text-rgb);
   --color-badge-foreground: var(--flavor-text-rgb);
@@ -247,7 +248,7 @@ small,
                             rgba(255,255,255,0) 58%, rgba(255,255,255,.38) 69%, rgba(255,255,255,0) 80%),
     repeating-linear-gradient(31deg, rgba(176,146,50,.06) 0 2px, rgba(255,255,255,.07) 2px 6px);
   border-radius: var(--radius);
-  box-shadow: 0 2px 0 var(--foil-fold), 0 18px 34px rgba(120,95,40,.22), 0 4px 8px rgba(120,95,40,.12);
+  box-shadow: 0 2px 0 var(--flavor-fold, var(--foil-fold)), 0 18px 34px rgba(120,95,40,.22), 0 4px 8px rgba(120,95,40,.12);
 }
 
 /* wrapper end folds: subtle triangles at the left and right edges */
@@ -267,12 +268,12 @@ small,
 
 .foil--folds::before {
   left: 0;
-  border-left: 14px solid var(--foil-fold);
+  border-left: 14px solid var(--flavor-fold, var(--foil-fold));
 }
 
 .foil--folds::after {
   right: 0;
-  border-right: 14px solid var(--foil-fold);
+  border-right: 14px solid var(--flavor-fold, var(--foil-fold));
 }
 
 /* the one rotated element per page (§6.1, §11) */
@@ -375,7 +376,8 @@ body .mobile-facets__heading,
 body .mobile-facets__open,
 body .mobile-facets__open-label,
 body .mobile-facets__count,
-body .product-count__text {
+body .product-count__text,
+body .cart__login-paragraph {
   opacity: 1;
   color: var(--text);
 }

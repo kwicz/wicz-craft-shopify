@@ -89,7 +89,7 @@
   }
 }
 
-/* carton contents stack one per line under the "contents" label */
+/* box picks stack one per line under the "inside" label */
 .cart-item .product-option:has(.wicz-cart-contents) {
   display: block;
 }

@@ -1,0 +1,275 @@
+{%- comment -%}
+  The box builder (design guide §7 builder tray, §8.2, §9 build a box).
+
+  The product is "build a box", one variant per format. Each variant carries
+  its slot counts in custom.box_big (8 oz, salted or unsalted) and
+  custom.box_small (2 oz, any flavor), set by
+  app/wicz-craft-cartons/scripts/seed-store.mjs.
+
+  1. choose a format (radio cards: contents, flat price, "if bought separately")
+  2. fill the slots: the 8 oz choice when the format has one, then the flavor
+     grid with a + on each card. The tray stays in view and shows the slots,
+     "3 of 4 picked" and the box price.
+  3. add to cart: disabled until every slot is filled.
+
+  One cart line is added: the format's variant at its flat price, with
+  visible properties (`big: salted`, `slot 1: caesar`, ...) and a hidden
+  `_components` list of the picked variant ids. The box-expand Cart
+  Transform (app/wicz-craft-cartons/extensions/box-expand) turns that line
+  into the butters inside, so each one's inventory is tracked.
+
+  ?format=eight&flight=classics-culinary pre-fills the builder, which is how
+  a flight's "make it your own" link opens it.
+{%- endcomment -%}
+{{ 'wicz-box.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'wicz-box-builder.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign flavors = section.settings.flavors.products
+  assign flights = section.settings.flights.products
+  assign form_id = 'BoxForm-' | append: section.id
+  assign selected = product.selected_or_first_available_variant
+
+  assign small_price = 0
+  assign big_price = 0
+  for flavor in flavors
+    for variant in flavor.variants
+      if variant.title == section.settings.small_size and variant.price > small_price
+        assign small_price = variant.price
+      endif
+      if variant.title == section.settings.big_size and flavor.metafields.custom.price_tier.value == 'plain'
+        assign big_price = variant.price
+      endif
+    endfor
+  endfor
+-%}
+
+<div class="wicz-box page-width">
+  <div class="wicz-box__intro">
+    <h1 class="wicz-box__title">{{ product.title | escape }}</h1>
+    {%- if product.description != blank -%}
+      <div class="wicz-box__description">{{ product.description }}</div>
+    {%- endif -%}
+  </div>
+
+  {%- if flavors == blank -%}
+    <p class="wicz-box__notice">choose the flavors collection in the theme editor.</p>
+  {%- else -%}
+    <wicz-box-builder
+      data-money-format="{{ shop.money_format | escape }}"
+      data-small-size="{{ section.settings.small_size | escape }}"
+      data-big-size="{{ section.settings.big_size | escape }}"
+    >
+      <script type="application/json" data-box-data>
+        {
+          "flavors": {
+            {%- for flavor in flavors -%}
+              {%- assign small = flavor.variants | where: 'title', section.settings.small_size | first -%}
+              {%- assign big = flavor.variants | where: 'title', section.settings.big_size | first -%}
+              {{ flavor.handle | json }}: {
+                "title": {{ flavor.title | downcase | json }},
+                "ground": {{ flavor.metafields.custom.color_ground.value | default: settings.wicz_foil | json }},
+                "ink": {{ flavor.metafields.custom.color_ink.value | default: settings.wicz_periwinkle | json }},
+                "deep": {{ flavor.metafields.custom.color_deep.value | default: settings.wicz_periwinkle_deep | json }},
+                "fold": {{ flavor.metafields.custom.color_fold.value | default: settings.wicz_foil_fold | json }},
+                "small": {% if small %}{ "id": {{ small.id }}, "available": {{ small.available }} }{% else %}null{% endif %},
+                "big": {% if big and flavor.metafields.custom.price_tier.value == 'plain' %}{ "id": {{ big.id }}, "available": {{ big.available }} }{% else %}null{% endif %}
+              }{% unless forloop.last %},{% endunless %}
+            {%- endfor -%}
+          },
+          "flights": {
+            {%- for flight in flights -%}
+              {{ flight.handle | json }}: {{ flight.metafields.custom.flight_contents.value | json }}{% unless forloop.last %},{% endunless %}
+            {%- endfor -%}
+          }
+        }
+      </script>
+
+      <form
+        id="{{ form_id }}"
+        action="{{ routes.cart_add_url }}"
+        method="post"
+        class="wicz-box__form"
+        data-box-form
+      >
+        <input type="hidden" name="return_to" value="{{ routes.cart_url }}">
+        <input type="hidden" name="quantity" value="1">
+
+        <fieldset class="wicz-box__step">
+          <legend class="wicz-box__step-title"><span class="wicz-box__step-number">1</span> choose a box</legend>
+          <div class="wicz-formats">
+            {%- for variant in product.variants -%}
+              {%- liquid
+                assign big_slots = variant.metafields.custom.box_big.value | default: 0
+                assign small_slots = variant.metafields.custom.box_small.value | default: 0
+                assign separately = small_price | times: small_slots
+                assign big_cost = big_price | times: big_slots
+                assign separately = separately | plus: big_cost
+              -%}
+              <label class="wicz-format">
+                <input
+                  type="radio"
+                  name="id"
+                  value="{{ variant.id }}"
+                  class="wicz-format__input"
+                  data-big="{{ big_slots }}"
+                  data-small="{{ small_slots }}"
+                  data-price="{{ variant.price }}"
+                  data-format="{{ variant.title | handleize }}"
+                  required
+                  {% if variant.id == selected.id %}
+                    checked
+                  {% endif %}
+                >
+                <span class="wicz-format__body">
+                  <span class="wicz-format__title">{{ variant.title }}</span>
+                  <span class="wicz-format__contents">
+                    {%- if big_slots > 0 -%}
+                      {{ big_slots }} × {{ section.settings.big_size }} salted or unsalted + {% endif -%}
+                    {{ small_slots }} × {{ section.settings.small_size }}
+                  </span>
+                  <span class="wicz-format__price">{{ variant.price | money }}</span>
+                  {%- if separately > variant.price -%}
+                    <span class="wicz-format__separately">{{ separately | money }} if bought separately</span>
+                  {%- endif -%}
+                </span>
+              </label>
+            {%- endfor -%}
+          </div>
+        </fieldset>
+
+        <div class="wicz-box__step" data-big-step hidden>
+          <fieldset>
+            <legend class="wicz-box__step-title"><span class="wicz-box__step-number">2</span> the big one</legend>
+            <p class="wicz-box__hint">one {{ section.settings.big_size }}, the everyday butter.</p>
+            <div class="wicz-big-choices">
+              {%- for flavor in flavors -%}
+                {%- if flavor.metafields.custom.price_tier.value == 'plain' -%}
+                  {%- assign big = flavor.variants | where: 'title', section.settings.big_size | first -%}
+                  {%- if big -%}
+                    <label class="wicz-big-choice" style="{% render 'wicz-flavor-vars', product: flavor %}">
+                      <input
+                        type="radio"
+                        name="wicz-big"
+                        value="{{ flavor.handle }}"
+                        class="wicz-big-choice__input"
+                        {% unless big.available %}
+                          disabled
+                        {% endunless %}
+                      >
+                      <span class="wicz-big-choice__pack foil">
+                        <span class="wicz-big-choice__name">{{ flavor.title | downcase }}</span>
+                        <span class="wicz-big-choice__size">{{ section.settings.big_size }}{% unless big.available %}, sold out{% endunless %}</span>
+                      </span>
+                    </label>
+                  {%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </fieldset>
+        </div>
+
+        <section class="wicz-box__step" aria-labelledby="FillHeading-{{ section.id }}">
+          <h2 id="FillHeading-{{ section.id }}" class="wicz-box__step-title">
+            <span class="wicz-box__step-number" data-fill-number>2</span> fill it
+          </h2>
+          <p class="wicz-box__hint">{{ section.settings.small_size }} each. pick the same one more than once if you like.</p>
+          <ul class="wicz-picker" role="list">
+            {%- for flavor in flavors -%}
+              {%- assign small = flavor.variants | where: 'title', section.settings.small_size | first -%}
+              {%- if small -%}
+                <li class="wicz-picker__item" style="{% render 'wicz-flavor-vars', product: flavor %}">
+                  <div class="wicz-picker__pack foil">
+                    {%- if flavor.metafields.custom.seasonal.value == true -%}
+                      <span class="wicz-picker__holiday">holiday</span>
+                    {%- endif -%}
+                    <span class="wicz-picker__name">
+                      {%- assign words = flavor.title | downcase | split: ' ' -%}
+                      {%- for word in words -%}<span>{{ word }}</span> {% endfor -%}
+                    </span>
+                    <span class="wicz-picker__count" data-count="{{ flavor.handle }}" aria-hidden="true"></span>
+                  </div>
+                  <div class="wicz-picker__controls">
+                    <button
+                      type="button"
+                      class="wicz-picker__button"
+                      data-remove="{{ flavor.handle }}"
+                      aria-label="remove one {{ flavor.title | downcase }}"
+                      disabled
+                    >
+                      −
+                    </button>
+                    <button
+                      type="button"
+                      class="wicz-picker__button wicz-picker__button--add"
+                      data-add="{{ flavor.handle }}"
+                      aria-label="add {{ flavor.title | downcase }}"
+                      {% unless small.available %}
+                        disabled
+                      {% endunless %}
+                    >
+                      +
+                    </button>
+                  </div>
+                  {%- unless small.available -%}
+                    <p class="wicz-picker__soldout">sold out</p>
+                  {%- endunless -%}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </section>
+
+        <div class="wicz-tray" data-tray>
+          <div class="wicz-tray__inner page-width">
+            <ol class="wicz-tray__slots" data-slots aria-label="your box"></ol>
+            <div class="wicz-tray__summary">
+              <p class="wicz-tray__count" data-count-label>0 of 0 picked</p>
+              <p class="wicz-tray__price" data-box-price>{{ selected.price | money }}</p>
+              <button type="submit" class="button wicz-tray__submit" data-submit disabled>add box to cart</button>
+            </div>
+          </div>
+          <p class="visually-hidden" role="status" aria-live="polite" data-status></p>
+        </div>
+
+        <div data-properties hidden></div>
+        <noscript>
+          <p class="wicz-box__notice">the box builder needs javascript. the flights work without it.</p>
+        </noscript>
+      </form>
+    </wicz-box-builder>
+  {%- endif -%}
+
+  {%- if section.settings.care_line != blank -%}
+    <p class="wicz-box__care">{{ section.settings.care_line }}</p>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "wicz box builder",
+  "class": "wicz-box-section",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "flavors",
+      "label": "flavors to choose from",
+      "info": "each flavor needs the two size variants below. the big slot offers flavors whose custom.price_tier is plain."
+    },
+    {
+      "type": "collection",
+      "id": "flights",
+      "label": "flights",
+      "info": "used to pre-fill the builder from a flight's make it your own link"
+    },
+    { "type": "text", "id": "big_size", "label": "big size", "default": "8 oz" },
+    { "type": "text", "id": "small_size", "label": "small size", "default": "2 oz" },
+    {
+      "type": "text",
+      "id": "care_line",
+      "label": "care line",
+      "default": "keep cold. soften 20 minutes before serving. best within 2–3 weeks, or freeze."
+    }
+  ]
+}
+{% endschema %}

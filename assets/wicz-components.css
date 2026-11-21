@@ -39,7 +39,7 @@
   display: block;
 }
 
-.wicz-cube__number {
+.wicz-cube__process {
   align-self: flex-end;
   font-family: var(--font-mono);
   font-weight: 500;
@@ -60,11 +60,11 @@
   font-size: max(44px, 14cqi);
 }
 
-.wicz-cube--large .wicz-cube__number {
+.wicz-cube--large .wicz-cube__process {
   font-size: 14px;
 }
 
-/* ---------- flavor card (§7) ---------- */
+/* ---------- product card / pack (§7) ---------- */
 .wicz-card {
   height: 100%;
 }
@@ -72,37 +72,55 @@
 .wicz-card__link {
   display: flex;
   flex-direction: column;
+  gap: var(--space-1);
   height: 100%;
-  color: var(--flavor-deep);
+  color: var(--text);
   text-decoration: none;
-  /* flat by default: only the foil fold line, no drop shadow */
+}
+
+.wicz-card__pack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+  min-height: 260px;
+  padding: var(--space-2);
+  color: var(--flavor-deep);
+  /* flat: only the fold line along the bottom, no drop shadow (§6.2) */
   box-shadow: 0 2px 0 var(--flavor-ground);
   transition: transform 150ms ease, box-shadow 150ms ease;
 }
 
-.wicz-card__link:hover {
+.wicz-card__link:hover .wicz-card__pack {
   transform: translateY(-2px);
-  box-shadow: 0 2px 0 var(--foil-fold);
+  box-shadow: 0 3px 0 var(--flavor-fold, var(--foil-fold));
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wicz-card__link {
+  .wicz-card__pack {
     transition: none;
   }
 
-  .wicz-card__link:hover {
+  .wicz-card__link:hover .wicz-card__pack {
     transform: none;
   }
 }
 
-.wicz-card__media {
-  overflow: hidden;
-  border-radius: var(--radius) var(--radius) 0 0;
+.wicz-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
 }
 
-/* the card is already foil; the cube inside is a quieter fold of the same ground */
-.wicz-card__media .wicz-cube__wrap {
-  box-shadow: 0 2px 0 var(--foil-fold), 0 10px 20px rgba(120, 95, 40, 0.16);
+.wicz-card__holiday {
+  padding: 3px 10px;
+  border: 1.5px solid var(--flavor-deep);
+  border-radius: var(--radius-pill);
+  line-height: 1.2;
 }
 
 .wicz-card__image {
@@ -111,64 +129,58 @@
   height: auto;
   aspect-ratio: 1 / 1;
   object-fit: cover;
+  border-radius: var(--radius);
 }
 
-.wicz-card__body {
-  display: grid;
-  gap: var(--space-1);
-  padding: 0 var(--space-2) var(--space-2);
-}
-
-@media screen and (min-width: 750px) {
-  .wicz-card__body {
-    padding: 0 var(--space-3) var(--space-3);
-  }
-}
-
-/* 32px, so the flavor ink is allowed (§3.3) */
+/* 32px and up, so the flavor ink is allowed (§3.3); long names stack (§4.3) */
 .wicz-card__title {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   margin: 0;
   font-family: var(--font-display);
   font-weight: 900;
   font-variation-settings: var(--fraunces-axes);
-  font-size: 32px;
-  line-height: 0.9;
-  letter-spacing: -0.04em;
+  font-size: 34px;
+  line-height: 0.88;
+  letter-spacing: -0.045em;
   color: var(--flavor-ink);
   text-transform: lowercase;
+  overflow-wrap: anywhere;
 }
 
-.wicz-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-2);
+.wicz-card__title span {
+  display: block;
+}
+
+.wicz-card__process {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.wicz-card__price {
   margin: 0;
   font-family: var(--font-mono);
   font-size: 14px;
-  color: var(--flavor-deep);
-}
-
-.wicz-card__number {
   font-weight: 500;
+  white-space: nowrap;
 }
 
-.wicz-card__number,
-.wicz-card__price {
-  white-space: nowrap;
+@media screen and (min-width: 750px) {
+  .wicz-card__pack {
+    min-height: 300px;
+    padding: var(--space-3);
+  }
+
+  .wicz-card__title {
+    font-size: 44px;
+  }
 }
 
 /* ---------- product page (§9) ---------- */
 .wicz-flavor-page .product__media-wrapper .wicz-cube {
   background-color: transparent;
-}
-
-.wicz-product-number {
-  margin: 0 0 var(--space-1);
-  font-family: var(--font-mono);
-  font-weight: 500;
-  font-size: 14px;
-  color: var(--flavor-text);
 }
 
 .wicz-flavor-page .product__title h1 {
@@ -306,7 +318,7 @@
   border: 2px dashed var(--flavor-deep, var(--periwinkle-deep));
 }
 
-/* a 2″ cube reads bigger than a 1.2″ cube */
+/* the 8 oz reads bigger than a 2 oz */
 .wicz-dots__dot--big {
   width: 30px;
   height: 30px;
@@ -316,7 +328,7 @@
   align-items: center;
 }
 
-/* ---------- carton contents in the cart ---------- */
+/* ---------- box picks in the cart ---------- */
 .wicz-cart-contents {
   margin: 4px 0 0;
   padding: 0;

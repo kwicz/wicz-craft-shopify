@@ -50,38 +50,33 @@ const clearCart = () => page.evaluate(() => fetch('/cart/clear.js', { method: 'P
 // --- pages ---
 await shoot('home-desktop', '/', DESKTOP, { fullPage: true });
 await shoot('home-mobile', '/', MOBILE, { fullPage: true });
-await shoot('collection-flavors-desktop', '/collections/shop', DESKTOP);
-await shoot('product-garlic-herb-desktop', '/products/garlic-herb', DESKTOP);
-await shoot('product-chili-crisp-mobile', '/products/chili-crisp', MOBILE, { fullPage: true });
-await shoot('carton-half-dozen-desktop', '/products/half-dozen', DESKTOP, { fullPage: true });
+await shoot('collection-flavors-desktop', '/collections/shop', DESKTOP, { fullPage: true });
+await shoot('product-smoked-sea-salt-mobile', '/products/smoked-sea-salt', MOBILE, { fullPage: true });
+await shoot('flight-desktop', '/products/classics-holiday', DESKTOP);
 
-// build your own, partway filled: 2″ salted, 2 × 1.2″ honey (5 of 6 slots)
-await shoot('carton-build-your-own-mobile', '/products/build-your-own', MOBILE, {
-  fullPage: true,
-  before: () =>
-    page.evaluate(() => {
-      const plus = (handle, size) =>
-        [...document.querySelectorAll('[data-step="1"]')].find((button) => {
-          const input = document.getElementById(button.getAttribute('aria-controls'));
-          return input.dataset.handle === handle && input.dataset.size.startsWith(size);
-        });
-      plus('salted', '2').click();
-      plus('honey', '1.2').click();
-      plus('honey', '1.2').click();
-      plus('white-miso', '1.2').click();
-    }),
-});
+// the builder partway filled: one big, four small, unsalted + caesar × 2 + honey (4 of 5)
+const fillBox = () =>
+  page.evaluate(() => {
+    [...document.querySelectorAll('.wicz-format__input')].find((input) => input.dataset.format === 'one-big-four-small').click();
+    document.querySelector('.wicz-big-choice__input[value="unsalted"]').click();
+    for (const handle of ['caesar', 'caesar', 'honey']) document.querySelector(`[data-add="${handle}"]`).click();
+  });
+await shoot('box-builder-desktop', '/products/build-a-box', DESKTOP, { before: fillBox });
+await shoot('box-builder-mobile', '/products/build-a-box', MOBILE, { before: fillBox });
 
-// cart with two merged cartons and one loose cube
-await page.goto(`${BASE}/products/one-big-four-small`, { waitUntil: 'networkidle2' });
+// cart: a box, a flight, and a single
+await page.setViewport({ ...DESKTOP, deviceScaleFactor: 1 });
+await page.goto(`${BASE}/cart`, { waitUntil: 'networkidle2' });
 await clearCart();
-for (const handle of ['one-big-four-small', 'half-dozen']) {
-  await page.goto(`${BASE}/products/${handle}?shot=${Date.now()}`, { waitUntil: 'networkidle2' });
-  await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle2' }), page.click('[data-submit]')]);
-}
+await page.goto(`${BASE}/products/build-a-box?shot=${Date.now()}`, { waitUntil: 'networkidle2' });
+await fillBox();
+await page.evaluate(() => document.querySelector('[data-add="white-miso"]').click());
+await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle2' }), page.click('[data-submit]')]);
+await page.goto(`${BASE}/products/classics-culinary?shot=${Date.now()}`, { waitUntil: 'networkidle2' });
+await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle2' }), page.click('.wicz-flight__form button')]);
 await page.evaluate(async () => {
-  const chili = await fetch('/products/chili-crisp.js').then((response) => response.json());
-  const small = chili.variants.find((variant) => variant.title.startsWith('1.2'));
+  const product = await fetch('/products/chili-crisp.js').then((response) => response.json());
+  const small = product.variants.find((variant) => variant.title === '2 oz');
   await fetch('/cart/add.js', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

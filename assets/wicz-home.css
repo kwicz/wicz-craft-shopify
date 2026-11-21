@@ -221,3 +221,62 @@
     font-size: 44px;
   }
 }
+
+/* ---------- build a box call-out (§9) ---------- */
+.wicz-callout {
+  margin-top: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.wicz-callout__inner {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-3);
+  border: var(--border);
+  border-radius: var(--radius);
+}
+
+.wicz-callout__heading {
+  margin: 0 0 var(--space-1);
+}
+
+.wicz-callout__line {
+  margin: 0;
+  max-width: 40ch;
+}
+
+.wicz-callout__formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wicz-callout__format {
+  display: inline-flex;
+  gap: var(--space-1);
+  padding: 6px 14px;
+  border: 1.5px solid var(--periwinkle-deep);
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.wicz-callout__button {
+  justify-self: start;
+}
+
+@media screen and (min-width: 990px) {
+  .wicz-callout__inner {
+    grid-template-columns: 1fr 1.2fr;
+    align-items: center;
+    padding: var(--space-5);
+  }
+
+  .wicz-callout__button {
+    grid-column: 2;
+  }
+}

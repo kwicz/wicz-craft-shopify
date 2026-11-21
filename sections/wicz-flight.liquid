@@ -1,0 +1,137 @@
+{%- comment -%}
+  Flight page (design guide §8.2, §9): the single-product layout plus flavor
+  dots, the "if bought separately" line, and a "make it your own" link that
+  opens the builder pre-filled with this flight.
+
+  A flight is a preset of the box's eight format. Adding it to the cart adds
+  the box variant whose custom.box_small matches the flight's size, with the
+  same properties the builder writes (so the box-expand Cart Transform
+  treats it the same way), plus `flight: <title>`.
+
+  Reads custom.flight_contents (a list of flavor handles) on the flight.
+{%- endcomment -%}
+{{ 'wicz-flight.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign contents = product.metafields.custom.flight_contents.value
+  assign box = section.settings.box
+  assign small_size = section.settings.small_size
+
+  assign box_variant = nil
+  for variant in box.variants
+    assign big_slots = variant.metafields.custom.box_big.value | default: 0
+    if big_slots == 0 and variant.metafields.custom.box_small.value == contents.size
+      assign box_variant = variant
+    endif
+  endfor
+
+  assign separately = 0
+  assign component_ids = ''
+  assign all_available = true
+  assign allergens = ''
+  for handle in contents
+    assign flavor = all_products[handle]
+    assign small = flavor.variants | where: 'title', small_size | first
+    assign separately = separately | plus: small.price
+    assign component_ids = component_ids | append: small.id | append: ','
+    unless small.available
+      assign all_available = false
+    endunless
+    assign allergens = allergens | append: flavor.metafields.custom.allergens.value | append: '|'
+  endfor
+  assign component_ids = component_ids | split: ',' | join: ','
+  assign allergen_lines = allergens | split: '|' | uniq
+
+  assign price = product.price
+  if box_variant
+    assign price = box_variant.price
+  endif
+-%}
+
+<div class="wicz-flight page-width">
+  <div class="wicz-flight__media">
+    {%- if product.featured_media -%}
+      {{ product.featured_media | image_url: width: 1200 | image_tag: loading: 'eager', class: 'wicz-flight__image', sizes: '(min-width: 990px) 560px, 100vw' }}
+    {%- else -%}
+      {%- render 'wicz-foil-placeholder', product: product, size: 'large' -%}
+    {%- endif -%}
+  </div>
+
+  <div class="wicz-flight__info">
+    {%- if product.metafields.custom.seasonal.value == true -%}
+      <span class="wicz-flight__holiday">holiday</span>
+    {%- endif -%}
+    <h1 class="wicz-flight__title">{{ product.title | escape }}</h1>
+    <p class="wicz-flight__price">{{ price | money }}</p>
+    {%- if separately > price -%}
+      <p class="wicz-flight__separately">{{ separately | money }} if bought separately</p>
+    {%- endif -%}
+
+    {%- render 'wicz-flavor-dots', handles: contents -%}
+
+    <ul class="wicz-flight__contents" role="list" aria-label="what's inside">
+      {%- for handle in contents -%}
+        <li>{{ all_products[handle].title | downcase }}, {{ small_size }}</li>
+      {%- endfor -%}
+    </ul>
+
+    {%- if box_variant -%}
+      <form action="{{ routes.cart_add_url }}" method="post" class="wicz-flight__form">
+        <input type="hidden" name="id" value="{{ box_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+        <input type="hidden" name="return_to" value="{{ routes.cart_url }}">
+        <input type="hidden" name="properties[flight]" value="{{ product.title | downcase | escape }}">
+        {%- for handle in contents -%}
+          <input type="hidden" name="properties[slot {{ forloop.index }}]" value="{{ all_products[handle].title | downcase | escape }}">
+        {%- endfor -%}
+        <input type="hidden" name="properties[_components]" value="{{ component_ids }}">
+        <button type="submit" class="button button--full-width"{% unless all_available %} disabled{% endunless %}>
+          {%- if all_available -%}add to cart{%- else -%}one of these is sold out{%- endif -%}
+        </button>
+      </form>
+      <a class="wicz-flight__custom" href="{{ box.url }}?format={{ box_variant.title | handleize }}&flight={{ product.handle }}">
+        make it your own
+      </a>
+    {%- else -%}
+      <p class="wicz-flight__notice">choose the build a box product in the theme editor. it needs a format with {{ contents.size }} slots.</p>
+    {%- endif -%}
+
+    {%- if product.description != blank -%}
+      <div class="wicz-flight__description">{{ product.description }}</div>
+    {%- endif -%}
+
+    <dl class="wicz-facts">
+      <div class="wicz-facts__row">
+        <dt class="wicz-facts__label">allergens</dt>
+        <dd class="wicz-facts__value">
+          {%- for line in allergen_lines -%}
+            {%- if line != blank -%}{{ line }}<br>{%- endif -%}
+          {%- endfor -%}
+        </dd>
+      </div>
+      {%- if section.settings.care_line != blank -%}
+        <div class="wicz-facts__row">
+          <dt class="wicz-facts__label">care</dt>
+          <dd class="wicz-facts__value">{{ section.settings.care_line }}</dd>
+        </div>
+      {%- endif -%}
+    </dl>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "wicz flight",
+  "class": "wicz-flight-section",
+  "settings": [
+    { "type": "product", "id": "box", "label": "build a box product" },
+    { "type": "text", "id": "small_size", "label": "size in the flight", "default": "2 oz" },
+    {
+      "type": "text",
+      "id": "care_line",
+      "label": "care line",
+      "default": "keep cold. soften 20 minutes before serving. best within 2–3 weeks, or freeze."
+    }
+  ]
+}
+{% endschema %}

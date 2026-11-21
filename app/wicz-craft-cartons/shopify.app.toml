@@ -1,8 +1,8 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 #
-# wicz craft cartons: an extension-only app. Its one job is the carton-merge
-# Cart Transform function, which turns the lines a shopper picked in the
-# carton builder into a single carton line. No server, no admin UI.
+# wicz craft cartons: an extension-only app. Its one job is the box-expand
+# Cart Transform function, which turns a "build a box" line into the butters
+# picked for it. No server, no admin UI.
 
 client_id = "2d4a7eedd9b23d22ea384c63782b4bcf"
 name = "wicz-craft-cartons"
@@ -20,10 +20,11 @@ direct_api_mode = "online"
 embedded_app_direct_api_access = true
 
 [access_scopes]
-# write_cart_transforms: register the carton-merge function
-# write_products, write_online_store_pages, write_online_store_navigation:
-#   scripts/seed-store.mjs (carton products, about page, main menu)
-scopes = "write_cart_transforms,write_products,write_online_store_pages,write_online_store_navigation"
+# write_cart_transforms: register the box-expand function and its rules
+# write_products, write_publications, write_inventory, read_locations,
+# write_online_store_pages, write_online_store_navigation:
+#   scripts/seed-store.mjs (catalog, collections, about page, main menu)
+scopes = "write_cart_transforms,write_products,write_publications,write_inventory,read_locations,write_online_store_pages,write_online_store_navigation"
 
 [auth]
 redirect_urls = [ "https://shopify.dev/apps/default-app-home/api/auth" ]

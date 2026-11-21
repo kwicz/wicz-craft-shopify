@@ -4,7 +4,7 @@
       "type": "wicz-hero",
       "settings": {
         "heading": "really\ngood\nbutter",
-        "details": "cultured butter\nnº 1 — salted\ngrass-fed cream\nportland, oregon",
+        "details": "cultured butter\ncultured 48 hours\nportland, oregon",
         "rotate": true,
         "show_stamp": true,
         "stamp_text": "it's really good."
@@ -15,19 +15,28 @@
       "settings": {
         "heading": "the flavors",
         "collection": "shop",
-        "limit": 5,
-        "columns_desktop": "5",
+        "limit": 12,
+        "columns_desktop": "4",
         "link_label": "see all"
       }
     },
-    "cartons": {
+    "flights": {
       "type": "wicz-product-grid",
       "settings": {
-        "heading": "cartons",
-        "collection": "cartons",
+        "heading": "flights",
+        "collection": "flights",
         "limit": 3,
         "columns_desktop": "3",
         "link_label": "see all"
+      }
+    },
+    "box": {
+      "type": "wicz-box-callout",
+      "settings": {
+        "heading": "build a box",
+        "line": "pick a box, then fill it. one price per box, whatever goes in.",
+        "product": "build-a-box",
+        "button_label": "build a box"
       }
     },
     "story": {
@@ -35,10 +44,10 @@
       "settings": {
         "line": "we made butter.",
         "accent": "it's really good.",
-        "subline": "cultured slowly from grass-fed cream in portland, oregon.",
+        "subline": "cultured 48 hours in portland, oregon.",
         "show_stamp": false
       }
     }
   },
-  "order": ["hero", "flavors", "cartons", "story"]
+  "order": ["hero", "flavors", "flights", "box", "story"]
 }

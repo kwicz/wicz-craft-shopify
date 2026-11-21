@@ -690,11 +690,6 @@
                   </product-recommendations>
                 {%- when 'icon-with-text' -%}
                   {% render 'icon-with-text', block: block %}
-                {%- when 'wicz_flavor_number' -%}
-                  {%- assign flavor_number = product.metafields.custom.flavor_number.value -%}
-                  {%- if flavor_number != blank -%}
-                    <p class="wicz-product-number" {{ block.shopify_attributes }}>nº {{ flavor_number }}</p>
-                  {%- endif -%}
                 {%- when 'wicz_product_facts' -%}
                   {%- render 'wicz-product-facts', product: product, block: block -%}
               {%- endcase -%}
@@ -768,17 +763,6 @@
   "tag": "section",
   "class": "section",
   "blocks": [
-    {
-      "type": "wicz_flavor_number",
-      "name": "wicz: flavor number",
-      "limit": 1,
-      "settings": [
-        {
-          "type": "paragraph",
-          "content": "shows nº from the product's custom.flavor_number metafield"
-        }
-      ]
-    },
     {
       "type": "wicz_product_facts",
       "name": "wicz: ingredients, care",

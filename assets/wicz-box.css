@@ -1,0 +1,460 @@
+/* wicz craft box builder (sections/wicz-box-builder.liquid, design guide §7, §9) */
+.wicz-box {
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-4);
+}
+
+.wicz-box__intro {
+  margin-bottom: var(--space-4);
+}
+
+.wicz-box__title {
+  margin: 0 0 var(--space-1);
+}
+
+.wicz-box__description p {
+  margin: 0;
+}
+
+.wicz-box__notice,
+.wicz-box__care {
+  font-size: 14px;
+}
+
+.wicz-box__care {
+  margin-top: var(--space-4);
+}
+
+.wicz-box__form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+}
+
+.wicz-box__step {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.wicz-box__step fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.wicz-box__step-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: var(--fraunces-axes-heading);
+  font-size: 32px;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--display);
+  text-transform: lowercase;
+}
+
+/* step numbers are mono, deep, on a pill: small text can't use periwinkle (§3.3) */
+.wicz-box__step-number {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background-color: var(--periwinkle-deep);
+  color: var(--cream);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.wicz-box__hint {
+  margin: calc(var(--space-1) * -1) 0 var(--space-2);
+  font-size: 14px;
+}
+
+/* ---------- 1. formats ---------- */
+.wicz-formats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-formats {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-2);
+  }
+}
+
+.wicz-format {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.wicz-format__input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.wicz-format__body {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  height: 100%;
+  padding: var(--space-2);
+  border: var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+}
+
+.wicz-format__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: var(--fraunces-axes-heading);
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.wicz-format__price {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.wicz-format__separately {
+  font-size: 13px;
+}
+
+.wicz-format__input:checked + .wicz-format__body {
+  background-color: var(--periwinkle-deep);
+  color: var(--cream);
+}
+
+.wicz-format__input:focus-visible + .wicz-format__body {
+  outline: 2px solid var(--periwinkle-deep);
+  outline-offset: 3px;
+}
+
+/* ---------- 2. the big one ---------- */
+.wicz-big-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.wicz-big-choice {
+  position: relative;
+  cursor: pointer;
+}
+
+.wicz-big-choice__input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.wicz-big-choice__pack {
+  display: grid;
+  gap: var(--space-1);
+  width: 180px;
+  padding: var(--space-2);
+  color: var(--flavor-deep);
+  outline: 2px solid transparent;
+  outline-offset: 3px;
+}
+
+.wicz-big-choice__name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: var(--fraunces-axes);
+  font-size: 36px;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  color: var(--flavor-ink);
+}
+
+.wicz-big-choice__size {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.wicz-big-choice__input:checked + .wicz-big-choice__pack {
+  outline-color: var(--periwinkle-deep);
+}
+
+.wicz-big-choice__input:focus-visible + .wicz-big-choice__pack {
+  outline: 2px dashed var(--periwinkle-deep);
+}
+
+.wicz-big-choice__input:disabled + .wicz-big-choice__pack {
+  opacity: 0.5;
+}
+
+/* ---------- 3. fill it: the flavor grid ---------- */
+.wicz-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wicz-picker__item {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.wicz-picker__pack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 140px;
+  padding: var(--space-2);
+  color: var(--flavor-deep);
+}
+
+.wicz-picker__holiday {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-1);
+  padding: 2px 8px;
+  border: 1.5px solid var(--flavor-deep);
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.wicz-picker__name {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: var(--fraunces-axes);
+  font-size: 32px;
+  line-height: 0.88;
+  letter-spacing: -0.045em;
+  color: var(--flavor-ink);
+}
+
+.wicz-picker__count {
+  position: absolute;
+  top: var(--space-1);
+  left: var(--space-2);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.wicz-picker__controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1);
+}
+
+.wicz-picker__button {
+  min-height: 44px;
+  border: var(--border);
+  border-radius: var(--radius);
+  background-color: transparent;
+  color: var(--periwinkle-deep);
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.wicz-picker__button--add {
+  background-color: var(--periwinkle-deep);
+  color: var(--cream);
+}
+
+.wicz-picker__button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.wicz-picker__soldout {
+  margin: 0;
+  font-size: 13px;
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-picker {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .wicz-picker__pack {
+    min-height: 170px;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .wicz-picker {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .wicz-picker__name {
+    font-size: 36px;
+  }
+}
+
+/* ---------- the tray: sticky along the bottom of the screen ---------- */
+.wicz-tray {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  margin: 0 calc(var(--gutter) * -1);
+  background-color: var(--cream);
+  border-top: var(--border);
+}
+
+.wicz-tray__inner {
+  display: grid;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-2);
+}
+
+.wicz-tray__slots {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wicz-tray__slot {
+  display: grid;
+  place-items: stretch;
+  width: 64px;
+  height: 52px;
+  border-radius: var(--radius);
+  color: var(--flavor-ink);
+  /* miniature packs: keep the sheen, drop the big foil shadow */
+  box-shadow: 0 2px 0 var(--flavor-fold, var(--foil-fold));
+}
+
+.wicz-tray__slot--big {
+  width: 96px;
+  height: 64px;
+  place-items: end start;
+  padding: 6px;
+}
+
+.wicz-tray__slot--empty {
+  border: 1.5px dashed var(--periwinkle-deep);
+  background: none;
+  box-shadow: none;
+}
+
+.wicz-tray__clear {
+  display: grid;
+  place-items: end start;
+  padding: 6px;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.wicz-tray__clear:focus-visible {
+  outline: 2px solid var(--periwinkle-deep);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* display type at 16px would break §3.3, so the miniature names are mono, deep */
+.wicz-tray__name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--flavor-deep);
+  overflow-wrap: anywhere;
+}
+
+.wicz-tray__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+}
+
+.wicz-tray__count,
+.wicz-tray__price {
+  margin: 0;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.wicz-tray__submit {
+  margin-left: auto;
+}
+
+.wicz-tray__submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* phones: miniature packs without names (the remove buttons keep them in
+   their labels), so eight slots fit one row */
+@media screen and (max-width: 749px) {
+  .wicz-tray__slots {
+    flex-wrap: nowrap;
+  }
+
+  .wicz-tray__slot {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    max-width: 52px;
+    height: 40px;
+  }
+
+  .wicz-tray__slot--big {
+    flex: 1.5 1 0;
+    max-width: 72px;
+    height: 48px;
+  }
+
+  .wicz-tray__name {
+    display: none;
+  }
+
+  .wicz-tray__summary {
+    gap: var(--space-1) var(--space-2);
+  }
+
+  .wicz-tray__submit {
+    padding: 12px 16px;
+    white-space: nowrap;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .wicz-tray__inner {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+}

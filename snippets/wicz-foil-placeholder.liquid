@@ -5,7 +5,7 @@
   element that sets them (the product page body, or a flavor card).
 
   Accepts:
-  - product: {Object} optional. Adds the flavor number and an accessible label.
+  - product: {Object} optional. Adds an accessible label.
   - size: {String} 'card' (default) or 'large' (product page)
 
   Usage:
@@ -13,17 +13,14 @@
 {%- endcomment -%}
 {%- liquid
   assign placeholder_size = size | default: 'card'
-  assign flavor_number = product.metafields.custom.flavor_number.value
 -%}
 <div
   class="wicz-cube wicz-cube--{{ placeholder_size }}"
   role="img"
-  aria-label="{% if product %}{{ product.title | escape }}, {% endif %}foil-wrapped butter cube"
+  aria-label="{% if product %}{{ product.title | escape }}, {% endif %}foil-wrapped butter"
 >
   <div class="wicz-cube__wrap foil foil--folds">
     <span class="wicz-cube__wordmark" aria-hidden="true"><span>wicz</span><span>craft</span></span>
-    {%- if flavor_number != blank -%}
-      <span class="wicz-cube__number" aria-hidden="true">nº {{ flavor_number }}</span>
-    {%- endif -%}
+    <span class="wicz-cube__process" aria-hidden="true">cultured 48 hours</span>
   </div>
 </div>

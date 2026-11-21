@@ -1,0 +1,47 @@
+{%- comment -%}
+  "build a box" call-out for the home page (design guide §9): a heading, one
+  plain line, the formats as mono pills with their prices, and a button into
+  the builder. Flat cream with a 1.5px border: the hero is the page's foil
+  block and its one rotated element (§11).
+{%- endcomment -%}
+{{ 'wicz-home.css' | asset_url | stylesheet_tag }}
+
+{%- assign box = section.settings.product -%}
+<section class="wicz-callout page-width" aria-labelledby="Heading-{{ section.id }}">
+  <div class="wicz-callout__inner">
+    <div class="wicz-callout__text">
+      <h2 id="Heading-{{ section.id }}" class="wicz-callout__heading">{{ section.settings.heading }}</h2>
+      {%- if section.settings.line != blank -%}
+        <p class="wicz-callout__line">{{ section.settings.line }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if box != blank -%}
+      <ul class="wicz-callout__formats" role="list">
+        {%- for variant in box.variants -%}
+          <li class="wicz-callout__format">
+            <span>{{ variant.title }}</span>
+            <span>{{ variant.price | money }}</span>
+          </li>
+        {%- endfor -%}
+      </ul>
+      <a href="{{ box.url }}" class="button wicz-callout__button">{{ section.settings.button_label }}</a>
+    {%- elsif request.design_mode -%}
+      <p class="wicz-callout__line">choose the build a box product in the theme editor.</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "wicz box call-out",
+  "class": "wicz-callout-section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "heading", "default": "build a box" },
+    { "type": "text", "id": "line", "label": "line", "default": "pick a box, then fill it. one price per box, whatever goes in." },
+    { "type": "product", "id": "product", "label": "box product" },
+    { "type": "text", "id": "button_label", "label": "button label", "default": "build a box" }
+  ],
+  "presets": [{ "name": "wicz box call-out" }]
+}
+{% endschema %}

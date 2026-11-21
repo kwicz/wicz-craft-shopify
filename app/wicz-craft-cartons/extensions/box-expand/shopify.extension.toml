@@ -2,9 +2,9 @@ api_version = "2026-07"
 
 [[extensions]]
 name = "t:name"
-handle = "carton-merge"
+handle = "box-expand"
+uid = "fce01fb4-c304-bae0-e109-78559f9b28aae2e1a07a"
 type = "function"
-uid = "a71406f4-961d-6ea7-3c17-443b2841e86e9a747dae"
 description = "t:description"
 
   [[extensions.targeting]]

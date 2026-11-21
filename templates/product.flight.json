@@ -10,9 +10,10 @@
       }
     },
     "main": {
-      "type": "wicz-carton",
+      "type": "wicz-flight",
       "settings": {
-        "flavors": "shop",
+        "box": "build-a-box",
+        "small_size": "2 oz",
         "care_line": "keep cold. soften 20 minutes before serving. best within 2–3 weeks, or freeze."
       }
     }

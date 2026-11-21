@@ -3,7 +3,7 @@ import fs from "fs";
 import { describe, beforeAll, test, expect } from "vitest";
 import { buildFunction, getFunctionInfo, loadSchema, loadInputQuery, loadFixture, validateTestAssets, runFunction } from "@shopify/shopify-function-test-helpers";
 
-describe("carton-merge wasm fixtures", () => {
+describe("box-expand wasm fixtures", () => {
   let schema;
   let functionDir;
   let functionInfo;

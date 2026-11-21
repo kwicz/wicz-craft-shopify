@@ -1,0 +1,28 @@
+# Input for the box-expand Cart Transform.
+# The theme's box builder adds one line for the box (the "build a box"
+# variant for the chosen format, at its flat price) with a hidden
+# _components property: the picked butter variant ids, big slot first.
+# The rules come from a JSON metafield on the cart transform itself, set by
+# scripts/seed-store.mjs, so shoppers can't change them.
+query CartTransformRunInput {
+  cart {
+    lines {
+      id
+      quantity
+      components: attribute(key: "_components") {
+        value
+      }
+      merchandise {
+        __typename
+        ... on ProductVariant {
+          id
+        }
+      }
+    }
+  }
+  cartTransform {
+    rules: metafield(key: "box_rules") {
+      jsonValue
+    }
+  }
+}

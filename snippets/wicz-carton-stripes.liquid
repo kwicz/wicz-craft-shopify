@@ -4,7 +4,7 @@
   because the foil sheen is the only gradient allowed (§6.1, §11).
 
   Accepts:
-  - flavor: {String} salted | garlic-herb | honey | white-miso | chili-crisp (default salted)
+  - flavor: {String} a flavor handle, e.g. salted, caesar, smoked-sea-salt (default salted)
   - ground: {String} hex color, overrides the flavor's ground (e.g. from a metafield)
   - ink: {String} hex color, overrides the flavor's ink
   - height: {Number} band height in px (default 24)
@@ -15,18 +15,39 @@
 {%- endcomment -%}
 {%- liquid
   case flavor
-    when 'garlic-herb'
-      assign pair_ground = '#D6EDB8'
-      assign pair_ink = '#E5583A'
+    when 'unsalted'
+      assign pair_ground = '#E6E8EC'
+      assign pair_ink = '#93AEEB'
     when 'honey'
+      assign pair_ground = '#FCE3BE'
+      assign pair_ink = '#D9873A'
+    when 'garlic-herb'
+      assign pair_ground = '#E1EDCF'
+      assign pair_ink = '#6F9B4E'
+    when 'hot-honey'
       assign pair_ground = '#FFD8A8'
       assign pair_ink = '#D93B8C'
-    when 'white-miso'
-      assign pair_ground = '#E2D4F7'
-      assign pair_ink = '#2F8F55'
     when 'chili-crisp'
       assign pair_ground = '#7A1E1E'
       assign pair_ink = '#FF8A3D'
+    when 'white-miso'
+      assign pair_ground = '#E2D4F7'
+      assign pair_ink = '#2F8F55'
+    when 'caesar'
+      assign pair_ground = '#D6EDB8'
+      assign pair_ink = '#E5583A'
+    when 'smoked-sea-salt'
+      assign pair_ground = '#2E2C2B'
+      assign pair_ink = '#FFD23F'
+    when 'french-onion'
+      assign pair_ground = '#F7D58A'
+      assign pair_ink = '#7B3FC4'
+    when 'cranberry-orange'
+      assign pair_ground = '#FFDCC2'
+      assign pair_ink = '#D0103A'
+    when 'brown-butter-sage'
+      assign pair_ground = '#4A2C1A'
+      assign pair_ink = '#B5D99C'
     else
       assign pair_ground = settings.wicz_foil
       assign pair_ink = settings.wicz_periwinkle

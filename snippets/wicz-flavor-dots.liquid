@@ -1,19 +1,36 @@
 {%- comment -%}
   Flavor dots (design guide §7): a row of 22px circles, each filled with a
-  flavor's ground and ringed 3px in its ink. Shows what's inside a carton.
+  flavor's ground and ringed 3px in its ink. Shows what's inside a box or
+  flight. Unsalted's dot is silver because its ground is.
 
-  Accepts:
-  - products: {Array} flavor products (e.g. carton.metafields.custom.carton_flavors.value).
-    The same product may appear more than once.
+  Accepts (one of):
+  - handles: {Array} flavor product handles, e.g. a flight's custom.flight_contents.
+    The same handle may appear more than once.
+  - products: {Array} flavor products
   - label: {Boolean} also print the flavor names for screen readers (default true)
 
   Usage:
-  {% render 'wicz-flavor-dots', products: product.metafields.custom.carton_flavors.value %}
+  {% render 'wicz-flavor-dots', handles: product.metafields.custom.flight_contents.value %}
 {%- endcomment -%}
-{%- if products != blank -%}
+{%- liquid
+  assign flavors = products
+  if handles != blank
+    assign flavors = ''
+    for handle in handles
+      assign flavors = flavors | append: handle | append: ','
+    endfor
+    assign flavors = flavors | split: ','
+  endif
+-%}
+{%- if flavors != blank -%}
   <ul class="wicz-dots" role="list">
-    {%- for flavor in products -%}
+    {%- for item in flavors -%}
       {%- liquid
+        if handles != blank
+          assign flavor = all_products[item]
+        else
+          assign flavor = item
+        endif
         assign mf = flavor.metafields.custom
         assign ground = mf.color_ground.value | default: settings.wicz_foil
         assign ink = mf.color_ink.value | default: settings.wicz_periwinkle

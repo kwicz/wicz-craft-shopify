@@ -1,0 +1,89 @@
+/* wicz craft flight page (sections/wicz-flight.liquid, design guide §9). Mobile first. */
+.wicz-flight {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-5);
+}
+
+@media screen and (min-width: 990px) {
+  .wicz-flight {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-5);
+    align-items: start;
+  }
+
+  .wicz-flight__media {
+    position: sticky;
+    top: var(--space-3);
+  }
+}
+
+.wicz-flight__image {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+.wicz-flight__info {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+  color: var(--flavor-text);
+}
+
+.wicz-flight__holiday {
+  justify-self: start;
+  padding: 3px 10px;
+  border: 1.5px solid var(--flavor-text);
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* H1 at 44/72px, so the flavor ink is allowed (§3.3) */
+.wicz-flight__title {
+  margin: 0;
+  color: var(--flavor-ink);
+}
+
+.wicz-flight__price {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.wicz-flight__separately,
+.wicz-flight__notice {
+  margin: 0;
+  font-size: 14px;
+}
+
+.wicz-flight__contents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+
+.wicz-flight__form {
+  margin-top: var(--space-1);
+}
+
+.wicz-flight__form .button {
+  --color-button: var(--flavor-button-bg-rgb, 63,91,176);
+  --color-button-text: var(--flavor-button-text-rgb, 255,244,230);
+}
+
+.wicz-flight__custom {
+  justify-self: start;
+  color: var(--flavor-text);
+  font-weight: 500;
+}
+
+.wicz-flight__description p {
+  margin: 0;
+}

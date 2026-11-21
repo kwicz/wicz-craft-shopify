@@ -1,6 +1,8 @@
 {%- comment -%}
   Ingredients, allergen line, care line and "pairs with" for a product page
-  (design guide §8, §9). Reads custom.ingredients and custom.pairs_with.
+  (design guide §8.4, §9). Reads custom.ingredients, custom.allergens and
+  custom.pairs_with. The block's allergen line is the fallback when a product
+  has no custom.allergens.
 
   Accepts:
   - product: {Object}
@@ -10,6 +12,7 @@
 {%- liquid
   assign ingredients = product.metafields.custom.ingredients.value
   assign pairs_with = product.metafields.custom.pairs_with.value
+  assign allergens = product.metafields.custom.allergens.value | default: block.settings.allergen_line
 -%}
 <dl class="wicz-facts" {{ block.shopify_attributes }}>
   {%- if block.settings.show_ingredients and ingredients != blank -%}
@@ -17,8 +20,8 @@
       <dt class="wicz-facts__label">ingredients</dt>
       <dd class="wicz-facts__value">
         {{ ingredients | newline_to_br }}
-        {%- if block.settings.allergen_line != blank -%}
-          <br><span class="wicz-facts__allergen">{{ block.settings.allergen_line }}</span>
+        {%- if allergens != blank -%}
+          <br><span class="wicz-facts__allergen">{{ allergens }}</span>
         {%- endif -%}
       </dd>
     </div>

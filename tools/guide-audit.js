@@ -10,10 +10,12 @@
   - extraGradients      any gradient outside the .foil sheen                      §6.1, §11
   - oddRadii            border radius other than 6px or 999px                     §6.2, §11
   - upperCase           uppercase/capitalize transforms, capitals in display type §5, §11
-  - bannedCopy          "!", emoji, "artisanal", "elevate", "indulge"             §5, §11
+  - bannedCopy          "!", emoji, "artisanal", "elevate", "indulge", "deal",
+                        "save", flavor numbers (nº)                         §5, §11
   - plainFraunces       Fraunces without SOFT 100 / WONK 1                         §4.1, §11
   - holidayStyling      Cormorant / EB Garamond / "winter solstice"               §2, §11
   - rotated, stamps     more than one rotated element or stamp                     §6.1, §7, §11
+  - goldUnsalted        an unsalted card or pack on gold foil                      §3.2, §11
 */
 (function wiczGuideAudit() {
   const LIGHT_INKS = {
@@ -25,7 +27,8 @@
     '255,138,61': 'tangerine #FF8A3D',
   };
   const OXBLOOD = '122,30,30';
-  const BANNED_WORDS = /\b(artisanal|elevate[sd]?|indulg(e|ent|ence))\b/i;
+  const GOLD = '246,232,164';
+  const BANNED_WORDS = /\b(artisanal|elevate[sd]?|indulg(e|ent|ence)|deals?|sav(e|es|ings?))\b|nº/i;
   // ©, ® and ™ are "pictographic" in Unicode but aren't emoji
   const EMOJI = /(?![©®™])\p{Extended_Pictographic}/u;
 
@@ -93,6 +96,7 @@
     holidayStyling: [],
     rotated: [],
     stamps: document.querySelectorAll('.wicz-stamp').length,
+    goldUnsalted: [],
   };
 
   for (const el of document.body.querySelectorAll('*')) {
@@ -155,6 +159,13 @@
       const b = m ? Number(m[1].split(',')[1]) : 0;
       if (Math.abs(b) > 0.001) report.rotated.push(describe(el));
     }
+  }
+
+  // unsalted is always silver (§3.2)
+  for (const card of document.querySelectorAll('.wicz-card, .wicz-picker__item')) {
+    if (!/\bunsalted\b/.test(card.textContent)) continue;
+    const pack = card.querySelector('.foil');
+    if (pack && rgb(getComputedStyle(pack).backgroundColor)?.key === GOLD) report.goldUnsalted.push(describe(card));
   }
 
   // de-duplicate repeated components so the report stays readable

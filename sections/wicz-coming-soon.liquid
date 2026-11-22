@@ -1,0 +1,102 @@
+{%- comment -%}
+  Coming soon, with an email signup (gift cards for now, design guide §8.5).
+
+  The signup is Shopify's customer form: it creates or updates a customer,
+  subscribes them to email marketing and adds the tags below, so the list
+  is in Customers, filtered by tag (e.g. `waitlist: gift cards`). When the
+  thing launches, email that segment.
+
+  The image defaults to the $50 gift card front (assets/wicz-gift-card-front.png).
+{%- endcomment -%}
+{{ 'wicz-coming-soon.css' | asset_url | stylesheet_tag }}
+
+<div class="wicz-soon page-width">
+  <div class="wicz-soon__media">
+    {%- if section.settings.image != blank -%}
+      {{
+        section.settings.image
+        | image_url: width: 1200
+        | image_tag: loading: 'eager', class: 'wicz-soon__image', widths: '400, 800, 1200', sizes: '(min-width: 990px) 560px, 100vw', alt: section.settings.image.alt
+      }}
+    {%- else -%}
+      <img
+        src="{{ 'wicz-gift-card-front.png' | asset_url }}"
+        class="wicz-soon__image"
+        width="1600"
+        height="1000"
+        alt="{{ section.settings.image_alt | escape }}"
+      >
+    {%- endif -%}
+  </div>
+
+  <div class="wicz-soon__info">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="wicz-soon__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+    {%- endif -%}
+    <h1 class="wicz-soon__heading">{{ section.settings.heading | escape }}</h1>
+    {%- if section.settings.text != blank -%}
+      <div class="wicz-soon__text">{{ section.settings.text }}</div>
+    {%- endif -%}
+
+    {%- form 'customer', id: 'WiczSoonForm', class: 'wicz-soon__form' -%}
+      <input type="hidden" name="contact[tags]" value="{{ section.settings.tags | escape }}">
+      {%- if form.posted_successfully? -%}
+        <p class="wicz-soon__done" role="status" tabindex="-1" autofocus>{{ section.settings.success_text | escape }}</p>
+      {%- else -%}
+        <label class="wicz-soon__label" for="WiczSoonEmail">{{ section.settings.label | escape }}</label>
+        <div class="wicz-soon__row">
+          <input
+            type="email"
+            name="contact[email]"
+            id="WiczSoonEmail"
+            class="wicz-soon__input"
+            value="{{ form.email }}"
+            autocomplete="email"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            required
+            {% if form.errors %}
+              aria-invalid="true"
+              aria-describedby="WiczSoonError"
+              autofocus
+            {% endif %}
+          >
+          <button type="submit" class="button wicz-soon__button">{{ section.settings.button_label | escape }}</button>
+        </div>
+        {%- if form.errors -%}
+          <p id="WiczSoonError" class="wicz-soon__error" role="alert">{{ section.settings.error_text | escape }}</p>
+        {%- endif -%}
+        {%- if section.settings.fine_print != blank -%}
+          <p class="wicz-soon__fine">{{ section.settings.fine_print | escape }}</p>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endform -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "wicz coming soon",
+  "class": "wicz-soon-section",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "image", "info": "empty: the $50 gift card front" },
+    { "type": "text", "id": "image_alt", "label": "default image alt text", "default": "a wicz craft gift card: a gift of really good butter." },
+    { "type": "text", "id": "eyebrow", "label": "eyebrow", "default": "gift cards" },
+    { "type": "text", "id": "heading", "label": "heading", "default": "coming soon." },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "text",
+      "default": "<p>a gift of really good butter, in $25, $50 and $100. leave your email and we'll tell you when they're ready.</p>"
+    },
+    { "type": "text", "id": "label", "label": "email label", "default": "your email" },
+    { "type": "text", "id": "button_label", "label": "button", "default": "tell me" },
+    { "type": "text", "id": "tags", "label": "customer tags", "info": "comma separated. how you find this list in Customers.", "default": "waitlist, waitlist: gift cards" },
+    { "type": "text", "id": "success_text", "label": "after signing up", "default": "you're on the list. we'll email you when they're ready." },
+    { "type": "text", "id": "error_text", "label": "error", "default": "that email didn't work. check it and try again." },
+    { "type": "text", "id": "fine_print", "label": "fine print", "default": "one email when they launch, then the occasional butter news. unsubscribe anytime." }
+  ],
+  "presets": [{ "name": "wicz coming soon" }]
+}
+{% endschema %}

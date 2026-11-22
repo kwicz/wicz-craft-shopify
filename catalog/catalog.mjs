@@ -209,6 +209,10 @@ export const addOns = [
   },
 ];
 
+// Gift cards are coming soon: /pages/gift-cards takes emails until this is
+// true (then also switch gift cards on in Settings > Gift cards and re-seed).
+export const GIFT_CARDS_LIVE = false;
+
 export const giftCard = {
   handle: 'gift-card',
   title: 'gift card',

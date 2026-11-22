@@ -2,15 +2,17 @@
 // theme expects, through the Admin API:
 //   1. product metafield definitions (custom.*)
 //   2. products: 12 flavors (8 oz / 2 oz), "build a box" (one variant per
-//      format), 3 flights, 4 add-ons, the gift card. Upserted by handle with
+//      format), 3 flights, 4 add-ons, the gift card once GIFT_CARDS_LIVE.
+//      Upserted by handle with
 //      productSet, so re-running replaces variants, prices and metafields
 //      with what the catalog says. Then custom.goes_with on each product
 //      (the `goes with` upsell row, guide §8.5).
 //   3. old catalog products (2″ / 1.2″ cubes era cartons) archived, not deleted
 //   4. collections: shop (flavors, guide order), holiday, flights, add-ons
 //   5. the box-expand Cart Transform, plus its box_rules metafield
-//   6. the about page, the main menu (shop / build a box / flights /
-//      gift cards / about) and a `gift cards` link in the footer menu
+//   6. the about and gift cards (coming soon) pages, the main menu (shop /
+//      build a box / flights / gift cards / about) and a `gift cards` link
+//      in the footer menu
 //
 // Why a script: the CSV import skips list metafields and template suffixes,
 // can't publish, and can't configure a cart transform.
@@ -21,7 +23,7 @@
 // Safe to re-run.
 import {
   flavors, SIZES, PRICES, box, formats, flights, BIG_FLAVORS, RETIRED,
-  addOns, giftCard, goesWith,
+  addOns, giftCard, GIFT_CARDS_LIVE, goesWith,
 } from '../../../catalog/catalog.mjs';
 import { connect, assertNoUserErrors } from './admin.mjs';
 
@@ -227,9 +229,11 @@ for (const addOn of addOns) {
   });
 }
 
-// Gift cards must be switched on in the admin first (Settings > Gift cards).
+// Gift cards are "coming soon" (a page with an email signup) until
+// GIFT_CARDS_LIVE is true in catalog.mjs. Going live also needs gift cards
+// switched on in the admin (Settings > Gift cards).
 let giftCardId = null;
-try {
+if (GIFT_CARDS_LIVE) try {
   const product = await upsert(giftCard.handle, {
     title: giftCard.title,
     giftCard: true,
@@ -418,29 +422,42 @@ const rulesSet = await gql(
 assertNoUserErrors('metafieldsSet box_rules', rulesSet.metafieldsSet.userErrors);
 console.log('box rules set');
 
-// ---------- 6. about page + main menu ----------
-const { pages } = await gql(`{ pages(first: 1, query: "handle:about") { nodes { id templateSuffix } } }`);
-let aboutPage = pages.nodes[0];
-if (!aboutPage) {
-  const created = await gql(
-    `mutation ($page: PageCreateInput!) {
-      pageCreate(page: $page) { page { id } userErrors { field message } }
-    }`,
-    // the about template carries the copy (editable in the theme editor)
-    { page: { title: 'about', handle: 'about', templateSuffix: 'about', body: '', isPublished: true } },
-  );
-  assertNoUserErrors('pageCreate about', created.pageCreate.userErrors);
-  aboutPage = created.pageCreate.page;
-  console.log('created about page');
-} else if (aboutPage.templateSuffix !== 'about') {
-  const updated = await gql(
-    `mutation ($id: ID!, $page: PageUpdateInput!) {
-      pageUpdate(id: $id, page: $page) { page { id } userErrors { field message } }
-    }`,
-    { id: aboutPage.id, page: { templateSuffix: 'about' } },
-  );
-  assertNoUserErrors('pageUpdate about', updated.pageUpdate.userErrors);
+// ---------- 6. about + gift cards pages, main menu ----------
+/** Creates the page if it's missing and keeps its template suffix. */
+async function ensurePage(handle, title, templateSuffix) {
+  const { pages: found } = await gql(`{ pages(first: 1, query: "handle:${handle}") { nodes { id templateSuffix } } }`);
+  const page = found.nodes[0];
+  if (!page) {
+    const created = await gql(
+      `mutation ($page: PageCreateInput!) {
+        pageCreate(page: $page) { page { id } userErrors { field message } }
+      }`,
+      { page: { title, handle, templateSuffix, body: '', isPublished: true } },
+    );
+    assertNoUserErrors(`pageCreate ${handle}`, created.pageCreate.userErrors);
+    console.log(`created ${handle} page`);
+    return created.pageCreate.page;
+  }
+  if (page.templateSuffix !== templateSuffix) {
+    const updated = await gql(
+      `mutation ($id: ID!, $page: PageUpdateInput!) {
+        pageUpdate(id: $id, page: $page) { page { id } userErrors { field message } }
+      }`,
+      { id: page.id, page: { templateSuffix } },
+    );
+    assertNoUserErrors(`pageUpdate ${handle}`, updated.pageUpdate.userErrors);
+  }
+  return page;
 }
+
+// the coming-soon page with the email signup (sections/wicz-coming-soon.liquid)
+const giftCardsPage = await ensurePage('gift-cards', 'gift cards', 'gift-cards');
+const giftCardsLink = giftCardId
+  ? { title: 'gift cards', type: 'PRODUCT', resourceId: giftCardId }
+  : { title: 'gift cards', type: 'PAGE', resourceId: giftCardsPage.id };
+
+// the about template carries the copy (editable in the theme editor)
+const aboutPage = await ensurePage('about', 'about', 'about');
 
 const { menus } = await gql(`{ menus(first: 10) { nodes { id handle title } } }`);
 const mainMenu = menus.nodes.find((menu) => menu.handle === 'main-menu');
@@ -456,7 +473,7 @@ const menu = await gql(
       { title: 'shop', type: 'COLLECTION', resourceId: shopId },
       { title: 'build a box', type: 'PRODUCT', resourceId: boxProduct.id },
       { title: 'flights', type: 'COLLECTION', resourceId: flightsId },
-      ...(giftCardId ? [{ title: 'gift cards', type: 'PRODUCT', resourceId: giftCardId }] : []),
+      giftCardsLink,
       { title: 'about', type: 'PAGE', resourceId: aboutPage.id },
     ],
   },
@@ -464,17 +481,20 @@ const menu = await gql(
 assertNoUserErrors('menuUpdate main-menu', menu.menuUpdate.userErrors);
 console.log(`main menu: ${menu.menuUpdate.menu.items.map((item) => item.title).join(' / ')}`);
 
-// footer: keep whatever is there, and add `gift cards` once (guide §7 footer)
+// footer: keep whatever is there, and keep one `gift cards` link (guide §7
+// footer) pointing at the product once it's live, the page until then
 const footerMenu = menus.nodes.find((m) => m.handle === 'footer');
-if (footerMenu && giftCardId) {
+if (footerMenu) {
   const { menu: footer } = await gql(
     `query ($id: ID!) { menu(id: $id) { items { title type resourceId url } } }`,
     { id: footerMenu.id },
   );
-  if (!footer.items.some((item) => item.resourceId === giftCardId)) {
+  if (!footer.items.some((item) => item.resourceId === giftCardsLink.resourceId)) {
     const items = [
-      ...footer.items.map(({ title, type, resourceId, url }) => ({ title, type, ...(resourceId ? { resourceId } : { url }) })),
-      { title: 'gift cards', type: 'PRODUCT', resourceId: giftCardId },
+      ...footer.items
+        .filter((item) => item.title !== 'gift cards')
+        .map(({ title, type, resourceId, url }) => ({ title, type, ...(resourceId ? { resourceId } : { url }) })),
+      giftCardsLink,
     ];
     const updated = await gql(
       `mutation ($id: ID!, $title: String!, $items: [MenuItemUpdateInput!]!) {
@@ -483,7 +503,7 @@ if (footerMenu && giftCardId) {
       { id: footerMenu.id, title: footerMenu.title, items },
     );
     assertNoUserErrors('menuUpdate footer', updated.menuUpdate.userErrors);
-    console.log('footer menu: added gift cards');
+    console.log(`footer menu: gift cards -> ${giftCardsLink.type.toLowerCase()}`);
   }
 }
 void holidayId;

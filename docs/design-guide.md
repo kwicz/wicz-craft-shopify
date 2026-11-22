@@ -406,11 +406,12 @@ Five add-ons go with the butter. Four are physical goods bought in and branded w
 | butter keeper | $30 | `butter-keeper` | cream-glazed french butter keeper (butter bell) with a thin periwinkle rim | 8 oz product pages · cart |
 | butter board | $34 | `butter-board` | small maple paddle board, the mold branded near the handle | flight and box pages · cart gift add-on |
 | flaky salt | $7 | `flaky-salt` | flaky sea salt in a small tin, butter-yellow lid with the mold | unsalted page · checkout add-on |
-| gift card | $25 / $50 / $100 | `gift-card` | digital Shopify gift card, good for pickup or local delivery | nav · footer · cart |
+| gift card | $25 / $50 / $100 | `gift-card` | digital Shopify gift card, good for pickup or local delivery. **Coming soon** (see below) | nav · footer · collection pill |
 
 Prices are set against what similar goods sell for: handmade maple spreaders run about $11–12, Butter Bell crocks about $31–35, small maple paddle boards about $30–35, and small flaky-salt tins about $5–7. Sizes are still open: [SPREADER LENGTH], [KEEPER CAPACITY], [BOARD DIMENSIONS], [SALT NET WT].
 
 - **No foil.** Add-ons aren't butter, so they use the add-on card (§7), not the foil card.
+- **Gift card, coming soon (Nov 21, 2026):** not on sale yet. `nav`, the footer and the `gift cards` pill go to `/pages/gift-cards`: the $50 card front, `coming soon.`, one line of copy, and an email signup (`tell me`). Signups become customers subscribed to email, tagged `waitlist: gift cards`. The gift card stays out of the cart upsell row until it launches.
 - **Gift card front:** a vector design, not a photo. Butter-yellow card, the mold, the `wicz craft` wordmark, *a gift of really good butter.*, and the amount. One image per amount.
 - **Copy:** same voice as the butter. Descriptions are in the catalog's `Description` column.
 - **Allergens:** none of the add-ons contain milk. The flaky salt page lists `ingredients: sea salt.` and no allergen line.
@@ -424,7 +425,7 @@ Prices are set against what similar goods sell for: handmade maple spreaders run
 - **Collection:** cream background, mono filter chips (e.g. `all`, `holiday`, `flights`, `add-ons`), and cards as described in §7.
 - **Product (single):** the page picks up the flavor's colors through CSS variables. A large foil image area sits on the left, ideally showing the embossed stamp on the cube. Details go on the right: name (display), price, size selector as pills (`8 oz` / `2 oz`), primary button, ingredients, allergens, care line, `pairs with`. Below it, a `goes with` row of add-on cards (§8.5 says which).
 - **Add-on product:** cream page, no flavor colors. Pack shot, in-use shot, and detail shot on the left. Name, price, description, size, and the primary button on the right. Below it, a `goes with` row of three butter cards.
-- **Gift card:** the card front image, amount pills (`$25` / `$50` / `$100`), recipient fields, and the primary button.
+- **Gift cards, coming soon:** the card front, `coming soon.`, one line of copy, and an email field with a `tell me` button. Once live: the card front image, amount pills (`$25` / `$50` / `$100`), recipient fields, and the primary button.
 - **Build a box:**
   1. **Choose a format:** five pill-cards showing contents and price.
   2. **Fill the slots:** the big slot offers the four classics. Below it, show the flavor grid with a `+` on each card, and keep the builder tray (§7) sticky with the count and fixed price.

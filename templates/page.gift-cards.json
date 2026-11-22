@@ -1,0 +1,19 @@
+{
+  "sections": {
+    "main": {
+      "type": "wicz-coming-soon",
+      "settings": {
+        "eyebrow": "gift cards",
+        "heading": "coming soon.",
+        "text": "<p>a gift of really good butter, in $25, $50 and $100. leave your email and we'll tell you when they're ready.</p>",
+        "label": "your email",
+        "button_label": "tell me",
+        "tags": "waitlist, waitlist: gift cards",
+        "success_text": "you're on the list. we'll email you when they're ready.",
+        "error_text": "that email didn't work. check it and try again.",
+        "fine_print": "one email when they launch, then the occasional butter news. unsubscribe anytime."
+      }
+    }
+  },
+  "order": ["main"]
+}

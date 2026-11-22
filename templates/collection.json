@@ -49,7 +49,7 @@
         "gift_cards": {
           "type": "chip",
           "settings": {
-            "link": "shopify://products/gift-card",
+            "link": "shopify://pages/gift-cards",
             "label": "gift cards"
           }
         }

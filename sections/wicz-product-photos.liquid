@@ -1,0 +1,81 @@
+{%- comment -%}
+  Product photo strip (design guide §9, §11): the product's photos that
+  aren't a size's pack shot (unwrapped with the stamp, the two sizes
+  together, and later the texture close-up and in situ shots), under the
+  main product block. Pairs with main-product's "selected size's photo only"
+  so the gallery and the strip don't repeat each other.
+
+  Order follows the product's media order (catalog/image-map.csv). Hidden
+  when the product has no extra photos.
+{%- endcomment -%}
+{{ 'wicz-product-extras.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  # the sizes' pack shots, as media ids (media objects have no attached_to_variant?)
+  assign variant_media = ''
+  for variant in product.variants
+    if variant.featured_media
+      assign variant_media = variant_media | append: ',' | append: variant.featured_media.id | append: ','
+    endif
+  endfor
+
+  assign extra_count = 0
+  for media in product.media
+    assign key = ',' | append: media.id | append: ','
+    if media.media_type == 'image' and variant_media contains key
+      continue
+    endif
+    if media.media_type == 'image'
+      assign extra_count = extra_count | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if extra_count > 0 -%}
+  <section class="wicz-photos page-width" aria-labelledby="PhotosHeading-{{ section.id }}">
+    <h2 id="PhotosHeading-{{ section.id }}" class="wicz-photos__heading">{{ section.settings.heading }}</h2>
+    <ul class="wicz-photos__list wicz-photos__list--{{ extra_count | at_most: 3 }}" role="list">
+      {%- for media in product.media -%}
+        {%- assign key = ',' | append: media.id | append: ',' -%}
+        {%- if media.media_type == 'image' and variant_media contains key -%}{%- continue -%}{%- endif -%}
+        {%- if media.media_type == 'image' -%}
+          <li class="wicz-photos__item">
+            <figure class="wicz-photos__figure">
+              {{
+                media
+                | image_url: width: 1400
+                | image_tag:
+                  widths: '400, 600, 900, 1200, 1400',
+                  sizes: '(min-width: 990px) 380px, (min-width: 750px) 45vw, 80vw',
+                  loading: 'lazy',
+                  class: 'wicz-photos__image'
+              }}
+              {%- if section.settings.show_captions and media.alt != blank -%}
+                <figcaption class="wicz-photos__caption">{{ media.alt | escape }}</figcaption>
+              {%- endif -%}
+            </figure>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "wicz product photos",
+  "class": "wicz-photos-section",
+  "enabled_on": { "templates": ["product"] },
+  "settings": [
+    { "type": "text", "id": "heading", "label": "heading", "default": "a closer look" },
+    {
+      "type": "checkbox",
+      "id": "show_captions",
+      "label": "show captions",
+      "default": false,
+      "info": "uses each photo's alt text"
+    }
+  ],
+  "presets": [{ "name": "wicz product photos" }]
+}
+{% endschema %}

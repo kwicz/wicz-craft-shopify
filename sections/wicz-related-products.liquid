@@ -1,0 +1,73 @@
+{%- comment -%}
+  Related products (design guide §7 cards, §9): a row of other flavors under
+  a product page, as the same photo cards the home grid uses.
+
+  Shopify's product recommendations fill it (Dawn's <product-recommendations>
+  element in global.js fetches this section from the recommendations
+  endpoint once it scrolls near view). Until they arrive, or if Shopify has
+  none for this product, it shows the fallback collection's flavors in
+  guide order, minus the current product.
+{%- endcomment -%}
+{{ 'wicz-home.css' | asset_url | stylesheet_tag }}
+{{ 'wicz-product-extras.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign limit = section.settings.products_to_show
+-%}
+
+<product-recommendations
+  class="wicz-related page-width"
+  data-url="{{ routes.product_recommendations_url }}?limit={{ limit }}&intent=related"
+  data-section-id="{{ section.id }}"
+  data-product-id="{{ product.id }}"
+>
+  {%- if recommendations.performed -%}
+    {%- comment -%} the endpoint's response: only replaces the fallback when Shopify has results {%- endcomment -%}
+    {%- if recommendations.products_count > 0 -%}
+      <h2 class="wicz-related__heading">{{ section.settings.heading }}</h2>
+      <ul class="wicz-grid wicz-grid--4" role="list">
+        {%- for recommendation in recommendations.products -%}
+          <li class="wicz-grid__item">{%- render 'wicz-flavor-card', product: recommendation -%}</li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  {%- elsif section.settings.fallback != blank -%}
+    {%- assign shown = 0 -%}
+    <h2 class="wicz-related__heading">{{ section.settings.heading }}</h2>
+    <ul class="wicz-grid wicz-grid--4" role="list">
+      {%- for candidate in section.settings.fallback.products -%}
+        {%- if candidate.id == product.id -%}{%- continue -%}{%- endif -%}
+        {%- if shown >= limit -%}{%- break -%}{%- endif -%}
+        <li class="wicz-grid__item">{%- render 'wicz-flavor-card', product: candidate -%}</li>
+        {%- assign shown = shown | plus: 1 -%}
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</product-recommendations>
+
+{% schema %}
+{
+  "name": "wicz related products",
+  "class": "wicz-related-section",
+  "enabled_on": { "templates": ["product"] },
+  "settings": [
+    { "type": "text", "id": "heading", "label": "heading", "default": "also really good" },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "products to show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "collection",
+      "id": "fallback",
+      "label": "fallback collection",
+      "info": "shown until Shopify's recommendations load, or when it has none"
+    }
+  ],
+  "presets": [{ "name": "wicz related products" }]
+}
+{% endschema %}

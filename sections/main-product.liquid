@@ -79,7 +79,16 @@
         <div class="grid__item product__media-wrapper">
           {%- comment -%} wicz craft: foil cube placeholder until real photos exist (design guide §10) {%- endcomment -%}
           {%- if product.media.size > 0 -%}
-            {% render 'product-media-gallery', variant_images: variant_images %}
+            {%- comment -%}
+              wicz craft: with "selected size's photo only" on, the gallery shows
+              just the 8 oz or 2 oz pack shot; the product's other photos go in
+              the wicz-product-photos strip below (sections/wicz-product-photos.liquid).
+            {%- endcomment -%}
+            {%- if section.settings.wicz_variant_photo_only and product.selected_or_first_available_variant.featured_media -%}
+              {% render 'product-media-gallery', variant_images: variant_images, limit: 1 %}
+            {%- else -%}
+              {% render 'product-media-gallery', variant_images: variant_images %}
+            {%- endif -%}
           {%- else -%}
             {% render 'wicz-foil-placeholder', product: product, size: 'large' %}
           {%- endif -%}
@@ -2332,6 +2341,13 @@
       "id": "hide_variants",
       "default": false,
       "label": "t:sections.main-product.settings.hide_variants.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "wicz_variant_photo_only",
+      "default": false,
+      "label": "selected size's photo only",
+      "info": "wicz craft: the gallery shows one pack shot for the chosen size. add the wicz product photos section for the rest."
     },
     {
       "type": "checkbox",

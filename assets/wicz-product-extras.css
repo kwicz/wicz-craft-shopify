@@ -1,0 +1,89 @@
+/* Product page extras (design guide §9): the photo strip
+   (sections/wicz-product-photos.liquid) and related products
+   (sections/wicz-related-products.liquid). Mobile first. Flat, on cream;
+   the cards bring their own colors. */
+
+.wicz-photos,
+.wicz-related {
+  display: block;
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-4);
+}
+
+.wicz-photos__heading,
+.wicz-related__heading {
+  margin: 0 0 var(--space-3);
+}
+
+/* both sections sit on a flavor page, which re-themes the page from the
+   product's metafields; they go back to the site palette (each card still
+   wears its own flavor's colors) */
+.wicz-flavor-page .wicz-photos,
+.wicz-flavor-page .wicz-related {
+  --text: var(--periwinkle-deep);
+  --display: var(--periwinkle);
+  --color-foreground: 63, 91, 176;
+  --color-link: 63, 91, 176;
+  color: var(--periwinkle-deep);
+}
+
+.wicz-flavor-page .wicz-photos__heading,
+.wicz-flavor-page .wicz-related__heading {
+  color: var(--periwinkle);
+}
+
+/* phones: a sideways strip that peeks at the next photo */
+.wicz-photos__list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 80%;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0 0 var(--space-1);
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--periwinkle-deep) transparent;
+}
+
+.wicz-photos__item {
+  scroll-snap-align: start;
+}
+
+.wicz-photos__figure {
+  margin: 0;
+}
+
+.wicz-photos__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.wicz-photos__caption {
+  margin-top: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--periwinkle-deep);
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-photos__list {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    overflow: visible;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .wicz-photos__list--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

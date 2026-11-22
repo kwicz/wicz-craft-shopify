@@ -65,11 +65,29 @@
         "hide_variants": true,
         "enable_video_looping": false,
         "padding_top": 36,
-        "padding_bottom": 36
+        "padding_bottom": 36,
+        "wicz_variant_photo_only": true
+      }
+    },
+    "photos": {
+      "type": "wicz-product-photos",
+      "settings": {
+        "heading": "a closer look",
+        "show_captions": false
+      }
+    },
+    "related": {
+      "type": "wicz-related-products",
+      "settings": {
+        "heading": "also really good",
+        "products_to_show": 4,
+        "fallback": "shop"
       }
     }
   },
   "order": [
-    "main"
+    "main",
+    "photos",
+    "related"
   ]
 }

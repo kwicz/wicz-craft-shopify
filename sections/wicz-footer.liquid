@@ -1,21 +1,14 @@
 {%- comment -%}
   wicz craft footer (design guide §7).
-  Foil background in the salted pair, optional carton-stripe band across
-  the top, stacked wordmark, mono location line, one voice line.
+  Flat butter-yellow (no sheen: the sheen belongs to the butter, §6.1), a
+  large stacked wordmark, the logo stamp ("the mold", §2.1) in deep
+  periwinkle, the mono location line and one voice line. No stripes (§12).
   Legal links and copyright keep their normal case (§4.2).
 {%- endcomment -%}
 {{ 'wicz-footer.css' | asset_url | stylesheet_tag }}
 
 <footer class="wicz-footer">
-  {%- if section.settings.show_stripes -%}
-    {%- render 'wicz-carton-stripes',
-      flavor: section.settings.stripe_flavor,
-      height: 24,
-      id: 'footer'
-    -%}
-  {%- endif -%}
-
-  <div class="wicz-footer__foil foil">
+  <div class="wicz-footer__foil">
     <div class="wicz-footer__inner page-width">
       <a href="{{ routes.root_url }}" class="wicz-footer__wordmark wicz-display wicz-display--stacked">
         {%- assign words = section.settings.wordmark | default: 'wicz craft' | split: ' ' -%}
@@ -23,6 +16,10 @@
           <span>{{ word }}</span>
         {%- endfor -%}
       </a>
+
+      {%- if section.settings.show_logo -%}
+        <img src="{{ 'wicz-stamp.png' | asset_url }}" width="120" height="120" alt="the wicz craft butter stamp" loading="lazy" class="wicz-footer__stamp">
+      {%- endif -%}
 
       <div class="wicz-footer__details">
         {%- if section.settings.voice_line != blank -%}
@@ -101,34 +98,10 @@
       "default": true
     },
     {
-      "type": "header",
-      "content": "carton stripes"
-    },
-    {
       "type": "checkbox",
-      "id": "show_stripes",
-      "label": "show stripe band across the top",
+      "id": "show_logo",
+      "label": "show the logo stamp",
       "default": true
-    },
-    {
-      "type": "select",
-      "id": "stripe_flavor",
-      "label": "stripe colors",
-      "default": "salted",
-      "options": [
-        { "value": "salted", "label": "salted (gold foil × periwinkle)" },
-        { "value": "unsalted", "label": "unsalted (silver foil × periwinkle)" },
-        { "value": "honey", "label": "honey (soft apricot × amber)" },
-        { "value": "garlic-herb", "label": "garlic herb (soft pistachio × herb)" },
-        { "value": "hot-honey", "label": "hot honey (apricot × magenta)" },
-        { "value": "chili-crisp", "label": "chili crisp (oxblood × tangerine)" },
-        { "value": "white-miso", "label": "white miso (lilac × kelly green)" },
-        { "value": "caesar", "label": "caesar (pistachio × tomato)" },
-        { "value": "smoked-sea-salt", "label": "smoked sea salt (charcoal × yolk)" },
-        { "value": "french-onion", "label": "french onion (golden × red-onion purple)" },
-        { "value": "cranberry-orange", "label": "cranberry orange (pale orange × cranberry)" },
-        { "value": "brown-butter-sage", "label": "brown butter sage (brown butter × sage)" }
-      ]
     }
   ]
 }

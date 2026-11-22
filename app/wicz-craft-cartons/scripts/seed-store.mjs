@@ -19,30 +19,14 @@
 import {
   flavors, SIZES, PRICES, box, formats, flights, BIG_FLAVORS, RETIRED,
 } from '../../../catalog/catalog.mjs';
+import { connect, assertNoUserErrors } from './admin.mjs';
 
-const API_VERSION = '2026-07';
 const graphiqlUrl = process.argv[2];
 if (!graphiqlUrl) {
   console.error('usage: node scripts/seed-store.mjs "<GraphiQL URL from shopify app dev>"');
   process.exit(1);
 }
-const { origin, searchParams } = new URL(graphiqlUrl);
-const endpoint = `${origin}/graphiql/graphql.json?key=${searchParams.get('key')}&api_version=${API_VERSION}`;
-
-async function gql(query, variables = {}) {
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query, variables }),
-  });
-  const body = await response.json();
-  if (body.errors?.length) throw new Error(JSON.stringify(body.errors, null, 2));
-  return body.data;
-}
-
-function assertNoUserErrors(label, errors) {
-  if (errors?.length) throw new Error(`${label}: ${JSON.stringify(errors)}`);
-}
+const gql = connect(graphiqlUrl);
 
 // ---------- 1. metafield definitions ----------
 const DEFINITIONS = [
@@ -55,6 +39,7 @@ const DEFINITIONS = [
   ['ingredients', 'ingredients', 'multi_line_text_field'],
   ['pairs_with', 'pairs with', 'single_line_text_field'],
   ['allergens', 'allergens', 'single_line_text_field'],
+  ['best_within', 'best within', 'single_line_text_field'],
   ['flight_contents', 'flight contents', 'list.single_line_text_field'],
 ];
 const { metafieldDefinitions } = await gql(`{
@@ -153,6 +138,7 @@ for (const f of flavors) {
       mf('ingredients', 'multi_line_text_field', f.ingredients),
       mf('pairs_with', 'single_line_text_field', f.pairs),
       mf('allergens', 'single_line_text_field', f.allergens),
+      mf('best_within', 'single_line_text_field', f.bestWithin),
     ],
   });
   const byTitle = (title) => product.variants.find((v) => v.title === title).id;
@@ -182,6 +168,23 @@ const boxProduct = await upsert(box.handle, {
 });
 
 for (const flight of flights) {
+  // the kit renamed flight handles to `<name>-flight`; move the old product
+  // (and leave a redirect) instead of creating a second one
+  const { old, current } = await gql(
+    `query ($old: String!, $current: String!) {
+      old: productByIdentifier(identifier: { handle: $old }) { id }
+      current: productByIdentifier(identifier: { handle: $current }) { id }
+    }`,
+    { old: flight.oldHandle, current: flight.handle },
+  );
+  if (old && !current) {
+    const renamed = await gql(
+      `mutation ($product: ProductUpdateInput!) { productUpdate(product: $product) { userErrors { field message } } }`,
+      { product: { id: old.id, handle: flight.handle, redirectNewHandle: true } },
+    );
+    assertNoUserErrors(`rename ${flight.oldHandle}`, renamed.productUpdate.userErrors);
+    console.log(`renamed ${flight.oldHandle} → ${flight.handle}`);
+  }
   await upsert(flight.handle, {
     title: flight.title,
     descriptionHtml: `<p><strong>${flight.title}.</strong> ${flight.body}</p>`,
@@ -193,10 +196,33 @@ for (const flight of flights) {
     metafields: [
       ...colorFields(flight.colors),
       mf('seasonal', 'boolean', String(flight.seasonal)),
-      mf('allergens', 'single_line_text_field', 'contains: milk.'),
+      mf('allergens', 'single_line_text_field', flight.allergens),
+      mf('best_within', 'single_line_text_field', flight.bestWithin),
       mf('flight_contents', 'list.single_line_text_field', JSON.stringify(flight.contents)),
     ],
   });
+}
+
+// The kit lists a gift card product (image: gift-card.jpg). The guide has no
+// amounts, so these are the usual three; change them in the admin if needed.
+const GIFT_AMOUNTS = ['25', '50', '100'];
+// Gift cards must be switched on in the admin first (Settings > Gift cards).
+try {
+  await upsert('gift-card', {
+  title: 'gift card',
+  giftCard: true,
+  descriptionHtml: '<p>for someone who likes butter. spend it on anything in the shop.</p>',
+  productType: 'gift card',
+  tags: ['gift card'],
+  productOptions: [{ name: 'amount', values: GIFT_AMOUNTS.map((amount) => ({ name: '$' + amount })) }],
+  variants: GIFT_AMOUNTS.map((amount) => ({
+    ...unstocked('amount', '$' + amount, amount + '.00', 'WC-GIFT-' + amount),
+    inventoryItem: { sku: 'WC-GIFT-' + amount, tracked: false, requiresShipping: false },
+  })),
+  });
+} catch (error) {
+  if (!/activated/.test(error.message)) throw error;
+  console.warn('skipped the gift card: turn on gift cards in Settings > Gift cards, then re-run');
 }
 
 // ---------- 3. archive the old catalog ----------

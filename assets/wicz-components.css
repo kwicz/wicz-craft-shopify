@@ -178,6 +178,61 @@
   }
 }
 
+/* photo card: the pack shot is the card */
+.wicz-card__frame {
+  position: relative;
+  border-radius: var(--radius);
+  border-bottom: 3px solid transparent;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.wicz-card--photo .wicz-card__image {
+  border-radius: var(--radius);
+}
+
+.wicz-card__link:hover .wicz-card__frame {
+  transform: translateY(-2px);
+  border-bottom-color: var(--flavor-fold, var(--foil-fold));
+}
+
+.wicz-card__frame .wicz-card__holiday {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  /* sits on the cream photo ground, so it takes the site deep, not the
+     flavor's (brown butter sage's deep is a light sage) */
+  color: var(--periwinkle-deep);
+  border-color: var(--periwinkle-deep);
+  background: var(--cream);
+}
+
+.wicz-card__name {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: lowercase;
+  color: var(--periwinkle-deep);
+}
+
+.wicz-card--photo .wicz-dots {
+  margin-top: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wicz-card__frame {
+    transition: none;
+  }
+
+  .wicz-card__link:hover .wicz-card__frame {
+    transform: none;
+  }
+}
+
 /* ---------- product page (§9) ---------- */
 .wicz-flavor-page .product__media-wrapper .wicz-cube {
   background-color: transparent;

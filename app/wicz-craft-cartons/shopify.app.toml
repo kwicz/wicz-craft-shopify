@@ -24,7 +24,8 @@ embedded_app_direct_api_access = true
 # write_products, write_publications, write_inventory, read_locations,
 # write_online_store_pages, write_online_store_navigation:
 #   scripts/seed-store.mjs (catalog, collections, about page, main menu)
-scopes = "write_cart_transforms,write_products,write_publications,write_inventory,read_locations,write_online_store_pages,write_online_store_navigation"
+# write_files: seed-images.mjs uploads the site kit images to Content > Files
+scopes = "write_files,write_cart_transforms,write_products,write_publications,write_inventory,read_locations,write_online_store_pages,write_online_store_navigation"
 
 [auth]
 redirect_urls = [ "https://shopify.dev/apps/default-app-home/api/auth" ]

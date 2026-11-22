@@ -2,6 +2,8 @@
   Product grid for the home page (design guide §9): the flavor grid (12 cards)
   and the flights row (3 cards with flavor dots) are both this section with
   a different collection. Cards are snippets/wicz-flavor-card.liquid.
+  An optional lead image (the kit's home-lineup.jpg on the flavor grid) sits
+  between the heading and the cards.
   Hidden on the storefront when the collection is empty.
 {%- endcomment -%}
 {{ 'wicz-home.css' | asset_url | stylesheet_tag }}
@@ -19,6 +21,18 @@
         <a href="{{ source.url }}" class="wicz-grid-section__link">{{ section.settings.link_label }}</a>
       {%- endif -%}
     </div>
+
+    {%- if section.settings.image != blank -%}
+      {{
+        section.settings.image
+        | image_url: width: 2400
+        | image_tag:
+          widths: '600, 900, 1200, 1800, 2400',
+          sizes: 'min(1200px, 100vw)',
+          loading: 'lazy',
+          class: 'wicz-grid-section__image'
+      }}
+    {%- endif -%}
 
     {%- if source.products_count > 0 -%}
       <ul
@@ -52,6 +66,12 @@
       "type": "collection",
       "id": "collection",
       "label": "collection"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "lead image",
+      "info": "optional. sits between the heading and the cards."
     },
     {
       "type": "range",

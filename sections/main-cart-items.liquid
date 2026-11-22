@@ -38,6 +38,14 @@
     </div>
 
     <div class="cart__warnings">
+      {%- comment -%} wicz craft: the kit's empty window box (cart-empty.jpg in files) {%- endcomment -%}
+      {%- if images['cart-empty.jpg'].width -%}
+        {{
+          images['cart-empty.jpg']
+          | image_url: width: 600
+          | image_tag: widths: '300, 450, 600', sizes: '300px', loading: 'lazy', class: 'wicz-cart__empty-image'
+        }}
+      {%- endif -%}
       <h1 class="cart__empty-text">{{ 'sections.cart.empty' | t }}</h1>
       <a href="{{ routes.all_products_collection_url }}" class="button">
         {{ 'general.continue_shopping' | t }}

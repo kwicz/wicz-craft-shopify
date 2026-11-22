@@ -7,7 +7,9 @@
         "details": "cultured butter\ncultured 48 hours\nportland, oregon",
         "rotate": true,
         "show_stamp": true,
-        "stamp_text": "it's really good."
+        "stamp_text": "it's really good.",
+        "image": "shopify://shop_images/home-hero-desktop.jpg",
+        "image_mobile": "shopify://shop_images/home-hero-mobile.jpg"
       }
     },
     "flavors": {
@@ -17,7 +19,8 @@
         "collection": "shop",
         "limit": 12,
         "columns_desktop": "4",
-        "link_label": "see all"
+        "link_label": "see all",
+        "image": "shopify://shop_images/home-lineup.jpg"
       }
     },
     "flights": {
@@ -36,7 +39,8 @@
         "heading": "build a box",
         "line": "pick a box, then fill it. one price per box, whatever goes in.",
         "product": "build-a-box",
-        "button_label": "build a box"
+        "button_label": "build a box",
+        "image": "shopify://shop_images/home-build-a-box.jpg"
       }
     },
     "story": {
@@ -49,5 +53,11 @@
       }
     }
   },
-  "order": ["hero", "flavors", "flights", "box", "story"]
+  "order": [
+    "hero",
+    "flavors",
+    "flights",
+    "box",
+    "story"
+  ]
 }

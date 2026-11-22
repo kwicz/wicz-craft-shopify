@@ -1,0 +1,24 @@
+{%- comment -%}
+  wicz craft <head> pieces shared by theme.liquid and password.liquid:
+  the stamp favicon and the self-hosted fonts.
+{%- endcomment -%}
+{%- comment -%} wicz craft: the logo stamp is the favicon (design guide §2.1). A favicon set in theme settings wins. {%- endcomment -%}
+{%- if settings.favicon != blank -%}
+  <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+{%- else -%}
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ 'wicz-favicon-32.png' | asset_url }}">
+{%- endif -%}
+<link rel="apple-touch-icon" sizes="180x180" href="{{ 'wicz-favicon-180.png' | asset_url }}">
+
+{%- comment -%}
+  wicz craft: Fraunces (variable, with SOFT and WONK) + DM Mono, self-hosted
+  from the site kit (design guide §4). Licenses: docs/licenses/.
+{%- endcomment -%}
+{{ 'fraunces-latin-full-normal.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+{{ 'dm-mono-latin-400-normal.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+<style>
+  @font-face { font-family: 'Fraunces'; src: url('{{ 'fraunces-latin-full-normal.woff2' | asset_url }}') format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Fraunces'; src: url('{{ 'fraunces-latin-full-italic.woff2' | asset_url }}') format('woff2'); font-weight: 100 900; font-style: italic; font-display: swap; }
+  @font-face { font-family: 'DM Mono'; src: url('{{ 'dm-mono-latin-400-normal.woff2' | asset_url }}') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'DM Mono'; src: url('{{ 'dm-mono-latin-500-normal.woff2' | asset_url }}') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+</style>

@@ -458,3 +458,119 @@
     align-items: center;
   }
 }
+
+/* ---------- site kit photos (phase 3) ---------- */
+.wicz-box__header-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* a short band, so the builder starts on the first screen */
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  margin: var(--space-3) 0 var(--space-4);
+  border-radius: var(--radius);
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-box__header-image {
+    aspect-ratio: 4 / 1;
+  }
+}
+
+.wicz-format__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: var(--space-1);
+  border-radius: var(--radius);
+}
+
+/* the cube / block photo is the pack: transparent PNG, no foil card behind it */
+.wicz-picker__pack--photo,
+.wicz-big-choice__pack--photo {
+  padding: 0;
+  min-height: 0;
+  background: none;
+}
+
+.wicz-picker__image,
+.wicz-big-choice__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.wicz-picker__image {
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.wicz-picker__pack--photo .wicz-picker__holiday {
+  color: var(--periwinkle-deep);
+  border-color: var(--periwinkle-deep);
+  background: var(--cream);
+}
+
+.wicz-picker__pack--photo .wicz-picker__count {
+  position: absolute;
+  top: auto;
+  left: var(--space-1);
+  bottom: var(--space-1);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--cream);
+  color: var(--periwinkle-deep);
+}
+
+.wicz-picker__pack--photo .wicz-picker__count:empty {
+  display: none;
+}
+
+.wicz-big-choice__pack--photo {
+  border-radius: var(--radius);
+}
+
+.wicz-big-choice__pack--photo .wicz-big-choice__name {
+  /* the block's wrapper carries the name */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.wicz-big-choice__pack--photo .wicz-big-choice__size {
+  color: var(--periwinkle-deep);
+}
+
+.wicz-tray__slot--photo {
+  height: auto;
+  aspect-ratio: 1 / 1;
+  box-shadow: none;
+  background: none;
+  padding: 0;
+}
+
+.wicz-tray__slot--photo .wicz-tray__clear {
+  padding: 0;
+}
+
+.wicz-tray__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media screen and (max-width: 749px) {
+  .wicz-tray__slot--photo {
+    height: auto;
+  }
+}
+
+/* the 8 oz block photo is square; keep it inside the tray */
+@media screen and (min-width: 750px) {
+  .wicz-tray__slot--big.wicz-tray__slot--photo {
+    width: 76px;
+  }
+}

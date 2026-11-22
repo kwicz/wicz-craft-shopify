@@ -6,8 +6,9 @@ Portland, Oregon. Built on Dawn (Online Store 2.0) from a written
 **Cart Transform function**.
 
 It's a practice and portfolio project: no real customers or payments.
-Facts the guide doesn't know yet (most ingredients, some pairings) stay as
-visible `[PLACEHOLDERS]`.
+Product data and photography come from a site kit (Nov 21, 2026): twelve
+flavors with draft ingredients, and AI-generated product shots with the
+wrapper type set from the real fonts in post.
 
 ![Home page, desktop](docs/screenshots/home-desktop.jpg)
 
@@ -19,7 +20,7 @@ visible `[PLACEHOLDERS]`.
   expands it into the butters inside, so each flavor's inventory is tracked.
   Flights are presets of the same box. [How it works ↓](#the-box-builder)
 - **Product pages that theme themselves.** Each flavor has ground / ink /
-  deep / fold colors in metafields. Pages, cards, buttons, dots and stripes
+  deep / fold colors in metafields. Pages, cards, buttons and dots
   pick them up through CSS custom properties, with contrast fallbacks
   computed in Liquid.
 - **A design system enforced by an audit.** The guide's rules (lowercase, no
@@ -27,8 +28,13 @@ visible `[PLACEHOLDERS]`.
   display sizes, WCAG AA for small text, unsalted always in silver foil) are
   checked page by page with a script, not by eye.
 - **One catalog file.** `catalog/catalog.mjs` holds the flavors, colors,
-  prices, box formats and flights. The CSV and the store seed script both
-  read it.
+  prices, ingredients, shelf life, box formats and flights. The CSV and the
+  store seed script both read it.
+- **Images loaded from a map, not by hand.** `catalog/image-map.csv` says
+  where each of the kit's images goes (product media order, variant images,
+  collections, theme sections). `seed-images.mjs` uploads them to Files under
+  their kit filenames and attaches them; the theme finds theme-only images by
+  name (`images['home-hero-desktop.jpg']`).
 - **Everything stays editable in the theme editor.** Sections, blocks and
   settings, no hard-coded pages.
 
@@ -72,7 +78,7 @@ Details worth noting:
   expanded and stays one line at the box price.
 - **Flights reuse the box.** A flight page posts the same line for the
   "eight" format, pre-filled. "make it your own" opens the builder with
-  `?format=eight&flight=<handle>`.
+  `?box=eight&flight=<handle>`.
 - **Accessible.** Native radio groups for the format and the 8 oz, labelled
   add / remove buttons, a live region that announces every change, and an
   add button that stays disabled until every slot is filled.
@@ -89,7 +95,9 @@ sections/, snippets/, templates/           (wicz-* files are new; Dawn edits are
 app/wicz-craft-cartons/                  extension-only Shopify app (see its README)
   extensions/box-expand/                   Cart Transform function + tests
   scripts/seed-store.mjs                   loads the catalog and store setup
+  scripts/seed-images.mjs                  uploads and attaches the site kit images
 catalog/catalog.mjs                      12 flavors × 2 sizes, 5 box formats, 3 flights
+catalog/image-map.csv                    where every site kit image goes
 catalog/build-csv.mjs                    product CSV for a manual import
 docs/design-guide.md                     the design spec
 tools/guide-audit.js                     design-guide audit, run in the browser console
@@ -112,7 +120,11 @@ Needs Node 22 (`.nvmrc`), [Shopify CLI](https://shopify.dev/docs/api/shopify-cli
    then `shopify app dev --store <your-store>` and
    `node scripts/seed-store.mjs "<GraphiQL URL it prints>"`. That loads every
    product, metafield, collection and menu item, and registers the Cart
-   Transform. (`node catalog/build-csv.mjs` writes a CSV of the same catalog
+   Transform. Then `node scripts/seed-images.mjs "<GraphiQL URL>" <unzipped
+   images folder>` loads the photos (the images aren't in the repo; rows
+   marked `coming` in the map are skipped). Gift cards must be switched on in
+   Settings > Gift cards before the seed can create the gift card product.
+   (`node catalog/build-csv.mjs` writes a CSV of the same catalog
    for a manual import, but the import can't set list metafields, templates
    or the function config, so the seed is still needed.)
 3. **Function tests:** `npm test --workspace box-expand -- --run` (from the app folder).
@@ -126,9 +138,17 @@ Needs Node 22 (`.nvmrc`), [Shopify CLI](https://shopify.dev/docs/api/shopify-cli
 - **Small-text contrast is computed, not hand-tuned.** If a flavor's deep color
   fails 4.5:1 on cream, Liquid's `color_contrast` switches small text to the
   ground color. That covers the three dark grounds.
-- **Placeholders stay visible.** Unknown ingredients and pairings show as
-  `[INGREDIENTS]` / `[PAIRS WITH]`; caesar's allergen line asks to confirm
-  fish. Nothing is invented.
+- **Photo cards don't repeat the type.** Each pack shot already carries
+  `wicz craft`, the flavor name in its ink and `cultured 48 hours`, so with a
+  photo the card is the photo plus the name and price in mono. The CSS foil
+  pack from the guide stays as the fallback for anything without a photo.
+- **Care line from data.** `custom.best_within` drives the care line: 1 week
+  for garlic herb, caesar and french onion, and for any flight or built box
+  that holds one (the builder switches it live).
+- **Unknown facts stay out.** Butterfat, cream source and batch size aren't
+  on the site until they're known; ingredients are marked draft in the kit.
+- **`?box=`, not `?format=`.** Shopify reserves `format` as a query
+  parameter and answers 404, so the builder's pre-fill uses `box`.
 - **Flavored 8 oz in a box isn't offered.** The guide leaves it as an open
   decision; the big slot is salted or unsalted.
 - **Known gap:** the guide allows its light inks (periwinkle on cream, 2.04:1)

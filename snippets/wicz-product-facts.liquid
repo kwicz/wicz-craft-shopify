@@ -1,8 +1,10 @@
 {%- comment -%}
   Ingredients, allergen line, care line and "pairs with" for a product page
-  (design guide §8.4, §9). Reads custom.ingredients, custom.allergens and
-  custom.pairs_with. The block's allergen line is the fallback when a product
-  has no custom.allergens.
+  (design guide §8.4, §9). Reads custom.ingredients, custom.allergens,
+  custom.best_within and custom.pairs_with. The block's allergen and care
+  lines are the fallbacks when a product has no metafield. The care line's
+  "best within" comes from custom.best_within (1 week for garlic herb,
+  caesar and french onion, and for any flight holding one of them).
 
   Accepts:
   - product: {Object}
@@ -13,6 +15,11 @@
   assign ingredients = product.metafields.custom.ingredients.value
   assign pairs_with = product.metafields.custom.pairs_with.value
   assign allergens = product.metafields.custom.allergens.value | default: block.settings.allergen_line
+  assign best_within = product.metafields.custom.best_within.value
+  assign care_line = block.settings.care_line
+  if best_within != blank
+    assign care_line = 'keep cold. soften 20 minutes before serving. best within ' | append: best_within | append: ', or freeze.'
+  endif
 -%}
 <dl class="wicz-facts" {{ block.shopify_attributes }}>
   {%- if block.settings.show_ingredients and ingredients != blank -%}
@@ -27,10 +34,10 @@
     </div>
   {%- endif -%}
 
-  {%- if block.settings.care_line != blank -%}
+  {%- if care_line != blank -%}
     <div class="wicz-facts__row">
       <dt class="wicz-facts__label">care</dt>
-      <dd class="wicz-facts__value">{{ block.settings.care_line }}</dd>
+      <dd class="wicz-facts__value">{{ care_line }}</dd>
     </div>
   {%- endif -%}
 

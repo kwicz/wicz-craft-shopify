@@ -29,6 +29,8 @@ class WiczBoxBuilder extends HTMLElement {
     this.submit = this.querySelector('[data-submit]');
     this.status = this.querySelector('[data-status]');
     this.properties = this.querySelector('[data-properties]');
+    // the care line sits outside the element, after the form
+    this.care = this.closest('.wicz-box')?.querySelector('[data-care]');
     this.moneyFormat = this.dataset.moneyFormat;
 
     /** @type {string[]} 2 oz picks, by flavor handle, in slot order */
@@ -56,10 +58,11 @@ class WiczBoxBuilder extends HTMLElement {
     return { input, big: Number(input.dataset.big), small: Number(input.dataset.small), price: Number(input.dataset.price) };
   }
 
-  /** ?format=eight&flight=classics-culinary, or ?picks=salted,caesar */
+  /** ?box=eight&flight=classics-culinary-flight, or ?picks=salted,caesar
+      (not ?format=, which Shopify reserves and answers with a 404) */
   prefill() {
     const params = new URLSearchParams(window.location.search);
-    const format = params.get('format');
+    const format = params.get('box');
     if (format) {
       const match = this.formats.find((input) => input.dataset.format === format);
       if (match) match.checked = true;
@@ -178,6 +181,15 @@ class WiczBoxBuilder extends HTMLElement {
 
     this.submit.disabled = !this.isComplete();
     this.writeProperties();
+    this.renderCare();
+  }
+
+  /** §8.4: a box holding any 1-week flavor uses the 1-week care line. */
+  renderCare() {
+    if (!this.care?.dataset.careShort) return;
+    const inside = [...this.picks, ...(this.format.big && this.big ? [this.big] : [])];
+    const short = inside.some((handle) => this.data.flavors[handle]?.bestWithin === '1 week');
+    this.care.textContent = short ? this.care.dataset.careShort : this.care.dataset.careDefault;
   }
 
   slotMarkup(handle, size, index) {
@@ -189,12 +201,18 @@ class WiczBoxBuilder extends HTMLElement {
     const flavor = this.data.flavors[handle];
     const style = `--flavor-ground: ${flavor.ground}; --flavor-ink: ${flavor.ink}; --flavor-deep: ${flavor.deep}; --flavor-fold: ${flavor.fold};`;
     const name = escapeHtml(flavor.title);
+    // the overhead cube / block photo when there is one, else a mini foil card
+    const photo = size === 'big' ? flavor.block : flavor.cube;
+    const look = photo ? 'wicz-tray__slot--photo' : 'foil';
+    const face = photo
+      ? `<img class="wicz-tray__image" src="${escapeHtml(photo)}" alt="">`
+      : `<span class="wicz-tray__name" aria-hidden="true">${name}</span>`;
     if (size === 'big') {
-      return `<li class="wicz-tray__slot wicz-tray__slot--big foil" style="${style}"><span class="wicz-tray__name" aria-hidden="true">${name}</span><span class="visually-hidden">big slot, ${name}, ${label}</span></li>`;
+      return `<li class="wicz-tray__slot wicz-tray__slot--big ${look}" style="${style}">${face}<span class="visually-hidden">big slot, ${name}, ${label}</span></li>`;
     }
-    return `<li class="wicz-tray__slot wicz-tray__slot--small foil" style="${style}">
+    return `<li class="wicz-tray__slot wicz-tray__slot--small ${look}" style="${style}">
       <button type="button" class="wicz-tray__clear" data-clear-slot="${index}" aria-label="remove ${name} from slot ${index + 1}">
-        <span class="wicz-tray__name" aria-hidden="true">${name}</span>
+        ${face}
       </button>
     </li>`;
   }

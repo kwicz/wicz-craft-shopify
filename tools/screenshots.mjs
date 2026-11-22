@@ -31,6 +31,15 @@ async function settle() {
     const style = document.createElement('style');
     style.textContent = '#preview-bar-iframe, #PBarNextFrameWrapper, [id^="shopify-pc__banner"] { display: none !important; }';
     document.head.append(style);
+    // product photos: load lazy images in view, then wait for every image
+    document.querySelectorAll('img[loading="lazy"]').forEach((img) => { img.loading = 'eager'; });
+    await Promise.all(
+      [...document.images].filter((img) => !img.complete).map((img) => new Promise((resolve) => {
+        img.addEventListener('load', resolve, { once: true });
+        img.addEventListener('error', resolve, { once: true });
+        setTimeout(resolve, 5000);
+      })),
+    );
   });
   await new Promise((resolve) => setTimeout(resolve, 600));
 }
@@ -40,7 +49,10 @@ async function shoot(name, path, viewport, { fullPage = false, before } = {}) {
   // a fresh query string avoids Shopify serving a cached render for another viewport
   await page.goto(`${BASE}${path}${path.includes('?') ? '&' : '?'}shot=${Date.now()}`, { waitUntil: 'networkidle2' });
   await settle();
-  if (before) await before();
+  if (before) {
+    await before();
+    await settle(); // images the change added (e.g. tray cubes)
+  }
   await page.screenshot({ path: new URL(`${name}.jpg`, OUT), type: 'jpeg', quality: 82, fullPage });
   console.log(`saved ${name}.jpg`);
 }
@@ -52,7 +64,7 @@ await shoot('home-desktop', '/', DESKTOP, { fullPage: true });
 await shoot('home-mobile', '/', MOBILE, { fullPage: true });
 await shoot('collection-flavors-desktop', '/collections/shop', DESKTOP, { fullPage: true });
 await shoot('product-smoked-sea-salt-mobile', '/products/smoked-sea-salt', MOBILE, { fullPage: true });
-await shoot('flight-desktop', '/products/classics-holiday', DESKTOP);
+await shoot('flight-desktop', '/products/classics-holiday-flight', DESKTOP);
 
 // the builder partway filled: one big, four small, unsalted + caesar × 2 + honey (4 of 5)
 const fillBox = () =>
@@ -72,7 +84,7 @@ await page.goto(`${BASE}/products/build-a-box?shot=${Date.now()}`, { waitUntil: 
 await fillBox();
 await page.evaluate(() => document.querySelector('[data-add="white-miso"]').click());
 await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle2' }), page.click('[data-submit]')]);
-await page.goto(`${BASE}/products/classics-culinary?shot=${Date.now()}`, { waitUntil: 'networkidle2' });
+await page.goto(`${BASE}/products/classics-culinary-flight?shot=${Date.now()}`, { waitUntil: 'networkidle2' });
 await Promise.all([page.waitForNavigation({ waitUntil: 'networkidle2' }), page.click('.wicz-flight__form button')]);
 await page.evaluate(async () => {
   const product = await fetch('/products/chili-crisp.js').then((response) => response.json());

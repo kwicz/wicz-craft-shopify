@@ -3,15 +3,22 @@
   margin-top: var(--space-5);
 }
 
-.wicz-footer .wicz-stripes {
-  display: block;
+/* Flat butter-yellow, full bleed. The foil sheen is for butter only (§6.1). */
+.wicz-footer__foil {
+  background-color: var(--foil);
 }
 
-/* Full-bleed foil: no corner radius at the page edge, keep the sheen and fold line. */
-.wicz-footer__foil {
-  --flavor-ground: var(--foil);
-  border-radius: 0;
-  box-shadow: inset 0 -2px 0 var(--foil-fold);
+.wicz-footer__stamp {
+  display: block;
+  width: 96px;
+  height: auto;
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-footer__stamp {
+    width: 120px;
+    align-self: end;
+  }
 }
 
 .wicz-footer__inner {
@@ -69,7 +76,7 @@
 
 @media screen and (min-width: 750px) {
   .wicz-footer__inner {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto auto 1fr;
     align-items: end;
     gap: var(--space-5);
     padding-top: var(--space-6);

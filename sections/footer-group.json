@@ -10,10 +10,11 @@
         "voice_line": "keep cold. spread generously.",
         "menu": "footer",
         "show_policies": true,
-        "show_stripes": true,
-        "stripe_flavor": "salted"
+        "show_logo": true
       }
     }
   },
-  "order": ["footer"]
+  "order": [
+    "footer"
+  ]
 }

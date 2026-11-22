@@ -9,9 +9,13 @@
 }
 
 .wicz-hero__block {
+  position: relative;
+  padding: var(--space-4) var(--space-3) var(--space-6);
+}
+
+.wicz-hero__copy {
   display: grid;
   gap: var(--space-3);
-  padding: var(--space-4) var(--space-3) var(--space-6);
 }
 
 .wicz-hero__heading {
@@ -40,14 +44,57 @@
   bottom: -40px;
 }
 
+/* photo hero: below 1100px the stacked line is taller than the photo's
+   empty space, so it sits above the photo; on desktop it sits in the
+   photo's empty left half */
+.wicz-hero--photo .wicz-hero__block {
+  padding: 0;
+}
+
+.wicz-hero__media,
+.wicz-hero__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.wicz-hero__image {
+  border-radius: 6px;
+}
+
+.wicz-hero--photo .wicz-hero__block {
+  display: flex;
+  flex-direction: column;
+}
+
+.wicz-hero--photo .wicz-hero__copy {
+  order: -1;
+  margin-bottom: var(--space-3);
+}
+
+/* the tall mobile crop's empty top isn't needed when the type sits above */
+.wicz-hero--photo .wicz-hero__image {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+.wicz-hero--photo .wicz-hero__stamp {
+  right: var(--space-2);
+  bottom: var(--space-2);
+}
+
 @media screen and (min-width: 750px) {
   .wicz-hero {
     padding-top: var(--space-6);
   }
 
-  .wicz-hero__block {
+  .wicz-hero__copy {
     grid-template-columns: 1fr auto;
     align-items: start;
+  }
+
+  .wicz-hero__block {
     padding: var(--space-5) var(--space-5) var(--space-6);
   }
 
@@ -65,6 +112,43 @@
   .wicz-hero__stamp {
     right: -16px;
     bottom: -56px;
+  }
+
+  /* tablet and up: the wide photo, uncropped */
+  .wicz-hero--photo .wicz-hero__image {
+    aspect-ratio: auto;
+  }
+
+  .wicz-hero--photo .wicz-hero__stamp {
+    right: var(--space-3);
+    bottom: var(--space-3);
+  }
+}
+
+@media screen and (min-width: 1100px) {
+  .wicz-hero--photo .wicz-hero__block {
+    display: block;
+  }
+
+  /* desktop photo: heading on the empty left half, details under it */
+  .wicz-hero--photo .wicz-hero__copy {
+    position: absolute;
+    inset: var(--space-5) auto auto var(--space-5);
+    grid-template-columns: 1fr;
+    max-width: 48%;
+    margin: 0;
+  }
+
+  .wicz-hero--photo .wicz-hero__details {
+    grid-column: 1;
+    grid-row: auto;
+    text-align: left;
+  }
+
+  .wicz-hero--photo .wicz-hero__stamp {
+    right: auto;
+    left: 40%;
+    bottom: var(--space-4);
   }
 }
 
@@ -269,6 +353,26 @@
   justify-self: start;
 }
 
+.wicz-callout__body {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.wicz-callout__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+.wicz-grid-section__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius);
+}
+
 @media screen and (min-width: 990px) {
   .wicz-callout__inner {
     grid-template-columns: 1fr 1.2fr;
@@ -276,7 +380,49 @@
     padding: var(--space-5);
   }
 
-  .wicz-callout__button {
-    grid-column: 2;
+  .wicz-callout__inner--image {
+    grid-template-columns: 1.1fr 1fr;
+    gap: var(--space-5);
+  }
+
+  .wicz-callout__body {
+    align-content: center;
+  }
+}
+
+/* about: detail photos, then the logo stamp beside the location line */
+.wicz-about__photos {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+.wicz-about__photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+.wicz-about__sign {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.wicz-about__sign .wicz-about__location {
+  margin: 0;
+}
+
+.wicz-about__logo {
+  display: block;
+  width: 96px;
+  height: auto;
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-about__photos {
+    grid-template-columns: 1fr 1fr;
   }
 }

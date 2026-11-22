@@ -3,9 +3,15 @@
 // Unknown facts stay as bracketed placeholders (guide, "for the agent").
 
 export const SIZES = { big: '8 oz', small: '2 oz' };
-export const CARE_LINE = 'keep cold. soften 20 minutes before serving. best within 2–3 weeks, or freeze.';
+// Care line (guide §8.4). Garlic, anchovy and onion flavors keep 1 week;
+// a box holding any of them uses the short line too.
+export const careLine = (bestWithin) =>
+  `keep cold. soften 20 minutes before serving. best within ${bestWithin}, or freeze.`;
+export const CARE_LINE = careLine('2–3 weeks');
 
-const flavor = (handle, name, [ground, ink, deep, fold], extra = {}) => ({
+// Data from the site kit's data/flavors.csv (Nov 21, 2026). Ingredients are
+// drafts until the recipes are confirmed.
+const flavor = (handle, name, [ground, ink, deep, fold], extra) => ({
   handle,
   name,
   ground,
@@ -14,10 +20,8 @@ const flavor = (handle, name, [ground, ink, deep, fold], extra = {}) => ({
   fold,
   tier: 'flavored',
   seasonal: false,
-  ingredients: '[INGREDIENTS]',
-  pairs: '[PAIRS WITH]',
   allergens: 'contains: milk.',
-  body: `cultured butter with [INGREDIENTS].`,
+  bestWithin: '2–3 weeks',
   ...extra,
 });
 
@@ -27,31 +31,72 @@ export const flavors = [
     tier: 'plain',
     ingredients: 'cultured cream, sea salt',
     pairs: 'warm bread, radishes',
-    body: 'cultured butter with sea salt. for warm bread, radishes, and most things.',
+    body: 'cultured butter with sea salt. for warm bread, radishes, and eating off the knife.',
   }),
   flavor('unsalted', 'unsalted', ['#E6E8EC', '#93AEEB', '#3F5BB0', '#D3D6DC'], {
     tier: 'plain',
     ingredients: 'cultured cream',
-    body: 'cultured butter. nothing added.',
+    pairs: 'baking, pan sauces, soft scrambled eggs',
+    body: 'cultured butter, nothing added. for baking, pan sauces, and soft scrambled eggs.',
   }),
   flavor('honey', 'honey', ['#FCE3BE', '#D9873A', '#8A4A12', '#EED0A4'], {
     ingredients: 'cultured cream, honey, sea salt',
-    body: 'cultured butter with honey and a little salt.',
+    pairs: 'crumpets, biscuits, cornbread',
+    body: 'cultured butter with honey and a little sea salt. for crumpets, biscuits, and cornbread.',
   }),
-  flavor('garlic-herb', 'garlic herb', ['#E1EDCF', '#6F9B4E', '#3E5A26', '#CCDDB6']),
-  flavor('hot-honey', 'hot honey', ['#FFD8A8', '#D93B8C', '#A51E63', '#EEC48F']),
-  flavor('chili-crisp', 'chili crisp', ['#7A1E1E', '#FF8A3D', '#FF9A55', '#5A1414']),
-  flavor('white-miso', 'white miso', ['#E2D4F7', '#2F8F55', '#1F6B3E', '#CFBFE8']),
+  flavor('garlic-herb', 'garlic herb', ['#E1EDCF', '#6F9B4E', '#3E5A26', '#CCDDB6'], {
+    ingredients: 'cultured cream, roasted garlic, parsley, thyme, chives, sea salt, black pepper',
+    pairs: 'baguette, steak, roast potatoes',
+    bestWithin: '1 week',
+    body: 'cultured butter with roasted garlic, parsley, thyme, and chives. for baguette, steak, and roast potatoes.',
+  }),
+  flavor('hot-honey', 'hot honey', ['#FFD8A8', '#D93B8C', '#A51E63', '#EEC48F'], {
+    ingredients: 'cultured cream, honey, chili flakes, apple cider vinegar, sea salt',
+    pairs: 'fried chicken, cornbread, pizza crust',
+    body: 'cultured butter with honey, chili, and a splash of vinegar. for fried chicken, cornbread, and pizza crust.',
+  }),
+  flavor('chili-crisp', 'chili crisp', ['#7A1E1E', '#FF8A3D', '#FF9A55', '#5A1414'], {
+    ingredients: 'cultured cream, sunflower oil, chili flakes, fried shallot, fried garlic, sichuan peppercorn, sugar, sea salt',
+    pairs: 'dumplings, fried eggs, rice',
+    body: 'cultured butter with crunchy chili, shallot, and sichuan pepper. for dumplings, fried eggs, and a bowl of rice.',
+  }),
+  flavor('white-miso', 'white miso', ['#E2D4F7', '#2F8F55', '#1F6B3E', '#CFBFE8'], {
+    ingredients: 'cultured cream, white miso (soybeans, rice, salt, koji)',
+    allergens: 'contains: milk, soy.',
+    pairs: 'corn on the cob, roasted delicata squash, rice',
+    body: 'cultured butter with white miso. for corn on the cob, roasted delicata squash, and rice.',
+  }),
   flavor('caesar', 'caesar', ['#D6EDB8', '#E5583A', '#B23A20', '#C4DBA4'], {
+    ingredients: 'cultured cream, parmesan, anchovy, garlic, lemon zest, black pepper',
+    allergens: 'contains: milk, fish.',
     pairs: 'steak, roast chicken, the end of the loaf',
-    allergens: 'contains: milk. [CONFIRM: fish, if made with anchovy]',
-    body: 'cultured butter with [INGREDIENTS]. for steak, roast chicken, and the end of the loaf.',
+    bestWithin: '1 week',
+    body: 'cultured butter with parmesan, anchovy, garlic, and lemon. for steak, roast chicken, and the end of the loaf.',
   }),
-  flavor('smoked-sea-salt', 'smoked sea salt', ['#2E2C2B', '#FFD23F', '#FFD23F', '#1A1918']),
-  flavor('french-onion', 'french onion', ['#F7D58A', '#7B3FC4', '#5A2A96', '#E6C173']),
-  flavor('cranberry-orange', 'cranberry orange', ['#FFDCC2', '#D0103A', '#9E0C2C', '#EFC6A8'], { seasonal: true }),
-  flavor('brown-butter-sage', 'brown butter sage', ['#4A2C1A', '#B5D99C', '#B5D99C', '#2F1C10'], { seasonal: true }),
-];
+  flavor('smoked-sea-salt', 'smoked sea salt', ['#2E2C2B', '#FFD23F', '#FFD23F', '#1A1918'], {
+    ingredients: 'cultured cream, smoked sea salt',
+    pairs: 'radishes, grilled corn, baked potatoes',
+    body: 'cultured butter with smoked sea salt. for radishes, grilled corn, and baked potatoes.',
+  }),
+  flavor('french-onion', 'french onion', ['#F7D58A', '#7B3FC4', '#5A2A96', '#E6C173'], {
+    ingredients: 'cultured cream, caramelized onion, gruyère, thyme, sea salt, black pepper',
+    pairs: 'toasted baguette, steak, baked potatoes',
+    bestWithin: '1 week',
+    body: 'cultured butter with slow-caramelized onion, gruyère, and thyme. for toasted baguette, steak, and baked potatoes.',
+  }),
+  flavor('cranberry-orange', 'cranberry orange', ['#FFDCC2', '#D0103A', '#9E0C2C', '#EFC6A8'], {
+    seasonal: true,
+    ingredients: 'cultured cream, dried cranberries (cranberries, cane sugar, sunflower oil), orange zest, sea salt',
+    pairs: 'scones, cornbread, turkey sandwiches',
+    body: 'cultured butter with dried cranberry and orange zest. for scones, cornbread, and the leftover turkey sandwich.',
+  }),
+  flavor('brown-butter-sage', 'brown butter sage', ['#4A2C1A', '#B5D99C', '#B5D99C', '#2F1C10'], {
+    seasonal: true,
+    ingredients: 'cultured cream (part browned), sage, sea salt',
+    pairs: 'delicata squash, gnocchi, roast chicken',
+    body: 'cultured butter, part of it browned, with crisp sage. for delicata squash, gnocchi, and roast chicken.',
+  }),
+].map((f) => ({ ...f, care: careLine(f.bestWithin) }));
 
 export const PRICES = {
   plain: { [SIZES.big]: '14.00', [SIZES.small]: '5.00' },
@@ -76,25 +121,38 @@ export const box = {
   body: 'pick a box, then fill it. one price per box, whatever goes in.',
 };
 
+// §8.4: a box lists the combined allergens of everything inside, and uses
+// the 1-week care line if it holds any 1-week flavor.
+export function boxFacts(handles) {
+  const inside = handles.map(colorsOfHandle);
+  const allergens = [...new Set(inside.flatMap((f) => f.allergens.replace(/^contains: |\.$/g, '').split(', ')))];
+  const bestWithin = inside.some((f) => f.bestWithin === '1 week') ? '1 week' : '2–3 weeks';
+  return { allergens: `contains: ${allergens.join(', ')}.`, bestWithin, care: careLine(bestWithin) };
+}
+const colorsOfHandle = (handle) => flavors.find((f) => f.handle === handle);
+
 // §8.2 flights: presets of the eight format. Each borrows one flavor's colors.
 const colorsOf = (handle) => flavors.find((f) => f.handle === handle);
 export const flights = [
   {
-    handle: 'classics-culinary',
+    handle: 'classics-culinary-flight',
+    oldHandle: 'classics-culinary',
     title: 'classics + culinary',
     colors: colorsOf('salted'),
     seasonal: false,
     contents: ['salted', 'unsalted', 'honey', 'garlic-herb', 'hot-honey', 'chili-crisp', 'caesar', 'french-onion'],
   },
   {
-    handle: 'classics-holiday',
+    handle: 'classics-holiday-flight',
+    oldHandle: 'classics-holiday',
     title: 'classics + holiday',
     colors: colorsOf('cranberry-orange'),
     seasonal: true,
     contents: ['salted', 'unsalted', 'honey', 'garlic-herb', 'cranberry-orange', 'cranberry-orange', 'brown-butter-sage', 'brown-butter-sage'],
   },
   {
-    handle: 'culinary-holiday',
+    handle: 'culinary-holiday-flight',
+    oldHandle: 'culinary-holiday',
     title: 'culinary + holiday',
     colors: colorsOf('brown-butter-sage'),
     seasonal: true,
@@ -105,6 +163,7 @@ export const flights = [
   format: 'eight',
   price: '42.00',
   body: `eight 2 oz butters: ${flight.contents.map((h) => colorsOf(h).name).join(', ')}.`,
+  ...boxFacts(flight.contents),
 }));
 
 // Old catalog (2″ / 1.2″ cubes and cartons), archived by the seed script.

@@ -20,6 +20,7 @@ const MF = {
   ingredients: 'Ingredients (product.metafields.custom.ingredients)',
   pairs: 'Pairs with (product.metafields.custom.pairs_with)',
   allergens: 'Allergens (product.metafields.custom.allergens)',
+  bestWithin: 'Best within (product.metafields.custom.best_within)',
 };
 
 const headers = [
@@ -70,6 +71,7 @@ for (const f of flavors) {
       [MF.ingredients]: f.ingredients,
       [MF.pairs]: f.pairs,
       [MF.allergens]: f.allergens,
+      [MF.bestWithin]: f.bestWithin,
     };
     rows.push(i === 0 ? row : variantOnly(row));
   });
@@ -113,7 +115,8 @@ for (const flight of flights) {
     'Variant Price': flight.price,
     ...colorColumns(flight.colors),
     [MF.seasonal]: String(flight.seasonal),
-    [MF.allergens]: 'contains: milk.',
+    [MF.allergens]: flight.allergens,
+    [MF.bestWithin]: flight.bestWithin,
   });
 }
 

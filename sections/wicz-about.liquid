@@ -1,6 +1,7 @@
 {%- comment -%}
-  About page (design guide §9): short. Three or four voice lines, the stamp,
-  and the location line. Each voice line is a block so it stays editable.
+  About page (design guide §9): short. Three or four voice lines, the phrase
+  stamp, the logo stamp ("the mold", §2.1), the location line, and up to two
+  detail photos (the kit's detail-seal.jpg and detail-side-stamp.jpg). Each voice line is a block so it stays editable.
   The stamp is this page's one stamp and one rotated element (§11).
 {%- endcomment -%}
 {{ 'wicz-home.css' | asset_url | stylesheet_tag }}
@@ -22,9 +23,30 @@
     {%- endif -%}
   </div>
 
-  {%- if section.settings.location_line != blank -%}
-    <p class="wicz-about__location">{{ section.settings.location_line }}</p>
+  {%- if section.settings.image_1 != blank or section.settings.image_2 != blank -%}
+    <div class="wicz-about__photos">
+      {%- for image in (1..2) -%}
+        {%- assign key = 'image_' | append: image -%}
+        {%- assign photo = section.settings[key] -%}
+        {%- if photo != blank -%}
+          {{
+            photo
+            | image_url: width: 1200
+            | image_tag: widths: '450, 750, 1000, 1200', sizes: '(min-width: 750px) 560px, 100vw', loading: 'lazy', class: 'wicz-about__photo'
+          }}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
   {%- endif -%}
+
+  <div class="wicz-about__sign">
+    {%- if section.settings.show_logo -%}
+      <img src="{{ 'wicz-stamp.png' | asset_url }}" width="96" height="96" alt="the wicz craft butter stamp" loading="lazy" class="wicz-about__logo">
+    {%- endif -%}
+    {%- if section.settings.location_line != blank -%}
+      <p class="wicz-about__location">{{ section.settings.location_line }}</p>
+    {%- endif -%}
+  </div>
 </section>
 
 {% schema %}
@@ -52,6 +74,14 @@
       "label": "stamp text",
       "default": "it's really good."
     },
+    {
+      "type": "checkbox",
+      "id": "show_logo",
+      "label": "show the logo stamp",
+      "default": true
+    },
+    { "type": "image_picker", "id": "image_1", "label": "detail photo 1" },
+    { "type": "image_picker", "id": "image_2", "label": "detail photo 2" },
     {
       "type": "text",
       "id": "location_line",

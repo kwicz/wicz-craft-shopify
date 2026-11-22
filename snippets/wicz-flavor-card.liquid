@@ -9,6 +9,8 @@
   - bottom: `cultured 48 hours` in mono (deep)
   The price sits below the card, in mono. Hover: no shadow, the card lifts
   2px and its bottom edge darkens to the flavor's fold color.
+  With a featured image, the card is the pack photo instead (the photo
+  carries the type), with the name in mono under it.
 
   Accepts:
   - product: {Object} product with custom.* flavor metafields
@@ -27,17 +29,15 @@
   assign words = product.title | downcase | split: ' '
   assign flight_contents = product.metafields.custom.flight_contents.value
 -%}
-<article class="wicz-card" style="{% render 'wicz-flavor-vars', product: product %}">
+<article class="wicz-card{% if product.featured_media %} wicz-card--photo{% endif %}" style="{% render 'wicz-flavor-vars', product: product %}">
   <a href="{{ product.url }}" class="wicz-card__link">
-    <div class="wicz-card__pack foil">
-      <div class="wicz-card__top">
-        <span class="wicz-card__brand">wicz craft</span>
-        {%- if product.metafields.custom.seasonal.value == true -%}
-          <span class="wicz-card__holiday">holiday</span>
-        {%- endif -%}
-      </div>
-
-      {%- if product.featured_media -%}
+    {%- if product.featured_media -%}
+      {%- comment -%}
+        Photo card: the pack shot already carries `wicz craft`, the flavor
+        name in its ink and `cultured 48 hours`, set from the real fonts in
+        post (§11), so the type isn't repeated on top of it.
+      {%- endcomment -%}
+      <div class="wicz-card__frame">
         {{
           product.featured_media
           | image_url: width: 900
@@ -47,21 +47,38 @@
             sizes: '(min-width: 990px) 280px, (min-width: 750px) 45vw, 90vw',
             class: 'wicz-card__image'
         }}
-      {%- endif -%}
-
-      <{{ tag }} class="wicz-card__title">
-        {%- for word in words -%}
-          <span>{{ word | escape }}</span>
-          {%- unless forloop.last %} {% endunless -%}
-        {%- endfor -%}
-      </{{ tag }}>
-
+        {%- if product.metafields.custom.seasonal.value == true -%}
+          <span class="wicz-card__holiday">holiday</span>
+        {%- endif -%}
+      </div>
+      <{{ tag }} class="wicz-card__name">{{ product.title | downcase | escape }}</{{ tag }}>
       {%- if flight_contents != blank -%}
         {%- render 'wicz-flavor-dots', handles: flight_contents -%}
       {%- endif -%}
+    {%- else -%}
+      {%- comment -%} No photo yet: the CSS foil pack placeholder (§7, §11). {%- endcomment -%}
+      <div class="wicz-card__pack foil">
+        <div class="wicz-card__top">
+          <span class="wicz-card__brand">wicz craft</span>
+          {%- if product.metafields.custom.seasonal.value == true -%}
+            <span class="wicz-card__holiday">holiday</span>
+          {%- endif -%}
+        </div>
 
-      <span class="wicz-card__process">cultured 48 hours</span>
-    </div>
+        <{{ tag }} class="wicz-card__title">
+          {%- for word in words -%}
+            <span>{{ word | escape }}</span>
+            {%- unless forloop.last %} {% endunless -%}
+          {%- endfor -%}
+        </{{ tag }}>
+
+        {%- if flight_contents != blank -%}
+          {%- render 'wicz-flavor-dots', handles: flight_contents -%}
+        {%- endif -%}
+
+        <span class="wicz-card__process">cultured 48 hours</span>
+      </div>
+    {%- endif -%}
 
     <p class="wicz-card__price">
       {%- if product.price == 0 -%}

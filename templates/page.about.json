@@ -3,19 +3,53 @@
     "main": {
       "type": "wicz-about",
       "blocks": {
-        "line-1": { "type": "line", "settings": { "text": "we made butter.", "italic": false } },
-        "line-2": { "type": "line", "settings": { "text": "cultured 48 hours in portland, oregon.", "italic": false } },
-        "line-3": { "type": "line", "settings": { "text": "keep cold. spread generously.", "italic": false } },
-        "line-4": { "type": "line", "settings": { "text": "it's really good.", "italic": true } }
+        "line-1": {
+          "type": "line",
+          "settings": {
+            "text": "we made butter.",
+            "italic": false
+          }
+        },
+        "line-2": {
+          "type": "line",
+          "settings": {
+            "text": "cultured 48 hours in portland, oregon.",
+            "italic": false
+          }
+        },
+        "line-3": {
+          "type": "line",
+          "settings": {
+            "text": "keep cold. spread generously.",
+            "italic": false
+          }
+        },
+        "line-4": {
+          "type": "line",
+          "settings": {
+            "text": "it's really good.",
+            "italic": true
+          }
+        }
       },
-      "block_order": ["line-1", "line-2", "line-3", "line-4"],
+      "block_order": [
+        "line-1",
+        "line-2",
+        "line-3",
+        "line-4"
+      ],
       "settings": {
         "heading": "about",
         "show_stamp": true,
         "stamp_text": "it's really good.",
-        "location_line": "cultured butter · portland, oregon"
+        "location_line": "cultured butter · portland, oregon",
+        "show_logo": true,
+        "image_1": "shopify://shop_images/detail-seal.jpg",
+        "image_2": "shopify://shop_images/detail-side-stamp.jpg"
       }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }

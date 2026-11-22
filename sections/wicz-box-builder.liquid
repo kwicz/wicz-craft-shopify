@@ -18,8 +18,18 @@
   Transform (app/wicz-craft-cartons/extensions/box-expand) turns that line
   into the butters inside, so each one's inventory is tracked.
 
-  ?format=eight&flight=classics-culinary pre-fills the builder, which is how
-  a flight's "make it your own" link opens it.
+  ?box=eight&flight=classics-culinary-flight pre-fills the builder, which
+  is how a flight's "make it your own" link opens it. (Not ?format=:
+  Shopify reserves that parameter and answers 404.)
+
+  Images (site kit, phase 3), all from Content > Files by filename:
+  builder-header.jpg over the intro, each format's variant image on its card,
+  and the transparent overhead pieces (builder-cube-<handle>.png,
+  builder-block-<handle>.png) on the picker and in the tray. Without them the
+  CSS foil packs stand in.
+
+  The care line switches to the 1-week version as soon as the box holds a
+  flavor whose custom.best_within is 1 week (§8.4).
 {%- endcomment -%}
 {{ 'wicz-box.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'wicz-box-builder.js' | asset_url }}" defer="defer"></script>
@@ -45,6 +55,24 @@
 -%}
 
 <div class="wicz-box page-width">
+  {%- liquid
+    # a missing Files image is still truthy; .width tells them apart
+    assign header_image = section.settings.header_image
+    if header_image == blank and images['builder-header.jpg'].width
+      assign header_image = images['builder-header.jpg']
+    endif
+  -%}
+  {%- if header_image != blank -%}
+    {{
+      header_image
+      | image_url: width: 2400
+      | image_tag:
+        widths: '600, 900, 1200, 1800, 2400',
+        sizes: 'min(1200px, 100vw)',
+        loading: 'eager',
+        class: 'wicz-box__header-image'
+    }}
+  {%- endif -%}
   <div class="wicz-box__intro">
     <h1 class="wicz-box__title">{{ product.title | escape }}</h1>
     {%- if product.description != blank -%}
@@ -66,7 +94,12 @@
             {%- for flavor in flavors -%}
               {%- assign small = flavor.variants | where: 'title', section.settings.small_size | first -%}
               {%- assign big = flavor.variants | where: 'title', section.settings.big_size | first -%}
+              {%- assign cube_name = 'builder-cube-' | append: flavor.handle | append: '.png' -%}
+              {%- assign block_name = 'builder-block-' | append: flavor.handle | append: '.png' -%}
               {{ flavor.handle | json }}: {
+                "cube": {% if images[cube_name].width %}{{ images[cube_name] | image_url: width: 200 | json }}{% else %}null{% endif %},
+                "block": {% if flavor.metafields.custom.price_tier.value == 'plain' and images[block_name].width %}{{ images[block_name] | image_url: width: 400 | json }}{% else %}null{% endif %},
+                "bestWithin": {{ flavor.metafields.custom.best_within.value | default: '' | json }},
                 "title": {{ flavor.title | downcase | json }},
                 "ground": {{ flavor.metafields.custom.color_ground.value | default: settings.wicz_foil | json }},
                 "ink": {{ flavor.metafields.custom.color_ink.value | default: settings.wicz_periwinkle | json }},
@@ -122,6 +155,18 @@
                   {% endif %}
                 >
                 <span class="wicz-format__body">
+                  {%- if variant.featured_image -%}
+                    {{
+                      variant.featured_image
+                      | image_url: width: 600
+                      | image_tag:
+                        widths: '300, 450, 600',
+                        sizes: '(min-width: 990px) 220px, 45vw',
+                        loading: 'lazy',
+                        class: 'wicz-format__image',
+                        alt: ''
+                    }}
+                  {%- endif -%}
                   <span class="wicz-format__title">{{ variant.title }}</span>
                   <span class="wicz-format__contents">
                     {%- if big_slots > 0 -%}
@@ -157,7 +202,11 @@
                           disabled
                         {% endunless %}
                       >
-                      <span class="wicz-big-choice__pack foil">
+                      {%- assign block_name = 'builder-block-' | append: flavor.handle | append: '.png' -%}
+                      <span class="wicz-big-choice__pack{% if images[block_name].width %} wicz-big-choice__pack--photo{% else %} foil{% endif %}">
+                        {%- if images[block_name].width -%}
+                          {{ images[block_name] | image_url: width: 400 | image_tag: loading: 'lazy', class: 'wicz-big-choice__image', alt: '' }}
+                        {%- endif -%}
                         <span class="wicz-big-choice__name">{{ flavor.title | downcase }}</span>
                         <span class="wicz-big-choice__size">{{ section.settings.big_size }}{% unless big.available %}, sold out{% endunless %}</span>
                       </span>
@@ -178,12 +227,26 @@
             {%- for flavor in flavors -%}
               {%- assign small = flavor.variants | where: 'title', section.settings.small_size | first -%}
               {%- if small -%}
+                {%- assign cube_name = 'builder-cube-' | append: flavor.handle | append: '.png' -%}
                 <li class="wicz-picker__item" style="{% render 'wicz-flavor-vars', product: flavor %}">
-                  <div class="wicz-picker__pack foil">
+                  <div class="wicz-picker__pack{% if images[cube_name].width %} wicz-picker__pack--photo{% else %} foil{% endif %}">
+                    {%- if images[cube_name].width -%}
+                      {%- comment -%} the cube's wrapper carries the flavor name; the text below is for screen readers {%- endcomment -%}
+                      {{
+                        images[cube_name]
+                        | image_url: width: 400
+                        | image_tag:
+                          widths: '200, 300, 400',
+                          sizes: '(min-width: 990px) 180px, 40vw',
+                          loading: 'lazy',
+                          class: 'wicz-picker__image',
+                          alt: ''
+                      }}
+                    {%- endif -%}
                     {%- if flavor.metafields.custom.seasonal.value == true -%}
                       <span class="wicz-picker__holiday">holiday</span>
                     {%- endif -%}
-                    <span class="wicz-picker__name">
+                    <span class="wicz-picker__name{% if images[cube_name].width %} visually-hidden{% endif %}">
                       {%- assign words = flavor.title | downcase | split: ' ' -%}
                       {%- for word in words -%}<span>{{ word }}</span> {% endfor -%}
                     </span>
@@ -241,7 +304,14 @@
   {%- endif -%}
 
   {%- if section.settings.care_line != blank -%}
-    <p class="wicz-box__care">{{ section.settings.care_line }}</p>
+    <p
+      class="wicz-box__care"
+      data-care
+      data-care-default="{{ section.settings.care_line | escape }}"
+      data-care-short="{{ section.settings.care_line_short | escape }}"
+    >
+      {{ section.settings.care_line }}
+    </p>
   {%- endif -%}
 </div>
 
@@ -269,6 +339,19 @@
       "id": "care_line",
       "label": "care line",
       "default": "keep cold. soften 20 minutes before serving. best within 2–3 weeks, or freeze."
+    },
+    {
+      "type": "text",
+      "id": "care_line_short",
+      "label": "care line, 1-week flavors",
+      "info": "shown once the box holds a flavor whose custom.best_within is 1 week",
+      "default": "keep cold. soften 20 minutes before serving. best within 1 week, or freeze."
+    },
+    {
+      "type": "image_picker",
+      "id": "header_image",
+      "label": "header photo",
+      "info": "blank uses builder-header.jpg from files"
     }
   ]
 }

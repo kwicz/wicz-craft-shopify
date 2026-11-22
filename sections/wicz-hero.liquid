@@ -1,43 +1,91 @@
 {%- comment -%}
-  Foil hero (design guide §7): a large foil block, rotated about -2.5°,
-  holding a stacked display line in periwinkle at 72–96px (mobile) and
-  160–200px (desktop). A mono detail column sits top-right and a stamp
-  overlaps the lower-right corner.
-  This is the page's one rotated element and one stamp (§11).
+  Photo hero (design guide §7): a full-width photo of the gold-foil salted
+  8 oz block, rotated about -2.5°, on cream, with empty space for type (a
+  taller crop on mobile). Over it, as live HTML: the stacked display line in
+  periwinkle (72–96px mobile, 160–200px desktop), a mono detail column and
+  the phrase stamp.
+  The block in the photo is the page's one rotated element, and the stamp is
+  its one stamp (§12).
+  Images come from the image pickers, or else from Content > Files by the
+  kit's filenames. With no image at all, it falls back to the CSS foil block.
 {%- endcomment -%}
 {{ 'wicz-home.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
   assign hero_words = section.settings.heading | newline_to_br | replace: '<br />', ' ' | split: ' '
   assign detail_lines = section.settings.details | newline_to_br | split: '<br />'
+  # a missing Files image is still truthy; .width tells them apart
+  assign desktop_image = section.settings.image
+  if desktop_image == blank and images['home-hero-desktop.jpg'].width
+    assign desktop_image = images['home-hero-desktop.jpg']
+  endif
+  assign mobile_image = section.settings.image_mobile
+  if mobile_image == blank and images['home-hero-mobile.jpg'].width
+    assign mobile_image = images['home-hero-mobile.jpg']
+  endif
+  if mobile_image == blank
+    assign mobile_image = desktop_image
+  endif
 -%}
 
-<section class="wicz-hero page-width" aria-label="{{ section.settings.heading | newline_to_br | replace: '<br />', ' ' | strip_newlines | escape }}">
-  <div class="wicz-hero__block foil foil--folds{% if section.settings.rotate %} foil--dropped{% endif %}">
-    <h1 class="wicz-hero__heading wicz-display wicz-display--stacked">
-      {%- for word in hero_words -%}
-        {%- if word != blank -%}
-          <span>{{ word | strip }}</span>
-        {%- endif -%}
-      {%- endfor -%}
-    </h1>
+<section
+  class="wicz-hero page-width{% if desktop_image != blank %} wicz-hero--photo{% endif %}"
+  aria-label="{{ section.settings.heading | newline_to_br | replace: '<br />', ' ' | strip_newlines | escape }}"
+>
+  <div class="wicz-hero__block{% if desktop_image == blank %} foil foil--folds{% if section.settings.rotate %} foil--dropped{% endif %}{% endif %}">
+    {%- if desktop_image != blank -%}
+      <picture class="wicz-hero__media">
+        <source
+          media="(min-width: 750px)"
+          srcset="
+            {{ desktop_image | image_url: width: 1100 }} 1100w,
+            {{ desktop_image | image_url: width: 1600 }} 1600w,
+            {{ desktop_image | image_url: width: 2400 }} 2400w
+          "
+          sizes="min(1200px, 100vw)"
+          width="{{ desktop_image.width }}"
+          height="{{ desktop_image.height }}"
+        >
+        {{
+          mobile_image
+          | image_url: width: 1200
+          | image_tag:
+            widths: '450, 750, 1000, 1200',
+            sizes: '100vw',
+            loading: 'eager',
+            fetchpriority: 'high',
+            class: 'wicz-hero__image',
+            alt: mobile_image.alt
+        }}
+      </picture>
+    {%- endif -%}
 
-    {%- if section.settings.details != blank -%}
-      <ul class="wicz-hero__details" role="list">
-        {%- for line in detail_lines -%}
-          {%- assign clean = line | strip_newlines | strip -%}
-          {%- if clean != blank -%}
-            <li>{{ clean }}</li>
+    <div class="wicz-hero__copy">
+      <h1 class="wicz-hero__heading wicz-display wicz-display--stacked">
+        {%- for word in hero_words -%}
+          {%- if word != blank -%}
+            <span>{{ word | strip }}</span>
           {%- endif -%}
         {%- endfor -%}
-      </ul>
-    {%- endif -%}
+      </h1>
 
-    {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
-      <a href="{{ section.settings.button_link }}" class="button wicz-hero__button">
-        {{- section.settings.button_label -}}
-      </a>
-    {%- endif -%}
+      {%- if section.settings.details != blank -%}
+        <ul class="wicz-hero__details" role="list">
+          {%- for line in detail_lines -%}
+            {%- assign clean = line | strip_newlines | strip -%}
+            {%- if clean != blank -%}
+              <li>{{ clean }}</li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+        <a href="{{ section.settings.button_link }}" class="button wicz-hero__button">
+          {{- section.settings.button_label -}}
+        </a>
+      {%- endif -%}
+    </div>
 
     {%- if section.settings.show_stamp -%}
       {%- render 'wicz-stamp', text: section.settings.stamp_text, class: 'wicz-hero__stamp' -%}
@@ -50,6 +98,18 @@
   "name": "wicz hero",
   "class": "wicz-hero-section",
   "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "photo (desktop)",
+      "info": "the salted 8 oz block on cream, with room on the left for type. blank uses home-hero-desktop.jpg from files."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "photo (mobile)",
+      "info": "a taller crop with room at the top. blank uses home-hero-mobile.jpg from files."
+    },
     {
       "type": "textarea",
       "id": "heading",
@@ -80,7 +140,7 @@
       "id": "rotate",
       "label": "drop the brick (rotate -2.5°)",
       "default": true,
-      "info": "use one rotated element per page"
+      "info": "only used by the css foil fallback when there's no photo. the photo's block is already rotated."
     },
     {
       "type": "checkbox",

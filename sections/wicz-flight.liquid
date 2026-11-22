@@ -8,7 +8,10 @@
   same properties the builder writes (so the box-expand Cart Transform
   treats it the same way), plus `flight: <title>`.
 
-  Reads custom.flight_contents (a list of flavor handles) on the flight.
+  Reads custom.flight_contents (a list of flavor handles) on the flight, and
+  custom.allergens / custom.best_within (combined across the flavors inside,
+  §8.4) when set. Without them, allergens are gathered from the flavors.
+  Media: every product image, stacked (window box closed, then open).
 {%- endcomment -%}
 {{ 'wicz-flight.css' | asset_url | stylesheet_tag }}
 
@@ -41,6 +44,13 @@
   endfor
   assign component_ids = component_ids | split: ',' | join: ','
   assign allergen_lines = allergens | split: '|' | uniq
+  if product.metafields.custom.allergens.value != blank
+    assign allergen_lines = product.metafields.custom.allergens.value | split: '|'
+  endif
+  assign care_line = section.settings.care_line
+  if product.metafields.custom.best_within.value != blank
+    assign care_line = 'keep cold. soften 20 minutes before serving. best within ' | append: product.metafields.custom.best_within.value | append: ', or freeze.'
+  endif
 
   assign price = product.price
   if box_variant
@@ -50,8 +60,26 @@
 
 <div class="wicz-flight page-width">
   <div class="wicz-flight__media">
-    {%- if product.featured_media -%}
-      {{ product.featured_media | image_url: width: 1200 | image_tag: loading: 'eager', class: 'wicz-flight__image', sizes: '(min-width: 990px) 560px, 100vw' }}
+    {%- if product.media.size > 0 -%}
+      {%- for media in product.media -%}
+        {%- if media.media_type == 'image' -%}
+          {%- liquid
+            assign media_loading = 'lazy'
+            if forloop.first
+              assign media_loading = 'eager'
+            endif
+          -%}
+          {{
+            media
+            | image_url: width: 1200
+            | image_tag:
+              loading: media_loading,
+              widths: '450, 750, 1000, 1200',
+              class: 'wicz-flight__image',
+              sizes: '(min-width: 990px) 560px, 100vw'
+          }}
+        {%- endif -%}
+      {%- endfor -%}
     {%- else -%}
       {%- render 'wicz-foil-placeholder', product: product, size: 'large' -%}
     {%- endif -%}
@@ -89,7 +117,7 @@
           {%- if all_available -%}add to cart{%- else -%}one of these is sold out{%- endif -%}
         </button>
       </form>
-      <a class="wicz-flight__custom" href="{{ box.url }}?format={{ box_variant.title | handleize }}&flight={{ product.handle }}">
+      <a class="wicz-flight__custom" href="{{ box.url }}?box={{ box_variant.title | handleize }}&flight={{ product.handle }}">
         make it your own
       </a>
     {%- else -%}
@@ -109,10 +137,10 @@
           {%- endfor -%}
         </dd>
       </div>
-      {%- if section.settings.care_line != blank -%}
+      {%- if care_line != blank -%}
         <div class="wicz-facts__row">
           <dt class="wicz-facts__label">care</dt>
-          <dd class="wicz-facts__value">{{ section.settings.care_line }}</dd>
+          <dd class="wicz-facts__value">{{ care_line }}</dd>
         </div>
       {%- endif -%}
     </dl>
@@ -130,6 +158,7 @@
       "type": "text",
       "id": "care_line",
       "label": "care line",
+      "info": "fallback. a flight's custom.best_within sets the shelf life.",
       "default": "keep cold. soften 20 minutes before serving. best within 2–3 weeks, or freeze."
     }
   ]

@@ -1,0 +1,115 @@
+{%- comment -%}
+  One-time vs subscribe picker for a product page. Reads the selling plans
+  the Shopify Subscriptions app attaches to the selected variant (weekly,
+  monthly, monthly for a year), so the 2 oz size, add-ons and flights show
+  nothing. Prepaid plans (if a plan app ever adds them) show the total and
+  the price per delivery. The radios join the product form through the
+  `form` attribute, so Dawn's product-form.js posts `selling_plan` with
+  the add. product-info.js swaps this block's inner HTML on a size change;
+  assets/wicz-purchase-options.js keeps the shopper's choice across it.
+
+  Accepts:
+  - product: {Object}
+  - product_form_id: {String} id of the buy-buttons form
+  - section_id: {String}
+  - block: {Object} main-product block (heading, one_time_label, note)
+{%- endcomment -%}
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign allocations = variant.selling_plan_allocations
+  assign selected_plan = product.selected_selling_plan
+  assign one_time_allowed = true
+  if product.requires_selling_plan
+    assign one_time_allowed = false
+  endif
+-%}
+<wicz-purchase-options
+  id="PurchaseOptions-{{ section_id }}"
+  class="wicz-purchase"
+  data-form-id="{{ product_form_id }}"
+  {{ block.shopify_attributes }}
+>
+  {%- if allocations.size > 0 -%}
+    <fieldset class="wicz-purchase__fieldset">
+      <legend class="wicz-purchase__legend">{{ block.settings.heading | default: 'how often' }}</legend>
+
+      {%- if one_time_allowed -%}
+        <label class="wicz-purchase__option">
+          <input
+            type="radio"
+            name="selling_plan"
+            value=""
+            form="{{ product_form_id }}"
+            data-key="once"
+            {% if selected_plan == blank %}checked{% endif %}
+          >
+          <span class="wicz-purchase__name">{{ block.settings.one_time_label | default: 'just once' }}</span>
+          <span class="wicz-purchase__price">{{ variant.price | money }}</span>
+        </label>
+      {%- endif -%}
+
+      {%- for allocation in allocations -%}
+        {%- liquid
+          assign plan = allocation.selling_plan
+          assign is_checked = false
+          if selected_plan.id == plan.id
+            assign is_checked = true
+          elsif selected_plan == blank and one_time_allowed == false and forloop.first
+            assign is_checked = true
+          endif
+          comment
+            A prepaid plan charges several deliveries up front; per_delivery_price
+            is what one delivery works out to.
+          endcomment
+          assign prepaid = false
+          if allocation.price != allocation.per_delivery_price
+            assign prepaid = true
+          endif
+        -%}
+        <label class="wicz-purchase__option">
+          <input
+            type="radio"
+            name="selling_plan"
+            value="{{ plan.id }}"
+            form="{{ product_form_id }}"
+            data-key="{{ allocation.selling_plan_group_id }}:{{ plan.name | handleize }}"
+            {% if is_checked %}checked{% endif %}
+          >
+          {%- liquid
+            comment
+              Shopify Subscriptions names plans like "Deliver every month, 10% off,
+              ends after 12 orders". The price column already shows the discount,
+              so the label is the frequency and the end rule moves to the small line.
+            endcomment
+            assign label = plan.options.first.value | default: plan.name | downcase | remove_first: 'deliver '
+            assign detail = plan.description
+            if detail == blank and plan.name contains 'ends after'
+              assign detail = plan.name | split: ', ' | last
+            endif
+          -%}
+          <span class="wicz-purchase__name">
+            {{ label }}
+            {%- if detail != blank -%}
+              <span class="wicz-purchase__desc">{{ detail | downcase }}</span>
+            {%- endif -%}
+          </span>
+          <span class="wicz-purchase__price">
+            {%- if prepaid -%}
+              {{ allocation.price | money }}
+              <span class="wicz-purchase__per">{{ allocation.per_delivery_price | money }} a delivery</span>
+            {%- else -%}
+              {%- if allocation.compare_at_price > allocation.price -%}
+                <s class="wicz-purchase__was">{{ allocation.compare_at_price | money }}</s>
+              {%- endif -%}
+              {{ allocation.price | money }}
+            {%- endif -%}
+          </span>
+        </label>
+      {%- endfor -%}
+    </fieldset>
+
+    {%- if block.settings.note != blank -%}
+      <p class="wicz-purchase__note">{{ block.settings.note }}</p>
+    {%- endif -%}
+  {%- endif -%}
+</wicz-purchase-options>

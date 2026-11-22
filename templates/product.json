@@ -22,6 +22,12 @@
           "type": "quantity_selector",
           "settings": {}
         },
+        "purchase_options": {
+          "type": "wicz_purchase_options",
+          "settings": {
+            "heading": "how often"
+          }
+        },
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
@@ -48,6 +54,7 @@
         "price",
         "variant_picker",
         "quantity_selector",
+        "purchase_options",
         "buy_buttons",
         "description",
         "facts"

@@ -87,3 +87,77 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* One-time vs subscribe picker (snippets/wicz-purchase-options.liquid).
+   Sits in the product info column, so it wears the flavor page's text color. */
+.wicz-purchase {
+  display: block;
+  margin: var(--space-2) 0;
+}
+
+.wicz-purchase__fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.wicz-purchase__legend {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  margin-bottom: var(--space-1);
+  padding: 0;
+}
+
+.wicz-purchase__option {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  padding: 12px var(--space-2);
+  border: var(--border);
+  border-color: currentColor;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.wicz-purchase__option:has(input:checked) {
+  box-shadow: inset 0 0 0 1.5px currentColor;
+}
+
+.wicz-purchase__option:has(input:focus-visible) {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.wicz-purchase__option input {
+  accent-color: currentColor;
+  margin: 0;
+}
+
+.wicz-purchase__name,
+.wicz-purchase__price {
+  display: grid;
+  gap: 2px;
+}
+
+.wicz-purchase__price {
+  text-align: right;
+}
+
+.wicz-purchase__desc,
+.wicz-purchase__per,
+.wicz-purchase__note {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+.wicz-purchase__was {
+  opacity: 0.6;
+}
+
+.wicz-purchase__note {
+  margin: var(--space-1) 0 0;
+}

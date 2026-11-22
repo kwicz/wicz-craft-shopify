@@ -33,6 +33,14 @@
         <div class="drawer__inner-empty">
           <div class="cart-drawer__warnings center{% if settings.cart_drawer_collection != blank %} cart-drawer__warnings--has-collection{% endif %}">
             <div class="cart-drawer__empty-content">
+              {%- comment -%} wicz craft: the kit's empty window box (cart-empty.jpg in files) {%- endcomment -%}
+              {%- if images['cart-empty.jpg'].width -%}
+                {{
+                  images['cart-empty.jpg']
+                  | image_url: width: 480
+                  | image_tag: widths: '240, 360, 480', sizes: '240px', loading: 'lazy', class: 'wicz-drawer__empty-image', alt: ''
+                }}
+              {%- endif -%}
               <h2 class="cart__empty-text">{{ 'sections.cart.empty' | t }}</h2>
               <button
                 class="drawer__close"
@@ -146,6 +154,11 @@
                               width="150"
                               height="{{ 150 | divided_by: item.image.aspect_ratio | ceil }}"
                             >
+                          {% else %}
+                            {%- comment -%} wicz craft: no photo yet, a small foil cube in the product's colors (§10) {%- endcomment -%}
+                            <a href="{{ item.url }}" class="cart-item__link wicz-cart-cube" tabindex="-1" aria-hidden="true" style="{% render 'wicz-flavor-vars', product: item.product %}">
+                              <span class="foil"></span>
+                            </a>
                           {% endif %}
                         </td>
 
@@ -203,28 +216,8 @@
                                 {%- endfor -%}
                               {%- endif -%}
 
-                              {%- for property in item.properties -%}
-                                {%- assign property_first_char = property.first | slice: 0 -%}
-                                {%- if property.last != blank and property_first_char != '_' -%}
-                                  <div class="product-option">
-                                    <dt>{{ property.first }}:</dt>
-                                    <dd>
-                                      {%- if property.last contains '/uploads/' -%}
-                                        <a
-                                          href="{{ property.last }}"
-                                          class="link"
-                                          target="_blank"
-                                          aria-describedby="a11y-new-window-message"
-                                        >
-                                          {{ property.last | split: '/' | last }}
-                                        </a>
-                                      {%- else -%}
-                                        {{ property.last }}
-                                      {%- endif -%}
-                                    </dd>
-                                  </div>
-                                {%- endif -%}
-                              {%- endfor -%}
+                              {%- comment -%} wicz craft: box picks listed under "inside" (§9), shared with the cart page {%- endcomment -%}
+                              {%- render 'wicz-cart-item-options', item: item -%}
                             </dl>
 
                             <p class="product-option">{{ item.selling_plan_allocation.selling_plan.name }}</p>
@@ -487,7 +480,8 @@
           <div id="CartDrawer-CartErrors" role="alert"></div>
         </form>
       </cart-drawer-items>
-      <div class="drawer__footer">
+      {%- comment -%} wicz craft: total + checkout are the one flat butter-yellow block (§9) {%- endcomment -%}
+      <div class="drawer__footer wicz-drawer__summary">
         {%- if settings.show_cart_note -%}
           <details id="Details-CartDrawer">
             <summary>

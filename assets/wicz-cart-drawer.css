@@ -1,0 +1,185 @@
+/* wicz craft cart drawer (snippets/cart-drawer.liquid, design guide §7, §9).
+   Same rules as the cart page: flat cream, mono throughout, and flat
+   butter-yellow only on the checkout block. Line items share
+   assets/wicz-cart.css with the cart page. Mobile first. */
+
+/* The drawer always wears the site palette, even when it opens over a
+   flavor page that has re-themed the page (snippets/wicz-flavor-vars.liquid). */
+cart-drawer.drawer,
+cart-drawer.drawer .drawer__inner.color-scheme-1 {
+  /* outranks .wicz-flavor-page .color-scheme-1 in wicz-base.css */
+  --flavor-ground: var(--foil);
+  --flavor-ink: var(--periwinkle);
+  --flavor-deep: var(--periwinkle-deep);
+  --flavor-fold: var(--foil-fold);
+  --flavor-text: var(--periwinkle-deep);
+  --text: var(--periwinkle-deep);
+  --display: var(--periwinkle);
+  --color-foreground: 63, 91, 176;
+  --color-button: 63, 91, 176;
+  --color-button-text: 255, 244, 230;
+  --color-secondary-button-text: 63, 91, 176;
+  --color-link: 63, 91, 176;
+  --color-background: 255, 244, 230;
+  --gradient-background: var(--cream);
+}
+
+/* flat periwinkle wash behind the drawer, no gradient */
+cart-drawer.drawer {
+  background-color: rgba(63, 91, 176, 0.28);
+}
+
+cart-drawer .drawer__inner {
+  width: 420px;
+  max-width: calc(100vw - 24px);
+  padding: 0 var(--space-3);
+  background: var(--cream);
+  border: 0;
+  border-left: var(--border);
+  color: var(--periwinkle-deep);
+}
+
+/* ---------- header ---------- */
+cart-drawer .drawer__header {
+  padding: var(--space-3) 0 var(--space-2);
+  border-bottom: var(--border);
+}
+
+cart-drawer .drawer__heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: var(--fraunces-axes-heading);
+  font-size: 32px;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-transform: lowercase;
+  color: var(--periwinkle);
+}
+
+cart-drawer .drawer__close {
+  width: 44px;
+  height: 44px;
+  right: -10px;
+  color: var(--periwinkle-deep);
+}
+
+/* ---------- line items ---------- */
+cart-drawer .drawer__contents {
+  padding-top: var(--space-2);
+}
+
+cart-drawer .cart-items thead {
+  display: none;
+}
+
+cart-drawer .cart-item {
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid rgba(63, 91, 176, 0.25);
+}
+
+cart-drawer .cart-item:last-child {
+  border-bottom: 0;
+}
+
+cart-drawer .cart-item__image {
+  border-radius: var(--radius);
+}
+
+cart-drawer .cart-item__name {
+  font-size: 15px;
+}
+
+cart-drawer .cart-item__totals,
+cart-drawer .cart-item__totals .price {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+cart-drawer .quantity {
+  border-radius: var(--radius);
+}
+
+cart-drawer .quantity::after,
+cart-drawer .quantity::before {
+  border-radius: var(--radius);
+}
+
+cart-drawer .cart-item__link.wicz-cart-cube {
+  width: 64px;
+  height: 64px;
+}
+
+/* ---------- empty ---------- */
+.wicz-drawer__empty-image {
+  display: block;
+  width: 200px;
+  height: auto;
+  margin: 0 auto var(--space-3);
+  border-radius: var(--radius);
+}
+
+cart-drawer .cart__empty-text {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: var(--fraunces-axes-heading);
+  font-size: 32px;
+  letter-spacing: -0.03em;
+  text-transform: lowercase;
+  color: var(--periwinkle);
+}
+
+/* ---------- checkout block: the one flat butter-yellow surface ---------- */
+cart-drawer .wicz-drawer__summary {
+  margin: 0 calc(var(--space-3) * -1);
+  padding: var(--space-3);
+  background: var(--foil);
+  border-top: var(--border);
+}
+
+cart-drawer .wicz-drawer__summary .totals {
+  justify-content: space-between;
+}
+
+/* an h2, so it would pick up the light display periwinkle; small text is deep (§3.3) */
+cart-drawer .wicz-drawer__summary .totals__total {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: lowercase;
+  color: var(--periwinkle-deep);
+}
+
+cart-drawer .wicz-drawer__summary .totals__total-value {
+  color: var(--periwinkle-deep);
+}
+
+cart-drawer .wicz-drawer__summary .totals__total-value {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  letter-spacing: 0;
+}
+
+cart-drawer .wicz-drawer__summary .tax-note {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0;
+  color: var(--periwinkle-deep);
+}
+
+cart-drawer .cart__ctas {
+  margin-top: var(--space-2);
+}
+
+cart-drawer .cart__checkout-button {
+  width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  cart-drawer .drawer__inner {
+    transition: none;
+  }
+}

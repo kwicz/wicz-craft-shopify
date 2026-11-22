@@ -280,7 +280,9 @@
     {{ 'wicz-tokens.css' | asset_url | stylesheet_tag }}
     {{ 'wicz-base.css' | asset_url | stylesheet_tag }}
     {{ 'wicz-components.css' | asset_url | stylesheet_tag }}
-    {%- if template.name == 'cart' -%}{{ 'wicz-cart.css' | asset_url | stylesheet_tag }}{%- endif -%}
+    {%- comment -%} wicz craft: cart line styles are shared by the cart page and the drawer {%- endcomment -%}
+    {%- if template.name == 'cart' or settings.cart_type == 'drawer' -%}{{ 'wicz-cart.css' | asset_url | stylesheet_tag }}{%- endif -%}
+    {%- if settings.cart_type == 'drawer' -%}{{ 'wicz-cart-drawer.css' | asset_url | stylesheet_tag }}{%- endif -%}
     {%- render 'wicz-theme-vars' -%}
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 
@@ -406,6 +408,7 @@
 
     {%- if settings.cart_type == 'drawer' -%}
       <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'wicz-cart-add.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
   </body>
 </html>

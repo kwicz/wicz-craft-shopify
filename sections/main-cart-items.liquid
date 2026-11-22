@@ -168,76 +168,7 @@
                             {%- endfor -%}
                           {%- endif -%}
 
-                          {%- comment -%}
-                            wicz craft: a box lists its picks under the line item (§9).
-                            The builder writes big / slot n properties; here they
-                            collapse into one list with counts, e.g. "caesar × 2".
-                          {%- endcomment -%}
-                          {%- liquid
-                            assign is_box = false
-                            if item.properties._components != blank
-                              assign is_box = true
-                              assign picks = ''
-                              for property in item.properties
-                                assign key_start = property.first | slice: 0, 4
-                                if key_start == 'slot'
-                                  assign picks = picks | append: property.last | append: '|'
-                                endif
-                              endfor
-                              assign picks = picks | split: '|'
-                              assign unique_picks = picks | uniq
-                            endif
-                          -%}
-                          {%- for property in item.properties -%}
-                            {%- assign property_first_char = property.first | slice: 0 -%}
-                            {%- assign property_start = property.first | slice: 0, 4 -%}
-                            {%- if is_box and property_start == 'slot' -%}{%- continue -%}{%- endif -%}
-                            {%- if is_box and property.first == 'big' -%}{%- continue -%}{%- endif -%}
-                            {%- if property.last != blank and property_first_char != '_' -%}
-                              <div class="product-option">
-                                <dt>{{ property.first }}:</dt>
-                                <dd>
-                                  {%- if property.last contains '/uploads/' -%}
-                                    <a href="{{ property.last }}" class="link" target="_blank">
-                                      {{ property.last | split: '/' | last }}
-                                    </a>
-                                  {%- else -%}
-                                    {{ property.last }}
-                                  {%- endif -%}
-                                </dd>
-                              </div>
-                            {%- endif -%}
-                          {%- endfor -%}
-
-                          {%- if is_box -%}
-                            <div class="product-option">
-                              <dt>inside:</dt>
-                              <dd>
-                                <ul class="wicz-cart-contents" role="list" data-expanded="{{ item.item_components.size }}">
-                                  {%- comment -%}
-                                    The box-expand function's result when Shopify has applied it;
-                                    the picks from the properties otherwise.
-                                  {%- endcomment -%}
-                                  {%- if item.item_components.size > 0 -%}
-                                    {%- for component in item.item_components -%}
-                                      <li>{{ component.product.title | downcase }}, {{ component.variant.title }}{% if component.quantity > 1 %} × {{ component.quantity }}{% endif %}</li>
-                                    {%- endfor -%}
-                                  {%- else -%}
-                                  {%- if item.properties.big != blank -%}
-                                    <li>{{ item.properties.big }}</li>
-                                  {%- endif -%}
-                                  {%- for pick in unique_picks -%}
-                                    {%- assign pick_count = 0 -%}
-                                    {%- for other in picks -%}
-                                      {%- if other == pick -%}{%- assign pick_count = pick_count | plus: 1 -%}{%- endif -%}
-                                    {%- endfor -%}
-                                    <li>{{ pick }}, 2 oz{% if pick_count > 1 %} × {{ pick_count }}{% endif %}</li>
-                                  {%- endfor -%}
-                                  {%- endif -%}
-                                </ul>
-                              </dd>
-                            </div>
-                          {%- endif -%}
+                          {%- render 'wicz-cart-item-options', item: item -%}
                         </dl>
 
                         <p class="product-option">{{ item.selling_plan_allocation.selling_plan.name }}</p>

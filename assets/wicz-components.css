@@ -394,3 +394,15 @@
   content: '· ';
   speak: never;
 }
+
+/* add-to-cart error from assets/wicz-cart-add.js (builder, flights) */
+.wicz-cart-add__error {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--periwinkle-deep);
+}
+
+.wicz-cart-add__error:empty {
+  display: none;
+}

@@ -193,6 +193,14 @@
   font-weight: 500;
 }
 
+/* a classic without its top-down block photo yet: a square foil pack, so
+   it lines up with the photo cards */
+.wicz-big-choice__pack.foil {
+  box-sizing: border-box;
+  aspect-ratio: 1;
+  align-content: end;
+}
+
 .wicz-big-choice__input:checked + .wicz-big-choice__pack {
   outline-color: var(--periwinkle-deep);
 }

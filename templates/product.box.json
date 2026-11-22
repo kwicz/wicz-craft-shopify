@@ -5,6 +5,7 @@
       "settings": {
         "flavors": "shop",
         "flights": "flights",
+        "big_flavors": ["salted", "unsalted", "honey", "garlic-herb"],
         "big_size": "8 oz",
         "small_size": "2 oz",
         "care_line": "keep cold. soften 20 minutes before serving. best within 2–3 weeks, or freeze."

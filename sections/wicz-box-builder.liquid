@@ -2,7 +2,7 @@
   The box builder (design guide §7 builder tray, §8.2, §9 build a box).
 
   The product is "build a box", one variant per format. Each variant carries
-  its slot counts in custom.box_big (8 oz, salted or unsalted) and
+  its slot counts in custom.box_big (8 oz, one of the classics) and
   custom.box_small (2 oz, any flavor), set by
   app/wicz-craft-cartons/scripts/seed-store.mjs.
 
@@ -38,6 +38,11 @@
   assign flavors = section.settings.flavors.products
   assign flights = section.settings.flights.products
   assign form_id = 'BoxForm-' | append: section.id
+
+  # the big slot's flavors: the classics (salted, unsalted, honey, garlic
+  # herb), picked in the section settings. Must match the box-expand rules
+  # (catalog BIG_FLAVORS, set by the seed). Empty: the plain tier.
+  assign big_handles = section.settings.big_flavors | map: 'handle'
   assign selected = product.selected_or_first_available_variant
 
   assign small_price = 0
@@ -58,7 +63,7 @@
   {%- liquid
     # a missing Files image is still truthy; .width tells them apart
     assign header_image = section.settings.header_image
-    if header_image == blank and images['builder-header.jpg'].width
+    if header_image == blank and images['builder-header.jpg'].width != blank
       assign header_image = images['builder-header.jpg']
     endif
   -%}
@@ -97,8 +102,23 @@
               {%- assign cube_name = 'builder-cube-' | append: flavor.handle | append: '.png' -%}
               {%- assign block_name = 'builder-block-' | append: flavor.handle | append: '.png' -%}
               {{ flavor.handle | json }}: {
-                "cube": {% if images[cube_name].width %}{{ images[cube_name] | image_url: width: 200 | json }}{% else %}null{% endif %},
-                "block": {% if flavor.metafields.custom.price_tier.value == 'plain' and images[block_name].width %}{{ images[block_name] | image_url: width: 400 | json }}{% else %}null{% endif %},
+                "cube": {% if images[cube_name].width != blank %}{{ images[cube_name] | image_url: width: 200 | json }}{% else %}null{% endif %},
+                {%- liquid
+                  assign big_ok = false
+                  if big_handles.size > 0
+                    if big_handles contains flavor.handle
+                      assign big_ok = true
+                    endif
+                  elsif flavor.metafields.custom.price_tier.value == 'plain'
+                    assign big_ok = true
+                  endif
+                  assign block_image = images[block_name]
+                  assign block_url = null
+                  if big_ok and block_image.width != blank
+                    assign block_url = block_image | image_url: width: 400
+                  endif
+                -%}
+                "block": {% if block_url %}{{ block_url | json }}{% else %}null{% endif %},
                 "bestWithin": {{ flavor.metafields.custom.best_within.value | default: '' | json }},
                 "title": {{ flavor.title | downcase | json }},
                 "ground": {{ flavor.metafields.custom.color_ground.value | default: settings.wicz_foil | json }},
@@ -106,7 +126,7 @@
                 "deep": {{ flavor.metafields.custom.color_deep.value | default: settings.wicz_periwinkle_deep | json }},
                 "fold": {{ flavor.metafields.custom.color_fold.value | default: settings.wicz_foil_fold | json }},
                 "small": {% if small %}{ "id": {{ small.id }}, "available": {{ small.available }} }{% else %}null{% endif %},
-                "big": {% if big and flavor.metafields.custom.price_tier.value == 'plain' %}{ "id": {{ big.id }}, "available": {{ big.available }} }{% else %}null{% endif %}
+                "big": {% if big and big_ok %}{ "id": {{ big.id }}, "available": {{ big.available }} }{% else %}null{% endif %}
               }{% unless forloop.last %},{% endunless %}
             {%- endfor -%}
           },
@@ -171,7 +191,7 @@
                   <span class="wicz-format__title">{{ variant.title }}</span>
                   <span class="wicz-format__contents">
                     {%- if big_slots > 0 -%}
-                      {{ big_slots }} × {{ section.settings.big_size }} salted or unsalted + {% endif -%}
+                      {{ big_slots }} × {{ section.settings.big_size }} a classic + {% endif -%}
                     {{ small_slots }} × {{ section.settings.small_size }}
                   </span>
                   <span class="wicz-format__price">{{ variant.price | money }}</span>
@@ -187,10 +207,20 @@
         <div class="wicz-box__step" data-big-step hidden>
           <fieldset>
             <legend class="wicz-box__step-title"><span class="wicz-box__step-number">2</span> the big one</legend>
-            <p class="wicz-box__hint">one {{ section.settings.big_size }}, the everyday butter.</p>
+            <p class="wicz-box__hint">one {{ section.settings.big_size }} of a classic.</p>
             <div class="wicz-big-choices">
               {%- for flavor in flavors -%}
-                {%- if flavor.metafields.custom.price_tier.value == 'plain' -%}
+                {%- liquid
+                  assign big_ok = false
+                  if big_handles.size > 0
+                    if big_handles contains flavor.handle
+                      assign big_ok = true
+                    endif
+                  elsif flavor.metafields.custom.price_tier.value == 'plain'
+                    assign big_ok = true
+                  endif
+                -%}
+                {%- if big_ok -%}
                   {%- assign big = flavor.variants | where: 'title', section.settings.big_size | first -%}
                   {%- if big -%}
                     <label class="wicz-big-choice" style="{% render 'wicz-flavor-vars', product: flavor %}">
@@ -204,8 +234,8 @@
                         {% endunless %}
                       >
                       {%- assign block_name = 'builder-block-' | append: flavor.handle | append: '.png' -%}
-                      <span class="wicz-big-choice__pack{% if images[block_name].width %} wicz-big-choice__pack--photo{% else %} foil{% endif %}">
-                        {%- if images[block_name].width -%}
+                      <span class="wicz-big-choice__pack{% if images[block_name].width != blank %} wicz-big-choice__pack--photo{% else %} foil{% endif %}">
+                        {%- if images[block_name].width != blank -%}
                           {{ images[block_name] | image_url: width: 400 | image_tag: loading: 'lazy', class: 'wicz-big-choice__image', alt: '' }}
                         {%- endif -%}
                         <span class="wicz-big-choice__name">{{ flavor.title | downcase }}</span>
@@ -230,8 +260,8 @@
               {%- if small -%}
                 {%- assign cube_name = 'builder-cube-' | append: flavor.handle | append: '.png' -%}
                 <li class="wicz-picker__item" style="{% render 'wicz-flavor-vars', product: flavor %}">
-                  <div class="wicz-picker__pack{% if images[cube_name].width %} wicz-picker__pack--photo{% else %} foil{% endif %}">
-                    {%- if images[cube_name].width -%}
+                  <div class="wicz-picker__pack{% if images[cube_name].width != blank %} wicz-picker__pack--photo{% else %} foil{% endif %}">
+                    {%- if images[cube_name].width != blank -%}
                       {%- comment -%} the cube's wrapper carries the flavor name; the text below is for screen readers {%- endcomment -%}
                       {{
                         images[cube_name]
@@ -247,7 +277,7 @@
                     {%- if flavor.metafields.custom.seasonal.value == true -%}
                       <span class="wicz-picker__holiday">holiday</span>
                     {%- endif -%}
-                    <span class="wicz-picker__name{% if images[cube_name].width %} visually-hidden{% endif %}">
+                    <span class="wicz-picker__name{% if images[cube_name].width != blank %} visually-hidden{% endif %}">
                       {%- assign words = flavor.title | downcase | split: ' ' -%}
                       {%- for word in words -%}<span>{{ word }}</span> {% endfor -%}
                     </span>
@@ -325,7 +355,14 @@
       "type": "collection",
       "id": "flavors",
       "label": "flavors to choose from",
-      "info": "each flavor needs the two size variants below. the big slot offers flavors whose custom.price_tier is plain."
+      "info": "each flavor needs the two size variants below."
+    },
+    {
+      "type": "product_list",
+      "id": "big_flavors",
+      "label": "flavors for the big slot",
+      "info": "the classics. keep in step with BIG_FLAVORS in catalog/catalog.mjs, which the cart transform checks. empty: the plain-tier flavors.",
+      "limit": 12
     },
     {
       "type": "collection",

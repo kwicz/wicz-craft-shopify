@@ -149,7 +149,8 @@ Needs Node 22 (`.nvmrc`), [Shopify CLI](https://shopify.dev/docs/api/shopify-cli
   on the site until they're known; ingredients are marked draft in the kit.
 - **`?box=`, not `?format=`.** Shopify reserves `format` as a query
   parameter and answers 404, so the builder's pre-fill uses `box`.
-- **Flavored 8 oz in a box isn't offered.** The guide leaves it as an open
-  decision; the big slot is salted or unsalted.
+- **The box's 8 oz is a classic.** Salted, unsalted, honey or garlic herb,
+  at the same flat box price. Honey and garlic herb show the foil pack in
+  the builder until top-down block photos exist.
 - **Known gap:** the guide allows its light inks (periwinkle on cream, 2.04:1)
   for large display type. That meets the guide but not WCAG's 3:1 for large text.

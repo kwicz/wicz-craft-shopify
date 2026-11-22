@@ -104,9 +104,9 @@ export const PRICES = {
 };
 
 // §8.2: one product, one variant per format, flat prices.
-// `big` slots take an 8 oz salted or unsalted; `small` slots take any 2 oz.
+// `big` slots take an 8 oz of a classic (no extra charge); `small` slots take any 2 oz.
 export const BOX_HANDLE = 'build-a-box';
-export const BIG_FLAVORS = ['salted', 'unsalted'];
+export const BIG_FLAVORS = ['salted', 'unsalted', 'honey', 'garlic-herb'];
 export const formats = [
   { key: 'four', title: 'four', big: 0, small: 4, price: '21.00', separately: '24.00' },
   { key: 'six', title: 'six', big: 0, small: 6, price: '32.00', separately: '36.00' },

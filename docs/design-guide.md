@@ -317,10 +317,10 @@ The **box builder** handles every multi-flavor purchase. The customer picks a fo
 | four | 4 × 2 oz, any flavors | small | $24 | **$21** |
 | six | 6 × 2 oz, any flavors | medium | $36 | **$32** |
 | eight | 8 × 2 oz, any flavors | large | $48 | **$42** |
-| one big, two small | 1 × 8 oz **salted or unsalted** + 2 × 2 oz, any flavors | medium | $26 | **$23** |
-| one big, four small | 1 × 8 oz **salted or unsalted** + 4 × 2 oz, any flavors | large | $38 | **$34** |
+| one big, two small | 1 × 8 oz **classic** + 2 × 2 oz, any flavors | medium | $26 | **$23** |
+| one big, four small | 1 × 8 oz **classic** + 4 × 2 oz, any flavors | large | $38 | **$34** |
 
-In the "one big" formats, the 8 oz is the everyday butter, so it's salted or unsalted only. [DECIDE: allow a flavored 8 oz for +$2?]
+In the "one big" formats, the 8 oz is one of the four classics: salted, unsalted, honey, or garlic herb. The box price stays flat whichever one is picked (decided Nov 21, 2026). Honey and garlic herb show the foil pack in the builder until top-down block photos (`builder-block-honey.png`, `builder-block-garlic-herb.png`) are shot.
 
 **Flights** are presets of the *eight* format, at **$42**:
 
@@ -427,7 +427,7 @@ Prices are set against what similar goods sell for: handmade maple spreaders run
 - **Gift card:** the card front image, amount pills (`$25` / `$50` / `$100`), recipient fields, and the primary button.
 - **Build a box:**
   1. **Choose a format:** five pill-cards showing contents and price.
-  2. **Fill the slots:** the big slot offers salted or unsalted. Below it, show the flavor grid with a `+` on each card, and keep the builder tray (§7) sticky with the count and fixed price.
+  2. **Fill the slots:** the big slot offers the four classics. Below it, show the flavor grid with a `+` on each card, and keep the builder tray (§7) sticky with the count and fixed price.
   3. **Add to cart:** the button stays disabled until every slot is full.
 - **Flight:** the same layout as a single product, plus flavor dots, the "if bought separately" line, a window-box image, a "make it your own" link into the builder, and a butter board add-on card.
 - **About:** short. Three or four voice lines, the phrase stamp, the logo stamp, and the location line.

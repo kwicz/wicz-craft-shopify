@@ -4,9 +4,9 @@
       "type": "wicz-hero",
       "settings": {
         "heading": "really\ngood\nbutter",
-        "details": "cultured butter\ncultured 48 hours\nportland, oregon",
+        "details": "cultured butter\nportland, oregon",
         "rotate": true,
-        "show_stamp": true,
+        "show_stamp": false,
         "stamp_text": "it's really good.",
         "image": "shopify://shop_images/home-hero-desktop.jpg",
         "image_mobile": "shopify://shop_images/home-hero-mobile.jpg"

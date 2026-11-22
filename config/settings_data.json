@@ -196,7 +196,14 @@
       "wicz_periwinkle": "#93AEEB",
       "wicz_periwinkle_deep": "#3F5BB0",
       "wicz_cream": "#FFF4E6",
-      "wicz_crust": "#C98A45"
+      "wicz_crust": "#C98A45",
+      "wicz_upsell_show": true,
+      "wicz_upsell_heading": "goes with",
+      "wicz_upsell_count": 2,
+      "wicz_upsell_board": "butter-board",
+      "wicz_upsell_keeper": "butter-keeper",
+      "wicz_upsell_spreader": "butter-spreader",
+      "wicz_upsell_gift_card": "gift-card"
     }
   }
 }

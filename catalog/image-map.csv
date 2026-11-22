@@ -134,4 +134,19 @@ email-header.jpg,images/phase-1-wrapped/email-header.jpg,included,site-wide,emai
 care-soften.jpg,,coming (4 · product),site-wide,care line (product pages),"theme: product template, beside the care line",a cube of butter softening on a plate,1200×1200
 404.jpg,,coming (4 · product),site-wide,404 page,theme: 404 template,an empty butter wrapper,1200×1200
 cart-empty.jpg,images/phase-3-builder/cart-empty.jpg,included,site-wide,empty cart,"theme: cart template, empty state",an empty window box,1200×1200
-gift-card.jpg,images/phase-2-boxes/gift-card.jpg,included,site-wide,gift card product,product 'gift card' · featured image,a wicz craft gift card on a window box,2048×2048
+gift-card.jpg,images/phase-2-boxes/gift-card.jpg,included,site-wide,gift card product,product 'gift card' · media position 4,a wicz craft gift card on a window box,2048×2048
+addon-gift-card-front-25.png,images/phase-6-add-ons/addon-gift-card-front-25.png,included,product page,gift card · front $25,product 'gift card' · media position 1 · featured image; variant '$25' image,"a $25 wicz craft gift card: butter yellow, with the mold and the wordmark",1600×1000
+addon-gift-card-front-50.png,images/phase-6-add-ons/addon-gift-card-front-50.png,included,product page,gift card · front $50,product 'gift card' · media position 2; variant '$50' image,"a $50 wicz craft gift card: butter yellow, with the mold and the wordmark",1600×1000
+addon-gift-card-front-100.png,images/phase-6-add-ons/addon-gift-card-front-100.png,included,product page,gift card · front $100,product 'gift card' · media position 3; variant '$100' image,"a $100 wicz craft gift card: butter yellow, with the mold and the wordmark",1600×1000
+addon-spreader-01-pack.jpg,,coming (6 · add-ons),product page,spreader · pack shot,product 'butter-spreader' · media position 1 · featured image,"the wicz craft maple butter spreader, the mold burned into the handle",2048×2048
+addon-spreader-02-in-use.jpg,,coming (6 · add-ons),product page,spreader · in use,product 'butter-spreader' · media position 2,"the maple spreader in a block of salted butter",2048×2048
+addon-spreader-03-detail.jpg,,coming (6 · add-ons),product page,spreader · detail,product 'butter-spreader' · media position 3,"the mold burned into the spreader handle, close up",2048×2048
+addon-keeper-01-pack.jpg,,coming (6 · add-ons),product page,butter keeper · pack shot,product 'butter-keeper' · media position 1 · featured image,"the cream-glazed butter keeper with a thin periwinkle rim",2048×2048
+addon-keeper-02-in-use.jpg,,coming (6 · add-ons),product page,butter keeper · in use,product 'butter-keeper' · media position 2,"the butter keeper's bell packed with honey butter",2048×2048
+addon-keeper-03-detail.jpg,,coming (6 · add-ons),product page,butter keeper · detail,product 'butter-keeper' · media position 3,"the butter keeper's periwinkle rim, close up",2048×2048
+addon-board-01-pack.jpg,,coming (6 · add-ons),product page,butter board · pack shot,product 'butter-board' · media position 1 · featured image,"the small maple butter board, the mold branded near the handle",2048×2048
+addon-board-02-in-use.jpg,,coming (6 · add-ons),product page,butter board · in use,product 'butter-board' · media position 2,"the butter board with a block, two cubes, and bread",2048×2048
+addon-board-03-detail.jpg,,coming (6 · add-ons),product page,butter board · detail,product 'butter-board' · media position 3,"the mold branded into the maple board, close up",2048×2048
+addon-salt-01-pack.jpg,,coming (6 · add-ons),product page,flaky salt · pack shot,product 'flaky-salt' · media position 1 · featured image,"the flaky salt tin with its butter-yellow lid",2048×2048
+addon-salt-02-in-use.jpg,,coming (6 · add-ons),product page,flaky salt · in use,product 'flaky-salt' · media position 2,"flaky salt on unsalted butter and bread",2048×2048
+addon-salt-03-detail.jpg,,coming (6 · add-ons),product page,flaky salt · detail,product 'flaky-salt' · media position 3,"the mold printed on the salt tin lid, close up",2048×2048

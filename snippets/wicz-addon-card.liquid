@@ -1,0 +1,110 @@
+{%- comment -%}
+  Add-on card (design guide §7, §8.5). For the spreader, keeper, board, salt
+  and gift card: they aren't butter, so no foil and no flavor colors. Cream
+  card, 1.5px periwinkle-deep border, 6px radius. The pack shot fills the
+  top; below it the name (H3), a one-line description in mono, the price,
+  and a secondary `add` button that adds it to the cart in place.
+
+  The compact version is for the cart upsell row: a 64px thumbnail, name,
+  price and `add`.
+
+  Without a photo yet (the add-on shots are still on the shot list), the
+  top shows the mold on cream.
+
+  A gift card has amounts and recipient fields to choose, so its button is a
+  `choose` link to the product page instead of `add`.
+
+  Accepts:
+  - product: {Object}
+  - compact: {Boolean} the cart row version (default false)
+  - ajax: {Boolean} add without leaving the page, through the cart drawer
+    (wicz-cart-add.js). Default true. The cart page passes false and gets a
+    plain link that adds and comes back to /cart.
+  - heading_level: {String} default 'h3'
+
+  Usage:
+  {% render 'wicz-addon-card', product: product %}
+{%- endcomment -%}
+{%- liquid
+  assign tag = heading_level | default: 'h3'
+  assign variant = product.selected_or_first_available_variant
+  assign line = product.description | strip_html | strip | split: '. ' | first | append: '.'
+  assign line = line | replace: '..', '.'
+  assign use_ajax = true
+  if ajax == false
+    assign use_ajax = false
+  endif
+  assign image_width = 600
+  if compact
+    assign image_width = 128
+  endif
+-%}
+<article class="wicz-addon{% if compact %} wicz-addon--compact{% endif %}">
+  <a href="{{ product.url }}" class="wicz-addon__media" tabindex="-1" aria-hidden="true">
+    {%- if product.featured_image -%}
+      {{
+        product.featured_image
+        | image_url: width: image_width
+        | image_tag: loading: 'lazy', class: 'wicz-addon__image', alt: '', sizes: '(min-width: 990px) 280px, 50vw'
+      }}
+    {%- else -%}
+      <span class="wicz-addon__placeholder">
+        {%- comment -%} the small mold (thicker edge, no dotted ring) is for 40px and under (§2.1) {%- endcomment -%}
+        {%- assign mold = 'wicz-mold.svg' -%}
+        {%- if compact -%}{%- assign mold = 'wicz-mold-small.svg' -%}{%- endif -%}
+        <img src="{{ mold | asset_url }}" alt="" width="64" height="64" loading="lazy">
+      </span>
+    {%- endif -%}
+  </a>
+  <div class="wicz-addon__body">
+    <{{ tag }} class="wicz-addon__name">
+      <a href="{{ product.url }}">{{ product.title | downcase | escape }}</a>
+    </{{ tag }}>
+    {%- unless compact -%}
+      {%- if line != '.' -%}<p class="wicz-addon__line">{{ line | escape }}</p>{%- endif -%}
+    {%- endunless -%}
+    <p class="wicz-addon__price">
+      {%- if product.gift_card? and product.price_varies -%}
+        from {{ product.price_min | money_without_trailing_zeros }}
+      {%- else -%}
+        {{ variant.price | money_without_trailing_zeros }}
+      {%- endif -%}
+    </p>
+    {%- if product.gift_card? -%}
+      <a href="{{ product.url }}" class="button button--secondary wicz-addon__add">choose</a>
+    {%- elsif variant.available and use_ajax == false -%}
+      {%- comment -%}
+        the cart page's items sit inside the cart form, and forms can't
+        nest, so this one is a link: GET /cart/add adds it and lands on /cart
+      {%- endcomment -%}
+      <a
+        href="{{ routes.cart_add_url }}?id={{ variant.id }}&quantity=1"
+        class="button button--secondary wicz-addon__add"
+        aria-label="add {{ product.title | downcase | escape }} to cart"
+        rel="nofollow"
+      >
+        add
+      </a>
+    {%- elsif variant.available -%}
+      <form
+        action="{{ routes.cart_add_url }}"
+        method="post"
+        class="wicz-addon__form"
+        data-wicz-cart-add
+      >
+        <input type="hidden" name="id" value="{{ variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+        <input type="hidden" name="return_to" value="{{ routes.cart_url }}">
+        <button
+          type="submit"
+          class="button button--secondary wicz-addon__add"
+          aria-label="add {{ product.title | downcase | escape }} to cart"
+        >
+          add
+        </button>
+      </form>
+    {%- else -%}
+      <p class="wicz-addon__sold-out">sold out</p>
+    {%- endif -%}
+  </div>
+</article>

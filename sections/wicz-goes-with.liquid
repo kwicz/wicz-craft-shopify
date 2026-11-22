@@ -1,0 +1,70 @@
+{%- comment -%}
+  `goes with` row (design guide §8.5, §9): the upsell row under a product
+  page's related products.
+  - on a butter, flight or box page: add-on cards (spreader and keeper on
+    every flavor, flaky salt on unsalted, the board on flights and the box)
+  - on an add-on page: three butter cards
+
+  Reads product.metafields.custom.goes_with (a list of product references,
+  set by the seed script and editable in the admin). When a product has
+  none, the fallback picks in the section settings are used, so the row
+  still shows on new products.
+{%- endcomment -%}
+{{ 'wicz-addon.css' | asset_url | stylesheet_tag }}
+{{ 'wicz-home.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign picks = product.metafields.custom.goes_with.value
+  if picks == blank or picks.count == 0
+    assign picks = section.settings.fallback
+  endif
+  assign shown = 0
+-%}
+
+{%- if picks != blank and picks.count > 0 -%}
+  <section class="wicz-goes-with page-width" aria-labelledby="GoesWith-{{ section.id }}">
+    <h2 class="wicz-goes-with__heading" id="GoesWith-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+    <ul class="wicz-goes-with__list" role="list">
+      {%- for pick in picks -%}
+        {%- if pick.id == product.id or pick.available == false and pick.gift_card? == false -%}{%- continue -%}{%- endif -%}
+        {%- if shown >= section.settings.limit -%}{%- break -%}{%- endif -%}
+        <li>
+          {%- if pick.type == 'add-on' or pick.gift_card? -%}
+            {%- render 'wicz-addon-card', product: pick -%}
+          {%- else -%}
+            {%- render 'wicz-flavor-card', product: pick -%}
+          {%- endif -%}
+        </li>
+        {%- assign shown = shown | plus: 1 -%}
+      {%- endfor -%}
+    </ul>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "wicz goes with",
+  "class": "wicz-goes-with-section",
+  "enabled_on": { "templates": ["product"] },
+  "settings": [
+    { "type": "text", "id": "heading", "label": "heading", "default": "goes with" },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "most to show",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "product_list",
+      "id": "fallback",
+      "label": "fallback picks",
+      "info": "used when a product has no custom.goes_with",
+      "limit": 4
+    }
+  ],
+  "presets": [{ "name": "wicz goes with" }]
+}
+{% endschema %}

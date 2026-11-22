@@ -89,6 +89,11 @@
             {%- else -%}
               {% render 'product-media-gallery', variant_images: variant_images %}
             {%- endif -%}
+          {%- elsif product.type == 'add-on' or product.gift_card? -%}
+            {%- comment -%} add-ons aren't butter, so no foil (§8.5): the mold on cream until the pack shot exists {%- endcomment -%}
+            <div class="wicz-addon-placeholder">
+              <img src="{{ 'wicz-mold.svg' | asset_url }}" alt="" width="160" height="160">
+            </div>
           {%- else -%}
             {% render 'wicz-foil-placeholder', product: product, size: 'large' %}
           {%- endif -%}

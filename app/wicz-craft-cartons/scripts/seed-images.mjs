@@ -2,7 +2,7 @@
 // where each one goes). Every image becomes a file in Content > Files under
 // its kit filename, so the theme can find it by name, then:
 //   - product media, in the map's media order, with alt text
-//   - variant images (8 oz / 2 oz, and each box format)
+//   - variant images (8 oz / 2 oz, each box format, each gift card amount)
 //   - collection images
 // Theme-only images (hero, lineup, builder pieces, cart, share image) stay in
 // Files; the theme reads them with `images['<filename>']` or an image picker.
@@ -84,7 +84,10 @@ for (const row of rows) {
     const handle = productHandle(product[1]);
     const position = Number(placement.match(/media position (\d+)/)?.[1] ?? 100);
     const variant = placement.match(/(\d+ oz) variant image/)?.[1] ?? placement.match(/variant '([^']+)' image/)?.[1];
-    if (variant && !/oz$/.test(variant) && !formatTitles.has(variant)) throw new Error(`unknown format ${variant}`);
+    // sizes (`8 oz`), box formats, and gift card amounts (`$25`)
+    if (variant && !/oz$/.test(variant) && !/^\$\d+$/.test(variant) && !formatTitles.has(variant)) {
+      throw new Error(`unknown variant ${variant}`);
+    }
     (productMedia[handle] ??= []).push({ row, position, variant });
   } else if (collection) {
     collectionImages[collectionHandle(collection[1])] = row;

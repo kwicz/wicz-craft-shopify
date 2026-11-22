@@ -83,11 +83,19 @@
         "products_to_show": 4,
         "fallback": "shop"
       }
+    },
+    "goes_with": {
+      "type": "wicz-goes-with",
+      "settings": {
+        "heading": "goes with",
+        "limit": 3
+      }
     }
   },
   "order": [
     "main",
     "photos",
-    "related"
+    "related",
+    "goes_with"
   ]
 }

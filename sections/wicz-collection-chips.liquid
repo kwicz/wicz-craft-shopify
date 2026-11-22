@@ -1,25 +1,35 @@
 {%- comment -%}
   Mono filter chips for collection pages (design guide §9): pill links
   between collections, the current one filled. 999px radius (§6.2).
+  A chip links to a collection, or to any link (the box builder, the gift
+  card) when no collection is picked.
 {%- endcomment -%}
 <nav class="wicz-chips page-width" aria-label="{{ section.settings.label | escape }}">
   <ul class="wicz-chips__list" role="list">
     {%- for block in section.blocks -%}
-      {%- assign target = block.settings.collection -%}
-      {%- if target != blank -%}
-        {%- assign is_current = false -%}
-        {%- if collection.handle == target.handle -%}
-          {%- assign is_current = true -%}
-        {%- endif -%}
+      {%- liquid
+        assign target = block.settings.collection
+        assign href = block.settings.link
+        assign label = block.settings.label
+        assign is_current = false
+        if target.handle != blank
+          assign href = target.url
+          assign label = label | default: target.title
+          if collection.handle == target.handle
+            assign is_current = true
+          endif
+        endif
+      -%}
+      {%- if href != blank and label != blank -%}
         <li {{ block.shopify_attributes }}>
           <a
-            href="{{ target.url }}"
+            href="{{ href }}"
             class="wicz-chips__chip{% if is_current %} is-current{% endif %}"
             {% if is_current %}
               aria-current="page"
             {% endif %}
           >
-            {{- block.settings.label | default: target.title | downcase -}}
+            {{- label | downcase -}}
           </a>
         </li>
       {%- endif -%}
@@ -85,7 +95,8 @@
       "name": "chip",
       "settings": [
         { "type": "collection", "id": "collection", "label": "collection" },
-        { "type": "text", "id": "label", "label": "label", "info": "defaults to the collection title" }
+        { "type": "url", "id": "link", "label": "or a link", "info": "used when no collection is picked, e.g. the box builder or the gift card" },
+        { "type": "text", "id": "label", "label": "label", "info": "defaults to the collection title; needed for a link" }
       ]
     }
   ],

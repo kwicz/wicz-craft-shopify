@@ -166,5 +166,66 @@ export const flights = [
   ...boxFacts(flight.contents),
 }));
 
+// §8.5 add-ons: bought in and branded with the mold. Not butter, so no
+// flavor colors and no foil card. Sizes are still open in the guide.
+export const ADD_ONS_HANDLE = 'add-ons';
+export const addOns = [
+  {
+    handle: 'butter-spreader',
+    title: 'spreader',
+    price: '12.00',
+    madeOf: 'maple, food-safe oil',
+    size: '[SPREADER LENGTH]',
+    body: 'maple butter spreader with the mold burned into the handle. rounded blade, made for soft butter.',
+    goesWith: ['salted', 'honey', 'garlic-herb'],
+  },
+  {
+    handle: 'butter-keeper',
+    title: 'butter keeper',
+    price: '30.00',
+    madeOf: 'glazed stoneware',
+    size: '[KEEPER CAPACITY]',
+    body: 'cream-glazed french butter keeper. pack butter into the bell, put a little cold water in the base, and it stays soft on the counter.',
+    goesWith: ['honey', 'salted', 'hot-honey'],
+  },
+  {
+    handle: 'butter-board',
+    title: 'butter board',
+    price: '34.00',
+    madeOf: 'maple, food-safe oil',
+    size: '[BOARD DIMENSIONS]',
+    body: 'small maple paddle board with the mold branded near the handle. room for one block, two cubes, and the bread.',
+    goesWith: ['classics-culinary-flight', 'build-a-box', 'chili-crisp'],
+  },
+  {
+    handle: 'flaky-salt',
+    title: 'flaky salt',
+    price: '7.00',
+    madeOf: 'sea salt',
+    size: '[SALT NET WT]',
+    ingredients: 'sea salt',
+    body: 'flaky sea salt in a small tin. for unsalted butter, radishes, and the top of anything.',
+    goesWith: ['unsalted', 'smoked-sea-salt', 'salted'],
+  },
+];
+
+export const giftCard = {
+  handle: 'gift-card',
+  title: 'gift card',
+  amounts: ['25', '50', '100'],
+  body: 'a gift of really good butter. good for anything in the shop, for pickup or local delivery.',
+};
+
+// §8.5 "where it's offered": the `goes with` row on each butter page.
+// The spreader is on every butter page, the keeper on every 8 oz page (all
+// twelve flavors come in 8 oz), the salt on unsalted, the board on flights
+// and the box.
+export function goesWith(handle) {
+  if (handle === BOX_HANDLE || flights.some((f) => f.handle === handle)) {
+    return ['butter-board', 'butter-spreader'];
+  }
+  return ['butter-spreader', 'butter-keeper', ...(handle === 'unsalted' ? ['flaky-salt'] : [])];
+}
+
 // Old catalog (2″ / 1.2″ cubes and cartons), archived by the seed script.
 export const RETIRED = ['a-little-four', 'half-dozen', 'one-big-four-small', 'build-your-own'];

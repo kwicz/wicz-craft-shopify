@@ -167,8 +167,12 @@
                       style="--animation-order: {{ forloop.index }};"
                     {% endif %}
                   >
-                    {%- comment -%} wicz craft: flavor card (design guide §7) {%- endcomment -%}
-                    {% render 'wicz-flavor-card', product: product, heading_level: 'h2', lazy_load: lazy_load %}
+                    {%- comment -%} wicz craft: flavor card (design guide §7); add-ons and the gift card never go on foil (§8.5) {%- endcomment -%}
+                    {%- if product.type == 'add-on' or product.gift_card? -%}
+                      {% render 'wicz-addon-card', product: product, heading_level: 'h2' %}
+                    {%- else -%}
+                      {% render 'wicz-flavor-card', product: product, heading_level: 'h2', lazy_load: lazy_load %}
+                    {%- endif -%}
                   </li>
                 {%- endfor -%}
               </ul>

@@ -1,0 +1,308 @@
+/* Add-on cards (design guide §7, §8.5), the `goes with` row
+   (sections/wicz-goes-with.liquid) and the cart upsell row
+   (snippets/wicz-cart-upsell.liquid). Mobile first. Flat cream, never foil. */
+
+.wicz-addon {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--cream);
+  border: var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  color: var(--periwinkle-deep);
+}
+
+.wicz-addon__media {
+  display: block;
+  aspect-ratio: 1;
+  background-color: var(--cream);
+  border-bottom: var(--border);
+}
+
+.wicz-addon__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wicz-addon__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.wicz-addon__placeholder img {
+  width: 36%;
+  height: auto;
+  opacity: 0.5;
+}
+
+.wicz-addon__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.wicz-addon__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-variation-settings: var(--fraunces-axes-heading);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.wicz-addon__name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.wicz-addon__name a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.wicz-addon__line,
+.wicz-addon__price,
+.wicz-addon__sold-out {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+.wicz-addon__line {
+  flex: 1;
+}
+
+.wicz-addon__price {
+  font-weight: 500;
+}
+
+.wicz-addon__form {
+  margin: 0;
+}
+
+.wicz-addon .wicz-addon__add {
+  min-width: 0;
+  min-height: 40px;
+  width: 100%;
+  padding: 0 var(--space-2);
+  font-size: 13px;
+}
+
+.wicz-addon .wicz-cart-add__error {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* ---------- compact: the cart upsell row ---------- */
+.wicz-addon--compact {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  height: auto;
+}
+
+.wicz-addon--compact .wicz-addon__media {
+  width: 64px;
+  height: 64px;
+  border-bottom: 0;
+  border-right: var(--border);
+}
+
+.wicz-addon--compact .wicz-addon__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'name add'
+    'price add';
+  column-gap: var(--space-1);
+  row-gap: 2px;
+  padding: var(--space-1) var(--space-1) var(--space-1) 12px;
+}
+
+.wicz-addon--compact .wicz-addon__name {
+  grid-area: name;
+  font-family: var(--font-mono);
+  font-variation-settings: normal;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.wicz-addon--compact .wicz-addon__price {
+  grid-area: price;
+  font-weight: 400;
+}
+
+.wicz-addon--compact .wicz-addon__form,
+.wicz-addon--compact > .wicz-addon__body > .wicz-addon__add,
+.wicz-addon--compact .wicz-addon__sold-out {
+  grid-area: add;
+}
+
+.wicz-addon--compact .wicz-addon__add {
+  width: auto;
+  min-height: 36px;
+}
+
+.wicz-addon--compact .wicz-addon__placeholder img {
+  width: 60%;
+}
+
+/* ---------- the `goes with` row on product pages ---------- */
+.wicz-goes-with {
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-5);
+}
+
+.wicz-goes-with__heading {
+  margin: 0 0 var(--space-3);
+}
+
+/* sideways strip on phones, a grid from tablet up */
+.wicz-goes-with__list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 62%;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0 0 var(--space-1);
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.wicz-goes-with__list > li {
+  scroll-snap-align: start;
+}
+
+@media screen and (min-width: 750px) {
+  .wicz-goes-with__list {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-columns: auto;
+    gap: var(--space-3);
+    overflow: visible;
+  }
+}
+
+/* the section sits on a flavor page, which re-themes the page from the
+   product's metafields; add-on cards stay in the site palette */
+.wicz-flavor-page .wicz-goes-with {
+  --text: var(--periwinkle-deep);
+  --display: var(--periwinkle);
+  --color-foreground: 63, 91, 176;
+  --color-link: 63, 91, 176;
+  --color-button: 63, 91, 176;
+  --color-button-text: 255, 244, 230;
+  --color-secondary-button-text: 63, 91, 176;
+  color: var(--periwinkle-deep);
+}
+
+.wicz-flavor-page .wicz-goes-with__heading {
+  color: var(--periwinkle);
+}
+
+/* ---------- the cart upsell row (one row, §9) ---------- */
+.wicz-upsell {
+  --color-button: 63, 91, 176;
+  --color-button-text: 255, 244, 230;
+  --color-secondary-button-text: 63, 91, 176;
+  --color-foreground: 63, 91, 176;
+  margin-top: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: var(--border);
+}
+
+.wicz-upsell__heading {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: lowercase;
+  color: var(--periwinkle-deep);
+}
+
+.wicz-upsell__list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(240px, 1fr);
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0 0 var(--space-1);
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.wicz-upsell__list > li {
+  scroll-snap-align: start;
+}
+
+.wicz-upsell:has(.wicz-upsell__list:empty) {
+  display: none;
+}
+
+/* ---------- cart line thumbnail for an add-on without a photo ---------- */
+.cart-item__link.wicz-cart-mold {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  align-self: start;
+  background-color: var(--cream);
+  border: var(--border);
+  border-radius: var(--radius);
+}
+
+.wicz-cart-mold img {
+  width: 55%;
+  height: auto;
+  opacity: 0.6;
+}
+
+cart-drawer .cart-item__link.wicz-cart-mold {
+  width: 64px;
+  height: 64px;
+}
+
+@media screen and (min-width: 750px) {
+  .cart-item__link.wicz-cart-mold {
+    width: 96px;
+    height: 96px;
+  }
+
+  cart-drawer .cart-item__link.wicz-cart-mold {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+/* ---------- add-on product page without a pack shot yet ---------- */
+.wicz-addon-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  background-color: var(--cream);
+  border: var(--border);
+  border-radius: var(--radius);
+}
+
+.wicz-addon-placeholder img {
+  width: 32%;
+  height: auto;
+  opacity: 0.5;
+}

@@ -2,12 +2,15 @@
 // theme expects, through the Admin API:
 //   1. product metafield definitions (custom.*)
 //   2. products: 12 flavors (8 oz / 2 oz), "build a box" (one variant per
-//      format), 3 flights. Upserted by handle with productSet, so re-running
-//      replaces variants, prices and metafields with what the catalog says.
+//      format), 3 flights, 4 add-ons, the gift card. Upserted by handle with
+//      productSet, so re-running replaces variants, prices and metafields
+//      with what the catalog says. Then custom.goes_with on each product
+//      (the `goes with` upsell row, guide §8.5).
 //   3. old catalog products (2″ / 1.2″ cubes era cartons) archived, not deleted
-//   4. collections: shop (flavors, guide order), holiday, flights
+//   4. collections: shop (flavors, guide order), holiday, flights, add-ons
 //   5. the box-expand Cart Transform, plus its box_rules metafield
-//   6. the about page and the main menu: shop / build a box / flights / about
+//   6. the about page, the main menu (shop / build a box / flights /
+//      gift cards / about) and a `gift cards` link in the footer menu
 //
 // Why a script: the CSV import skips list metafields and template suffixes,
 // can't publish, and can't configure a cart transform.
@@ -18,6 +21,7 @@
 // Safe to re-run.
 import {
   flavors, SIZES, PRICES, box, formats, flights, BIG_FLAVORS, RETIRED,
+  addOns, giftCard, goesWith,
 } from '../../../catalog/catalog.mjs';
 import { connect, assertNoUserErrors } from './admin.mjs';
 
@@ -41,6 +45,9 @@ const DEFINITIONS = [
   ['allergens', 'allergens', 'single_line_text_field'],
   ['best_within', 'best within', 'single_line_text_field'],
   ['flight_contents', 'flight contents', 'list.single_line_text_field'],
+  ['made_of', 'made of', 'single_line_text_field'],
+  ['item_size', 'size', 'single_line_text_field'],
+  ['goes_with', 'goes with', 'list.product_reference'],
 ];
 const { metafieldDefinitions } = await gql(`{
   metafieldDefinitions(first: 50, ownerType: PRODUCT, namespace: "custom") { nodes { key } }
@@ -203,27 +210,78 @@ for (const flight of flights) {
   });
 }
 
-// The kit lists a gift card product (image: gift-card.jpg). The guide has no
-// amounts, so these are the usual three; change them in the admin if needed.
-const GIFT_AMOUNTS = ['25', '50', '100'];
-// Gift cards must be switched on in the admin first (Settings > Gift cards).
-try {
-  await upsert('gift-card', {
-  title: 'gift card',
-  giftCard: true,
-  descriptionHtml: '<p>for someone who likes butter. spend it on anything in the shop.</p>',
-  productType: 'gift card',
-  tags: ['gift card'],
-  productOptions: [{ name: 'amount', values: GIFT_AMOUNTS.map((amount) => ({ name: '$' + amount })) }],
-  variants: GIFT_AMOUNTS.map((amount) => ({
-    ...unstocked('amount', '$' + amount, amount + '.00', 'WC-GIFT-' + amount),
-    inventoryItem: { sku: 'WC-GIFT-' + amount, tracked: false, requiresShipping: false },
-  })),
+for (const addOn of addOns) {
+  await upsert(addOn.handle, {
+    title: addOn.title,
+    descriptionHtml: `<p>${addOn.body}</p>`,
+    productType: 'add-on',
+    tags: ['add-on'],
+    templateSuffix: 'addon',
+    productOptions: [{ name: 'Title', values: [{ name: 'Default Title' }] }],
+    variants: [stocked('Title', 'Default Title', addOn.price, `WC-ADD-${addOn.handle}`.toUpperCase())],
+    metafields: [
+      mf('made_of', 'single_line_text_field', addOn.madeOf),
+      mf('item_size', 'single_line_text_field', addOn.size),
+      ...(addOn.ingredients ? [mf('ingredients', 'multi_line_text_field', addOn.ingredients)] : []),
+    ],
   });
+}
+
+// Gift cards must be switched on in the admin first (Settings > Gift cards).
+let giftCardId = null;
+try {
+  const product = await upsert(giftCard.handle, {
+    title: giftCard.title,
+    giftCard: true,
+    descriptionHtml: `<p>${giftCard.body}</p>`,
+    productType: 'gift card',
+    tags: ['gift card'],
+    templateSuffix: 'gift-card',
+    productOptions: [{ name: 'amount', values: giftCard.amounts.map((amount) => ({ name: '$' + amount })) }],
+    variants: giftCard.amounts.map((amount) => ({
+      ...unstocked('amount', '$' + amount, amount + '.00', 'WC-GIFT-' + amount),
+      inventoryItem: { sku: 'WC-GIFT-' + amount, tracked: false, requiresShipping: false },
+    })),
+  });
+  giftCardId = product.id;
 } catch (error) {
   if (!/activated/.test(error.message)) throw error;
   console.warn('skipped the gift card: turn on gift cards in Settings > Gift cards, then re-run');
 }
+
+// custom.goes_with: add-on cards on butter pages, butter cards on add-on
+// pages (guide §8.5). A list of product references, so it's editable in the
+// admin like any other metafield.
+const productIds = {};
+for (const handle of [
+  ...flavors.map((f) => f.handle), box.handle, ...flights.map((f) => f.handle), ...addOns.map((a) => a.handle),
+]) {
+  const { productByIdentifier } = await gql(
+    `query ($handle: String!) { productByIdentifier(identifier: { handle: $handle }) { id } }`,
+    { handle },
+  );
+  productIds[handle] = productByIdentifier.id;
+}
+const goesWithFields = [
+  ...[...flavors.map((f) => f.handle), box.handle, ...flights.map((f) => f.handle)].map((handle) => [handle, goesWith(handle)]),
+  ...addOns.map((addOn) => [addOn.handle, addOn.goesWith]),
+].map(([handle, targets]) => ({
+  ownerId: productIds[handle],
+  namespace: 'custom',
+  key: 'goes_with',
+  type: 'list.product_reference',
+  value: JSON.stringify(targets.map((target) => productIds[target])),
+}));
+for (let i = 0; i < goesWithFields.length; i += 25) {
+  const set = await gql(
+    `mutation ($metafields: [MetafieldsSetInput!]!) {
+      metafieldsSet(metafields: $metafields) { userErrors { field message } }
+    }`,
+    { metafields: goesWithFields.slice(i, i + 25) },
+  );
+  assertNoUserErrors('metafieldsSet goes_with', set.metafieldsSet.userErrors);
+}
+console.log(`goes with set on ${goesWithFields.length} products`);
 
 // ---------- 3. archive the old catalog ----------
 for (const handle of RETIRED) {
@@ -268,6 +326,7 @@ async function smartCollection(handle, title, tag) {
 const shopId = await smartCollection('shop', 'shop', 'flavor');
 const holidayId = await smartCollection('holiday', 'holiday', 'holiday');
 const flightsId = await smartCollection('flights', 'flights', 'flight');
+const addOnsId = await smartCollection('add-ons', 'add-ons', 'add-on');
 
 /**
  * Puts a smart collection in a fixed order. New products join a smart
@@ -309,6 +368,7 @@ async function orderCollection(id, handles) {
 // the guide's order, classics first (§9)
 await orderCollection(shopId, flavors.map((f) => f.handle));
 await orderCollection(flightsId, flights.map((f) => f.handle));
+await orderCollection(addOnsId, addOns.map((a) => a.handle));
 
 // ---------- 5. cart transform + rules ----------
 const { shopifyFunctions, cartTransforms } = await gql(`{
@@ -396,10 +456,34 @@ const menu = await gql(
       { title: 'shop', type: 'COLLECTION', resourceId: shopId },
       { title: 'build a box', type: 'PRODUCT', resourceId: boxProduct.id },
       { title: 'flights', type: 'COLLECTION', resourceId: flightsId },
+      ...(giftCardId ? [{ title: 'gift cards', type: 'PRODUCT', resourceId: giftCardId }] : []),
       { title: 'about', type: 'PAGE', resourceId: aboutPage.id },
     ],
   },
 );
 assertNoUserErrors('menuUpdate main-menu', menu.menuUpdate.userErrors);
 console.log(`main menu: ${menu.menuUpdate.menu.items.map((item) => item.title).join(' / ')}`);
+
+// footer: keep whatever is there, and add `gift cards` once (guide §7 footer)
+const footerMenu = menus.nodes.find((m) => m.handle === 'footer');
+if (footerMenu && giftCardId) {
+  const { menu: footer } = await gql(
+    `query ($id: ID!) { menu(id: $id) { items { title type resourceId url } } }`,
+    { id: footerMenu.id },
+  );
+  if (!footer.items.some((item) => item.resourceId === giftCardId)) {
+    const items = [
+      ...footer.items.map(({ title, type, resourceId, url }) => ({ title, type, ...(resourceId ? { resourceId } : { url }) })),
+      { title: 'gift cards', type: 'PRODUCT', resourceId: giftCardId },
+    ];
+    const updated = await gql(
+      `mutation ($id: ID!, $title: String!, $items: [MenuItemUpdateInput!]!) {
+        menuUpdate(id: $id, title: $title, items: $items) { userErrors { field message } }
+      }`,
+      { id: footerMenu.id, title: footerMenu.title, items },
+    );
+    assertNoUserErrors('menuUpdate footer', updated.menuUpdate.userErrors);
+    console.log('footer menu: added gift cards');
+  }
+}
 void holidayId;

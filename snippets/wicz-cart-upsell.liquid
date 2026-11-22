@@ -1,0 +1,76 @@
+{%- comment -%}
+  The cart's one upsell row (design guide §8.5, §9): compact add-on cards
+  under the items, picked by what's in the cart. Never more than one row.
+
+  Order of picks:
+  1. the butter board, when the cart has a box or a flight (a gift)
+  2. the butter keeper, when the cart has an 8 oz butter
+  3. the spreader (every butter)
+  4. then the keeper and board if they weren't picked above, then the
+     gift card
+  Anything already in the cart is skipped. Theme settings > wicz cart
+  upsell holds the four products and how many to show.
+
+  Accepts:
+  - ajax: {Boolean} add in place through the drawer (default true). The
+    cart page passes false.
+
+  Usage:
+  {% render 'wicz-cart-upsell' %}
+{%- endcomment -%}
+{%- if cart.item_count > 0 and settings.wicz_upsell_show -%}
+  {%- liquid
+    assign use_ajax = true
+    if ajax == false
+      assign use_ajax = false
+    endif
+
+    assign has_gift = false
+    assign has_big = false
+    assign in_cart = ''
+    for item in cart.items
+      if item.product.type == 'box' or item.product.type == 'flight'
+        assign has_gift = true
+      endif
+      if item.variant.title == '8 oz'
+        assign has_big = true
+      endif
+      assign in_cart = in_cart | append: ',' | append: item.product.handle
+    endfor
+    assign in_cart = in_cart | append: ','
+
+    assign board = settings.wicz_upsell_board.handle
+    assign keeper = settings.wicz_upsell_keeper.handle
+    assign spreader = settings.wicz_upsell_spreader.handle
+    assign gift_card = settings.wicz_upsell_gift_card.handle
+
+    assign order = ''
+    if has_gift
+      assign order = order | append: board | append: ','
+    endif
+    if has_big
+      assign order = order | append: keeper | append: ','
+    endif
+    assign order = order | append: spreader | append: ',' | append: keeper | append: ',' | append: board | append: ',' | append: gift_card
+    assign order = order | split: ',' | uniq
+
+    assign shown = 0
+    assign limit = settings.wicz_upsell_count
+  -%}
+  <div class="wicz-upsell">
+    <h2 class="wicz-upsell__heading">{{ settings.wicz_upsell_heading | escape }}</h2>
+    <ul class="wicz-upsell__list" role="list">
+      {%- for handle in order -%}
+        {%- if handle == blank -%}{%- continue -%}{%- endif -%}
+        {%- assign needle = ',' | append: handle | append: ',' -%}
+        {%- if in_cart contains needle -%}{%- continue -%}{%- endif -%}
+        {%- assign pick = all_products[handle] -%}
+        {%- if pick.id == blank -%}{%- continue -%}{%- endif -%}
+        {%- unless pick.available or pick.gift_card? -%}{%- continue -%}{%- endunless -%}
+        {%- if shown >= limit -%}{%- break -%}{%- endif -%}
+        <li>{%- render 'wicz-addon-card', product: pick, compact: true, ajax: use_ajax -%}</li>
+        {%- assign shown = shown | plus: 1 -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}

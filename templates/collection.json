@@ -31,12 +31,36 @@
             "collection": "flights",
             "label": "flights"
           }
+        },
+        "box": {
+          "type": "chip",
+          "settings": {
+            "link": "shopify://products/build-a-box",
+            "label": "build a box"
+          }
+        },
+        "add_ons": {
+          "type": "chip",
+          "settings": {
+            "collection": "add-ons",
+            "label": "add-ons"
+          }
+        },
+        "gift_cards": {
+          "type": "chip",
+          "settings": {
+            "link": "shopify://products/gift-card",
+            "label": "gift cards"
+          }
         }
       },
       "block_order": [
         "all",
         "holiday",
-        "flights"
+        "flights",
+        "box",
+        "add_ons",
+        "gift_cards"
       ],
       "settings": {
         "label": "browse"

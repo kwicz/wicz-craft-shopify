@@ -283,6 +283,7 @@
     {%- comment -%} wicz craft: cart line styles are shared by the cart page and the drawer {%- endcomment -%}
     {%- if template.name == 'cart' or settings.cart_type == 'drawer' -%}{{ 'wicz-cart.css' | asset_url | stylesheet_tag }}{%- endif -%}
     {%- if settings.cart_type == 'drawer' -%}{{ 'wicz-cart-drawer.css' | asset_url | stylesheet_tag }}{%- endif -%}
+    {{ 'wicz-addon.css' | asset_url | stylesheet_tag }}
     {%- render 'wicz-theme-vars' -%}
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 
@@ -326,9 +327,19 @@
     </script>
   </head>
 
+  {%- liquid
+    # wicz craft: butter pages take the flavor's colors; add-on and gift card pages stay cream (§8.5, §9)
+    assign wicz_flavor_page = false
+    if template.name == 'product'
+      assign wicz_flavor_page = true
+      if template.suffix == 'addon' or template.suffix == 'gift-card' or product.gift_card?
+        assign wicz_flavor_page = false
+      endif
+    endif
+  -%}
   <body
-    class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}{% if template.name == 'product' %} wicz-flavor-page{% endif %}"
-    {%- if template.name == 'product' %} style="{% render 'wicz-flavor-vars', product: product %}"{% endif %}
+    class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}{% if wicz_flavor_page %} wicz-flavor-page{% elsif template.name == 'product' %} wicz-plain-page{% endif %}"
+    {%- if wicz_flavor_page %} style="{% render 'wicz-flavor-vars', product: product %}"{% endif %}
   >
     <a class="skip-to-content-link button visually-hidden" href="#MainContent">
       {{ 'accessibility.skip_to_text' | t }}

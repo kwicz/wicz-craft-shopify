@@ -9,9 +9,17 @@
         "small_size": "2 oz",
         "care_line": "keep cold. soften 20 minutes before serving. best within 2–3 weeks, or freeze."
       }
+    },
+    "goes_with": {
+      "type": "wicz-goes-with",
+      "settings": {
+        "heading": "goes with",
+        "limit": 3
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "goes_with"
   ]
 }

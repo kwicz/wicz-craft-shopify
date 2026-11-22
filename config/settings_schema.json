@@ -85,6 +85,56 @@
     ]
   },
   {
+    "name": "wicz cart upsell",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "one row of add-ons under the cart items (design guide §8.5). the board comes first when the cart has a box or flight, the keeper when it has an 8 oz butter. items already in the cart are skipped."
+      },
+      {
+        "type": "checkbox",
+        "id": "wicz_upsell_show",
+        "label": "show the upsell row",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "wicz_upsell_heading",
+        "label": "heading",
+        "default": "goes with"
+      },
+      {
+        "type": "range",
+        "id": "wicz_upsell_count",
+        "label": "most to show",
+        "min": 1,
+        "max": 3,
+        "step": 1,
+        "default": 2
+      },
+      {
+        "type": "product",
+        "id": "wicz_upsell_board",
+        "label": "butter board"
+      },
+      {
+        "type": "product",
+        "id": "wicz_upsell_keeper",
+        "label": "butter keeper"
+      },
+      {
+        "type": "product",
+        "id": "wicz_upsell_spreader",
+        "label": "spreader"
+      },
+      {
+        "type": "product",
+        "id": "wicz_upsell_gift_card",
+        "label": "gift card"
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.colors.name",
     "settings": [
       {

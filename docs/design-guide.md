@@ -4,11 +4,11 @@ This is the design spec for the Wicz Craft Shopify storefront, a practice store 
 
 > **For the agent:** This document is the source of truth. If something isn't covered, choose the plainer, quieter option. Don't add gradients (except the foil sheen in §6), stripes, emoji, exclamation points, stock lifestyle photos, butter puns, or flavor numbers. When a fact is missing, write a bracketed placeholder like `[PRICE]` instead of inventing it.
 
-> **Revision (Nov 21, 2026):** We're back to the **bright** system. Each of the twelve flavors has its own ground and ink pair. The **classics** are lighter and mellow. The **culinary and holiday** flavors are bold and poppy. **Unsalted** wears **silver foil**. Sizes are **8 oz and 2 oz**, and multi-flavor sales go through a **box builder** (§8.2). Packaging is a **butter-yellow window box** (§10). The logo is a **butter stamp, "the mold"** (§2.1), pressed into every cube. Stripes are gone everywhere. Background research is in `premium-butter-market-research.md`.
+> **Revision (Nov 21, 2026):** We're back to the **bright** system. Each of the twelve flavors has its own ground and ink pair. The **classics** are lighter and mellow. The **culinary and holiday** flavors are bold and poppy. **Unsalted** wears **silver foil**. Sizes are **8 oz and 2 oz**, and multi-flavor sales go through a **box builder** (§8.2). Five **add-ons** (spreader, butter keeper, butter board, flaky salt, gift card) are covered in §8.5. Packaging is a **butter-yellow window box** (§10). The logo is a **butter stamp, "the mold"** (§2.1), pressed into every cube. Stripes are gone everywhere. Background research is in `premium-butter-market-research.md`.
 
 > **Visual reference:** the design canvas **[Wicz Craft — products & packaging](https://claude.ai/artifact/Shb2njzYZSvU6A6qzvj2Vo)** shows the twelve-flavor lineup, the logo ("the mold") in every use, and the window box in all three sizes. It's an artifact on the owner's account, not a project file. Open it with the artifact tools (its boards are `project/Bright-Lineup.dc.html`, `project/Butter-Stamp.dc.html`, and `project/Window-Box.dc.html`) rather than fetching it from the web. When this guide and the canvas disagree, this guide wins.
 
-> **Product data:** the sheet **[Wicz Craft — product catalog](https://claude.ai/artifact/GRfWvbN4wi2p8jJoLKZ7Hs)** has one row per flavor on its `Flavors` tab: 8 oz and 2 oz prices, ingredients, allergens, best-within, pairs with, product description, seasonal flag, handle, and the four color hexes. Its `Boxes` and `Flights` tabs hold the builder formats and flight presets. It's a Claude Sheets artifact on the owner's account; read its cells with the Claude Docs connector. Prices and colors match this guide. For **ingredients, allergens, shelf life, descriptions, and handles, the sheet is the source of truth**. Rows marked `draft` in its `Ingredients status` column haven't been confirmed against real recipes yet.
+> **Product data:** the sheet **[Wicz Craft — product catalog](https://claude.ai/artifact/GRfWvbN4wi2p8jJoLKZ7Hs)** has one row per flavor on its `Flavors` tab: 8 oz and 2 oz prices, ingredients, allergens, best-within, pairs with, product description, seasonal flag, handle, and the four color hexes. Its `Boxes` and `Flights` tabs hold the builder formats and flight presets, and its `Add-ons` tab holds the five add-ons. It's a Claude Sheets artifact on the owner's account; read its cells with the Claude Docs connector. Prices and colors match this guide. For **ingredients, allergens, shelf life, descriptions, and handles, the sheet is the source of truth**. Rows marked `draft` in its status columns haven't been confirmed yet.
 
 ---
 
@@ -49,6 +49,7 @@ Dairies once pressed carved stamps into butter to mark whose it was. The Wicz Cr
 - The favicon.
 - Stickers.
 - The social avatar.
+- The add-ons: burned into the spreader handle, branded on the butter board, printed on the salt tin lid, and on the gift card (§8.5).
 
 The wordmark stays for headers, box tops, and labels. The stamp is always one color: `--periwinkle-deep` on light grounds, `--cream` on periwinkle. On the butter itself it's an emboss with no ink.
 
@@ -207,7 +208,7 @@ Sample lines you can use as-is:
 - keep cold. spread generously.
 - soften 20 minutes before serving. freezes beautifully.
 
-Product description pattern (two or three short sentences). Draft descriptions for all twelve flavors are in the product catalog sheet's `Description` column.
+Product description pattern (two or three short sentences). Draft descriptions for all twelve flavors and the five add-ons are in the product catalog sheet's `Description` columns.
 
 > **caesar.** cultured butter with parmesan, anchovy, garlic, and lemon. for steak, roast chicken, and the end of the loaf.
 
@@ -265,6 +266,8 @@ Use an 8px base unit with steps of 8 / 16 / 24 / 40 / 64 / 96. Content max-width
 - The price goes below the card in mono.
 - No drop shadow on hover. Instead, the card moves up 2px and its bottom border darkens to the flavor's fold color.
 
+**Add-on card.** For the five add-ons, which aren't butter, so no foil. Cream card with a 1.5px `--periwinkle-deep` border and 6px radius. The add-on's pack shot fills the top. Below it: the name in an H3, a one-line description in mono, and the price. A secondary button (`add`) adds it to the cart in place. In the cart and checkout upsell rows, use a compact version: a 64px thumbnail, name, price, and `add`.
+
 **Buttons.**
 - Primary: `--periwinkle-deep` fill, `--cream` text, DM Mono 500 lowercase 15px, 6px radius, padding 14px × 22px.
 - Secondary: transparent, with a 1.5px deep border and deep text.
@@ -276,7 +279,7 @@ Use an 8px base unit with steps of 8 / 16 / 24 / 40 / 64 / 96. Content max-width
 
 **Builder tray.** A row of slots that matches the chosen box format: one large slot for the 8 oz plus small slots for the 2 oz cubes. Each filled slot shows that flavor's foil card in miniature, and empty slots are dashed. Show the running count in mono (`3 of 4 picked`) and the fixed box price.
 
-**Footer.** Butter-yellow background. It holds a large stacked `wicz / craft` wordmark, the logo stamp, the mono location line, and one sample voice line.
+**Footer.** Butter-yellow background. It holds a large stacked `wicz / craft` wordmark, the logo stamp, the mono location line, one sample voice line, and a `gift cards` link.
 
 ---
 
@@ -344,6 +347,7 @@ Show the saving plainly in mono, e.g. `$48 if bought separately`. Never "deal" o
 - Target: ingredients plus packaging at or below **about ⅓ of price**. Cream alone is 11–18% of these prices.
 - [PACKAGING COST per 8 oz wrap / 2 oz wrap / small, medium, large box / sticker]
 - [FLAVOR INGREDIENT COST per flavor]. Caesar (parmesan, anchovy) and chili crisp will cost the most.
+- [ADD-ON COST per item]. Add-ons are bought in and branded, so check each one's margin against its price in §8.5.
 - Byproduct: about 2 cups of buttermilk per quart.
 
 ### 8.4 Product data
@@ -392,20 +396,42 @@ The full per-flavor data lives in the **[Wicz Craft — product catalog](https:/
 
 **Care line** (every product page): keep cold. soften 20 minutes before serving. best within 2–3 weeks, or freeze. For **garlic herb, caesar, and french onion**, the line says *best within 1 week, or freeze.* instead, because of the garlic, anchovy, and onion. A box that holds any of those uses the 1-week line.
 
+### 8.5 Add-ons
+
+Five add-ons go with the butter. Four are physical goods bought in and branded with the mold. The fifth is a Shopify gift card. They're on the catalog's `Add-ons` tab.
+
+| Add-on | Price | Handle | What it is | Where it's offered |
+|---|---|---|---|---|
+| spreader | $12 | `butter-spreader` | maple butter spreader, the mold burned into the handle | checkout add-on · every butter page |
+| butter keeper | $30 | `butter-keeper` | cream-glazed french butter keeper (butter bell) with a thin periwinkle rim | 8 oz product pages · cart |
+| butter board | $34 | `butter-board` | small maple paddle board, the mold branded near the handle | flight and box pages · cart gift add-on |
+| flaky salt | $7 | `flaky-salt` | flaky sea salt in a small tin, butter-yellow lid with the mold | unsalted page · checkout add-on |
+| gift card | $25 / $50 / $100 | `gift-card` | digital Shopify gift card, good for pickup or local delivery | nav · footer · cart |
+
+Prices are set against what similar goods sell for: handmade maple spreaders run about $11–12, Butter Bell crocks about $31–35, small maple paddle boards about $30–35, and small flaky-salt tins about $5–7. Sizes are still open: [SPREADER LENGTH], [KEEPER CAPACITY], [BOARD DIMENSIONS], [SALT NET WT].
+
+- **No foil.** Add-ons aren't butter, so they use the add-on card (§7), not the foil card.
+- **Gift card front:** a vector design, not a photo. Butter-yellow card, the mold, the `wicz craft` wordmark, *a gift of really good butter.*, and the amount. One image per amount.
+- **Copy:** same voice as the butter. Descriptions are in the catalog's `Description` column.
+- **Allergens:** none of the add-ons contain milk. The flaky salt page lists `ingredients: sea salt.` and no allergen line.
+- **Shopify:** the spreader, keeper, board, and salt are ordinary products in an `add-ons` collection. Use Shopify's complementary products (Search & Discovery) for the "where it's offered" spots, or a custom cart upsell section. The gift card is a Shopify gift card product with $25, $50, and $100 denominations.
+
 ---
 
 ## 9. Pages
 
 - **Home:** hero → flavor grid (12 cards, 4 across on desktop and 2 on mobile, classics first) → flights row (3 cards with flavor dots) → "build a box" call-out → one-line story ("we made butter. it's really good.") with the phrase stamp → footer.
-- **Collection:** cream background, mono filter chips (e.g. `all`, `holiday`, `flights`), and cards as described in §7.
-- **Product (single):** the page picks up the flavor's colors through CSS variables. A large foil image area sits on the left, ideally showing the embossed stamp on the cube. Details go on the right: name (display), price, size selector as pills (`8 oz` / `2 oz`), primary button, ingredients, allergens, care line, `pairs with`.
+- **Collection:** cream background, mono filter chips (e.g. `all`, `holiday`, `flights`, `add-ons`), and cards as described in §7.
+- **Product (single):** the page picks up the flavor's colors through CSS variables. A large foil image area sits on the left, ideally showing the embossed stamp on the cube. Details go on the right: name (display), price, size selector as pills (`8 oz` / `2 oz`), primary button, ingredients, allergens, care line, `pairs with`. Below it, a `goes with` row of add-on cards (§8.5 says which).
+- **Add-on product:** cream page, no flavor colors. Pack shot, in-use shot, and detail shot on the left. Name, price, description, size, and the primary button on the right. Below it, a `goes with` row of three butter cards.
+- **Gift card:** the card front image, amount pills (`$25` / `$50` / `$100`), recipient fields, and the primary button.
 - **Build a box:**
   1. **Choose a format:** five pill-cards showing contents and price.
   2. **Fill the slots:** the big slot offers salted or unsalted. Below it, show the flavor grid with a `+` on each card, and keep the builder tray (§7) sticky with the count and fixed price.
   3. **Add to cart:** the button stays disabled until every slot is full.
-- **Flight:** the same layout as a single product, plus flavor dots, the "if bought separately" line, a window-box image, and a "make it your own" link into the builder.
+- **Flight:** the same layout as a single product, plus flavor dots, the "if bought separately" line, a window-box image, a "make it your own" link into the builder, and a butter board add-on card.
 - **About:** short. Three or four voice lines, the phrase stamp, the logo stamp, and the location line.
-- **Cart:** flat cream background with mono throughout. Flat butter-yellow appears only on the checkout summary block. Boxes list their picks under the line item.
+- **Cart:** flat cream background with mono throughout. Flat butter-yellow appears only on the checkout summary block. Boxes list their picks under the line item. One compact upsell row sits under the items (spreader, butter keeper, or board, by what's in the cart). Never more than one row.
 
 ---
 
@@ -433,6 +459,7 @@ Bundles ship in a **matte butter-yellow paperboard box** (`#F6E8A4`, flat, no sh
 - **Sides:** plain butter-yellow with the wordmark and `cultured butter · portland, oregon · keep cold`. Batch and date are **hand-stamped in periwinkle ink**, a little crooked (`batch [__] · made [DATE]`). No stripes.
 - **Box height:** about 1.75″, so the cubes clear the film.
 - **Contents sticker:** printed per order and placed on the bottom or a short side. It lists `inside` and the format name, one line per flavor with its dot and size, batch, date, combined allergens, and `keep cold. spread generously.`
+- **Add-ons in an order** ride beside the window box, not inside it. A spreader can tuck under the box's seal band.
 
 ### 10.3 Keeping it cold
 
@@ -445,6 +472,7 @@ The window box isn't insulated. That's fine, because orders are **local only**: 
 - Product shots, or rendered placeholders, show **foil-wrapped butter in its flavor colors** with the stamp embossed on top, on a cream ground. Shoot top-down or at a slight 3/4 angle, with soft shadows.
 - Bundle shots show the **window box** from above with the cubes visible.
 - **In situ shots** show the unwrapped butter, stamp up, on a **wooden butter board, a wooden or bamboo cutting board, or a nice plate**, with a butter knife beside it and a swipe taken out. Next to it is **one food that suits the flavor** (bread, a cracker, a potato) with the butter spread on it. The food comes from that flavor's `pairs with` metafield. Rotate the boards and plates across flavors so the set doesn't repeat. Keep the framing tight and the surfaces pale.
+- **Add-on shots:** three per item (pack shot alone on cream, in use with the butter, and a detail). Generate the spreader, board, and salt tin plain and composite the mold in post so it always matches the logo. Where an in situ butter shot shows a board or spreader, prefer the Wicz Craft ones, so the add-ons appear across the site.
 - **The audience is foodies.** Style the food the way Food52 or Smitten Kitchen would: natural window light, real crumbs and a little mess, and specific foods (a liege waffle, a crumpet, delicata squash) rather than generic ones. No pancakes.
 - Images are AI-generated (Gemini) on **plain wrappers**. The type (`wicz craft`, the flavor name, `cultured 48 hours`) is rendered from the real fonts and added in post, so it's always spelled and set correctly. Builder pieces are overhead shots of each cube and block with transparent backgrounds, composited into photos of the empty box insert. The full shot list is the "Wicz Craft — website image shot list" sheet.
 - Until an image exists, build a placeholder in CSS with the `.foil` class plus the wordmark. Don't use stock photos.
@@ -460,10 +488,12 @@ The window box isn't insulated. That's fine, because orders are **local only**: 
 - Don't label single packs "classic" or "culinary." Intensity is shown through color only, and groupings appear only as flight names.
 - Don't use gold foil for unsalted. Unsalted is always silver.
 - Don't use gradients other than the foil sheen, and use the sheen only on butter or foil blocks.
+- Don't put add-ons on foil cards.
 - Don't use radii other than 6px or 999px.
 - Don't set headlines in Title Case or ALL CAPS. The brand is lowercase.
 - Don't use exclamation points, puns, emoji, or "deal"/"save" language.
 - Don't use Fraunces without the `SOFT 100 / WONK 1` settings. It looks generic without them.
 - Don't mix in the Wicz Craft holiday label fonts (Cormorant/EB Garamond).
 - Don't use more than one rotated element or one phrase stamp per web page.
+- Don't show more than one upsell row in the cart.
 - Don't put the logo in more than one color, and don't ink it onto the butter.

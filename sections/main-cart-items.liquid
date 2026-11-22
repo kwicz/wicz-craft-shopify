@@ -113,9 +113,16 @@
                         </div>
                       {% else %}
                         {%- comment -%} wicz craft: no photo yet, show a small foil cube in the product's colors (§10) {%- endcomment -%}
+                        {%- if item.product.type == 'add-on' or item.product.gift_card? -%}
+                          {%- comment -%} add-ons never go on foil (§8.5): the mold on cream {%- endcomment -%}
+                          <a href="{{ item.url }}" class="cart-item__link wicz-cart-mold" tabindex="-1" aria-hidden="true">
+                            <img src="{{ 'wicz-mold-small.svg' | asset_url }}" alt="" width="40" height="40" loading="lazy">
+                          </a>
+                        {%- else -%}
                         <a href="{{ item.url }}" class="cart-item__link wicz-cart-cube" tabindex="-1" aria-hidden="true" style="{% render 'wicz-flavor-vars', product: item.product %}">
                           <span class="foil"></span>
                         </a>
+                        {%- endif -%}
                       {% endif %}
                     </td>
 
@@ -446,6 +453,8 @@
               </tbody>
             </table>
           {%- endif -%}
+          {%- comment -%} wicz craft: the one upsell row (§8.5, §9). Plain form posts here, back to /cart. {%- endcomment -%}
+          {%- render 'wicz-cart-upsell', ajax: false -%}
         </div>
       </div>
 

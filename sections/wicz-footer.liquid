@@ -17,11 +17,11 @@
         {%- endfor -%}
       </a>
 
-      {%- if section.settings.show_logo -%}
-        <img src="{{ 'wicz-stamp.png' | asset_url }}" width="120" height="120" alt="the wicz craft butter stamp" loading="lazy" class="wicz-footer__stamp">
-      {%- endif -%}
-
       <div class="wicz-footer__details">
+        {%- if section.settings.show_logo -%}
+          <img src="{{ 'wicz-stamp.png' | asset_url }}" width="120" height="120" alt="the wicz craft butter stamp" loading="lazy" class="wicz-footer__stamp">
+        {%- endif -%}
+
         {%- if section.settings.voice_line != blank -%}
           <p class="wicz-footer__voice wicz-italic">{{ section.settings.voice_line }}</p>
         {%- endif -%}

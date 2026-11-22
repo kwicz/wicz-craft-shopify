@@ -14,10 +14,14 @@
   height: auto;
 }
 
+/* sits at the top of the right-hand column, above the voice line */
+.wicz-footer__stamp {
+  margin-bottom: var(--space-1);
+}
+
 @media screen and (min-width: 750px) {
   .wicz-footer__stamp {
     width: 120px;
-    align-self: end;
   }
 }
 
@@ -76,7 +80,7 @@
 
 @media screen and (min-width: 750px) {
   .wicz-footer__inner {
-    grid-template-columns: auto auto 1fr;
+    grid-template-columns: auto 1fr;
     align-items: end;
     gap: var(--space-5);
     padding-top: var(--space-6);
